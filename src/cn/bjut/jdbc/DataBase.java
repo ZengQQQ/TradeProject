@@ -21,6 +21,9 @@ public class DataBase {
         public DataBase(){
 
         }
+
+
+
         public String GetDBPath()
         {
             return dbpath;
@@ -38,22 +41,25 @@ public class DataBase {
 
         public void closeCon(Connection con) throws Exception{
             if(con!=null){
-
                 con.close();
             }
         }
 
 
-        public static void OpenDB()
-        {DataBase db=new DataBase();
+        public static Connection OpenDB()
+        {
+            DataBase db=new DataBase();
             try {
-                db.getCon();
+                Connection a = db.getCon();
                 System.out.println("数据库连接成功!");
+                return a;
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                return null;
             }
         }
+
         public  static void main(String[] args) {
             OpenDB();
         }
