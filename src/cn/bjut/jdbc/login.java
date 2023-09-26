@@ -36,37 +36,29 @@ public class login extends JFrame {
                 DataControl dataControl = new DataControl();
                 String merchantPsw = dataControl.getMerchantPsw(username);//得到商家密码
                 if (password.equals(merchantPsw)) {
-                     JOptionPane.showMessageDialog(this, "商家登录成功");
+                    JOptionPane.showMessageDialog(this, "商家登录成功");
                     MerchantInterFrm merchantFrame = new MerchantInterFrm();
                     merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     merchantFrame.setSize(400, 300);
                     merchantFrame.setVisible(true);
                     dispose();
 
-                if (username.equals("merchant") && password.equals("merchantpassword")) {
-                    JOptionPane.showMessageDialog(this, "商家登录成功");
-                    // MerchantFrame merchantFrame = new MerchantFrame();
-                    // merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    // merchantFrame.setSize(400, 300);
-                    // merchantFrame.setVisible(true);
-                    // dispose();
-
-                } else {
-                    JOptionPane.showMessageDialog(this, "商家登录失败，请检查用户名和密码");
-                }
-            } else if (role.equals("管理员")) {
-                if (username.equals("admin") && password.equals("adminpassword")) {
-                    JOptionPane.showMessageDialog(this, "管理员登录成功");
-                    // AdminFrame adminFrame = new AdminFrame();
-                    // adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    // adminFrame.setSize(400, 300);
-                    // adminFrame.setVisible(true);
-                    // dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "管理员登录失败，请检查用户名和密码");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "商家登录失败，请检查用户名和密码");
+                    }
+                } else if (role.equals("管理员")) {
+                    if (username.equals("admin") && password.equals("adminpassword")) {
+                        JOptionPane.showMessageDialog(this, "管理员登录成功");
+                        // AdminFrame adminFrame = new AdminFrame();
+                        // adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        // adminFrame.setSize(400, 300);
+                        // adminFrame.setVisible(true);
+                        // dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "管理员登录失败，请检查用户名和密码");
+                    }
                 }
             }
-        }
     }
 
     private void initComponents() {
