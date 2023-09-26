@@ -2,6 +2,7 @@ package cn.bjut.jdbc;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
 import javax.swing.*;
 
 public class login extends JFrame {
@@ -13,10 +14,11 @@ public class login extends JFrame {
         initComponents();
     }
 
-    private void button1MouseClicked(MouseEvent e) {
+    private void button1MouseClicked(MouseEvent e) throws SQLException {
         String username = textField1.getText();
         String password = new String(passwordField.getPassword());
         String role = (String) roleComboBox.getSelectedItem();
+
 
         if (role != null) {
             if (role.equals("用户")) {
@@ -31,13 +33,15 @@ public class login extends JFrame {
                     JOptionPane.showMessageDialog(this, "用户登录失败，请检查用户名和密码");
                 }
             } else if (role.equals("商家")) {
-               if (username.equals("merchant") && password.equals("merchantpassword")) {
+                DataControl dataControl = new DataControl();
+                String merchantPsw = dataControl.getMerchantPsw(username);//得到商家密码
+                if (password.equals(merchantPsw)) {
                      JOptionPane.showMessageDialog(this, "商家登录成功");
-//                    MerchantFrame merchantFrame = new MerchantFrame();
-//                    merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//                    merchantFrame.setSize(400, 300);
-//                    merchantFrame.setVisible(true);
-//                    dispose();
+                    MerchantInterFrm merchantFrame = new MerchantInterFrm();
+                    merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    merchantFrame.setSize(400, 300);
+                    merchantFrame.setVisible(true);
+                    dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "商家登录失败，请检查用户名和密码");
                 }
@@ -87,7 +91,11 @@ public class login extends JFrame {
         button1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                button1MouseClicked(e);
+                try {
+                    button1MouseClicked(e);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         contentPane.add(button1);
