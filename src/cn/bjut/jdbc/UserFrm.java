@@ -7,14 +7,14 @@ import javax.swing.*;
  * @author 郭yw          未完成(每个具体页面内容)，用户登录进来之后的首页
  */
 
-public class Jframe extends JFrame {
+public class UserFrm extends JFrame {
     private JButton searchButton;
     private JButton homeButton;
     private JButton dynamicButton;
     private JButton shoppingButton;
     private JButton myButton;
 
-    public Jframe() {
+    public UserFrm() {
         initComponents();
     }
 
@@ -109,7 +109,7 @@ public class Jframe extends JFrame {
     }
 
     public static void main(String[] args) {
-        Jframe frame = new Jframe();
+        UserFrm frame = new UserFrm();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
