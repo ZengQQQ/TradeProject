@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 /**
- * @author 郭yw          未完成，用户登录进来之后的首页
+ * @author 郭yw          未完成(每个具体页面内容)，用户登录进来之后的首页
  */
 
 public class Jframe extends JFrame {
