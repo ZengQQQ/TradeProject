@@ -4,13 +4,10 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-/**
- * @author 郭yw          未完成，用户登录页面
- */
-
 public class login extends JFrame {
     private JTextField textField1;
     private JPasswordField passwordField;
+    private JComboBox<String> roleComboBox; // 添加角色选择下拉菜单
 
     public login() {
         initComponents();
@@ -19,20 +16,43 @@ public class login extends JFrame {
     private void button1MouseClicked(MouseEvent e) {
         String username = textField1.getText();
         String password = new String(passwordField.getPassword());
+        String role = (String) roleComboBox.getSelectedItem();
 
-        // 进行用户名和密码验证逻辑，这里假设用户名为"admin"，密码为"password"
-        if (username.equals("admin") && password.equals("password")) {
-            JOptionPane.showMessageDialog(this, "登录成功");
-
-            // 创建并显示第二个窗口
-            Jframe mainFrame = new Jframe();
-            mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            mainFrame.setSize(400, 300);
-            mainFrame.setVisible(true);
-            // 关闭当前登录窗口
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "登录失败，请检查用户名和密码");
+        if (role != null) {
+            if (role.equals("用户")) {
+                if (username.equals("user") && password.equals("userpassword")) {
+                      JOptionPane.showMessageDialog(this, "用户登录成功");
+//                    UserFrame userFrame = new UserFrame();
+//                    userFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//                    userFrame.setSize(400, 300);
+//                    userFrame.setVisible(true);
+//                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "用户登录失败，请检查用户名和密码");
+                }
+            } else if (role.equals("商家")) {
+               if (username.equals("merchant") && password.equals("merchantpassword")) {
+                     JOptionPane.showMessageDialog(this, "商家登录成功");
+//                    MerchantFrame merchantFrame = new MerchantFrame();
+//                    merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//                    merchantFrame.setSize(400, 300);
+//                    merchantFrame.setVisible(true);
+//                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "商家登录失败，请检查用户名和密码");
+                }
+            } else if (role.equals("管理员")) {
+                if (username.equals("admin") && password.equals("adminpassword")) {
+                      JOptionPane.showMessageDialog(this, "管理员登录成功");
+//                    AdminFrame adminFrame = new AdminFrame();
+//                    adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//                    adminFrame.setSize(400, 300);
+//                    adminFrame.setVisible(true);
+//                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "管理员登录失败，请检查用户名和密码");
+                }
+            }
         }
     }
 
@@ -43,7 +63,7 @@ public class login extends JFrame {
         JPanel contentPane = new JPanel();
         contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setContentPane(contentPane);
-        contentPane.setLayout(new GridLayout(3, 2, 5, 5));
+        contentPane.setLayout(new GridLayout(4, 2, 5, 5)); // 增加一行用于放置角色选择
 
         JLabel label1 = new JLabel("Username:");
         contentPane.add(label1);
@@ -56,6 +76,12 @@ public class login extends JFrame {
 
         passwordField = new JPasswordField();
         contentPane.add(passwordField);
+
+        JLabel label3 = new JLabel("Role:"); // 添加角色选择标签
+        contentPane.add(label3);
+
+        roleComboBox = new JComboBox<>(new String[]{"用户", "商家", "管理员"}); // 添加角色选择下拉菜单
+        contentPane.add(roleComboBox);
 
         JButton button1 = new JButton("Login");
         button1.addMouseListener(new MouseAdapter() {
@@ -74,7 +100,7 @@ public class login extends JFrame {
             @Override
             public void run() {
                 login login = new login();
-                login.setSize(500,400);
+                login.setSize(500, 400);
                 login.setVisible(true);
             }
         });
