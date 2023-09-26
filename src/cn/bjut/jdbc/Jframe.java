@@ -6,7 +6,7 @@ import javax.swing.*;
 import net.miginfocom.swing.*;
 
 /**
- * @author 郭yw
+ * @author 郭yw   用户进入首页内容，未完成
  */
 public class Jframe extends JFrame {
     private JButton searchButton;
@@ -119,7 +119,18 @@ public class Jframe extends JFrame {
         contentPane.add(myButton, "cell 8 8");
 
         contentPane.add(mainPanel, "dock center");  // 将主面板添加到内容面板中
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 4)); // 设置按钮的布局为GridLayout，一行四列
+        buttonPanel.add(homeButton);
+        buttonPanel.add(dynamicButton);
+        buttonPanel.add(shoppingButton);
+        buttonPanel.add(myButton);
 
+        // 将按钮面板放在界面的南方
+        contentPane.add(buttonPanel, BorderLayout.SOUTH);
+
+        // 设置主面板放在界面的中间
+        contentPane.add(mainPanel, BorderLayout.CENTER);
         pack();
         setLocationRelativeTo(getOwner());
     }
