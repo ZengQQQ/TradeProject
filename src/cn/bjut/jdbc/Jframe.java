@@ -6,7 +6,7 @@ import javax.swing.*;
 import net.miginfocom.swing.*;
 
 /**
- * @author 郭yw
+ * @author 郭yw   用户进入首页内容，未完成
  */
 public class Jframe extends JFrame {
     private JButton searchButton;
