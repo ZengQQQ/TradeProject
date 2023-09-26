@@ -1,17 +1,14 @@
-/*
- * Created by JFormDesigner on Tue Sep 26 09:27:07 CST 2023
- * 商家主界面
- */
 package cn.bjut.jdbc;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 public class MerchantInterFrm extends JFrame {
     private JButton searchButton;
-    private JButton homeButton;
-    private JButton dynamicButton;
-    private JButton shoppingButton;
+    private JButton upproject;
+    private JButton downproject;
+    private JButton evaluate;
     private JButton myButton;
 
     public MerchantInterFrm() {
@@ -25,19 +22,19 @@ public class MerchantInterFrm extends JFrame {
 
         JPanel card1 = new JPanel();
         card1.add(new JLabel("这是第一个界面"));
-        card1.setBackground(Color.RED);
+
 
         JPanel card2 = new JPanel();
         card2.add(new JLabel("这是第二个界面"));
-        card2.setBackground(Color.GREEN);
+
 
         JPanel card3 = new JPanel();
         card3.add(new JLabel("这是第三个界面"));
-        card3.setBackground(Color.BLUE);
+
 
         JPanel card4 = new JPanel();
         card4.add(new JLabel("这是第四个界面"));
-        card4.setBackground(Color.YELLOW);
+
 
         JPanel card5 = new JPanel();
         JTextField textField = new JTextField(10);
@@ -53,6 +50,7 @@ public class MerchantInterFrm extends JFrame {
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
 
+        //按钮
         searchButton = new JButton("搜索");
         searchButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -61,24 +59,24 @@ public class MerchantInterFrm extends JFrame {
             }
         });
 
-        homeButton = new JButton("首页");
-        homeButton.addMouseListener(new MouseAdapter() {
+        upproject = new JButton("上架商品");
+        upproject.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card1");
             }
         });
 
-        dynamicButton = new JButton("动态");
-        dynamicButton.addMouseListener(new MouseAdapter() {
+        downproject = new JButton("下架商品");
+        downproject.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card2");
             }
         });
 
-        shoppingButton = new JButton("购物车");
-        shoppingButton.addMouseListener(new MouseAdapter() {
+        evaluate = new JButton("评价");
+        evaluate.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card3");
@@ -95,9 +93,9 @@ public class MerchantInterFrm extends JFrame {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, 4));
-        buttonPanel.add(homeButton);
-        buttonPanel.add(dynamicButton);
-        buttonPanel.add(shoppingButton);
+        buttonPanel.add(upproject);
+        buttonPanel.add(downproject);
+        buttonPanel.add(evaluate);
         buttonPanel.add(myButton);
 
         contentPane.add(searchButton, BorderLayout.NORTH);
@@ -111,7 +109,7 @@ public class MerchantInterFrm extends JFrame {
     public static void main(String[] args) {
         MerchantInterFrm frame = new MerchantInterFrm();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(500,500);
         frame.setVisible(true);
     }
 }
-
