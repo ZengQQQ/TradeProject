@@ -5,17 +5,11 @@
 
 package cn.bjut.jdbc;
 
-import java.awt.*;
 import java.awt.event.*;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.*;
-import net.miginfocom.swing.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 import java.sql.*;
 
 public class MerchantInterFrm extends JFrame {
@@ -26,7 +20,7 @@ public class MerchantInterFrm extends JFrame {
 
     public MerchantInterFrm() {
         setTitle("商家主界面");
-        setSize(700, 300);
+        setSize(700, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // 创建登录界面
@@ -36,6 +30,11 @@ public class MerchantInterFrm extends JFrame {
         usernameField = new JTextField(20);
         passwordField = new JPasswordField(20);
         JButton loginButton = new JButton("登录");
+
+        // 创建并添加一个JLabel来显示图片
+        //ImageIcon imageIcon = new ImageIcon("picture/---------"); // 替换成图片的路径
+        //JLabel imageLabel = new JLabel(imageIcon);
+
 
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -64,6 +63,7 @@ public class MerchantInterFrm extends JFrame {
         loginPanel.add(passwordLabel);
         loginPanel.add(passwordField);
         loginPanel.add(loginButton);
+        //loginPanel.add(imageLabel);
 
         // 创建主界面的其他组件和功能
         // ...
