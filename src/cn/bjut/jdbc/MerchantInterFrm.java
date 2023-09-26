@@ -35,6 +35,7 @@ public class MerchantInterFrm extends JFrame {
         usernameField = new JTextField(20);
         passwordField = new JPasswordField(20);
         JButton loginButton = new JButton("登录");
+
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int m_id = Integer.parseInt(usernameField.getText());
@@ -43,7 +44,7 @@ public class MerchantInterFrm extends JFrame {
                 // 验证商家登录信息，连接数据库执行验证操作
                 boolean loginSuccessful;
                 try {
-                    loginSuccessful = validateMerchantLogin(m_id, m_psw);
+                    loginSuccessful = validateMerchantLogin(m_id, m_psw);//loginSuccessful的值表示登录成功没有
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
@@ -80,16 +81,14 @@ public class MerchantInterFrm extends JFrame {
         try {
             conn = data.getCon();
             String sql = "SELECT * FROM merchant WHERE m_id = ? AND m_psw = ?";
-
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, username);
-            stmt.setString(2, password);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
+            stmt = conn.prepareStatement(sql);//查询sql语句
+            stmt.setInt(1, username);//补全第一个？号
+            stmt.setString(2, password);//补全第二个？号
+            rs = stmt.executeQuery();//rs是一个结果集
+            while (rs.next()) {//选择要输出的结果集
                 int id = rs.getInt("m_id"); // 根据表中的列名获取数据
                 String psw = rs.getString("m_psw");
                 String name = rs.getString("m_name");
-
                 System.out.println("ID: " + id +" "+ "paw: " + psw + " " + "name: " + name);
                 System.out.println("--------------------------");
             }
@@ -100,7 +99,7 @@ public class MerchantInterFrm extends JFrame {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
+        } finally {//关闭
             try {
                 if (rs != null) rs.close();
                 if (stmt != null) stmt.close();
