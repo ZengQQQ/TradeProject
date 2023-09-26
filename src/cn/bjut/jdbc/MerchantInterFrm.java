@@ -86,7 +86,8 @@ public class MerchantInterFrm extends JFrame {
             stmt.setInt(1, username);//补全第一个？号
             stmt.setString(2, password);//补全第二个？号
             rs = stmt.executeQuery();//rs是一个结果集
-            while (rs.next()) {//选择要输出的结果集
+            //以下是选择要输出的结果集 供测试用
+            while (rs.next()) {
                 int id = rs.getInt("m_id"); // 根据表中的列名获取数据
                 String psw = rs.getString("m_psw");
                 String name = rs.getString("m_name");
