@@ -1,13 +1,8 @@
-package cn.bjut.jdbc;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import net.miginfocom.swing.*;
 
-/**
- * @author 郭yw   用户进入首页内容，未完成
- */
 public class Jframe extends JFrame {
     private JButton searchButton;
     private JButton homeButton;
@@ -20,9 +15,9 @@ public class Jframe extends JFrame {
     }
 
     private void initComponents() {
-        JPanel mainPanel = new JPanel();  // 添加一个新的面板
+        JPanel mainPanel = new JPanel();
         CardLayout cardLayout = new CardLayout();
-        mainPanel.setLayout(cardLayout);  // 将CardLayout应用于主面板
+        mainPanel.setLayout(cardLayout);
 
         JPanel card1 = new JPanel();
         card1.add(new JLabel("这是第一个界面"));
@@ -52,88 +47,63 @@ public class Jframe extends JFrame {
         mainPanel.add(card5, "card5");
 
         Container contentPane = getContentPane();
-        contentPane.setLayout(new MigLayout(
-                "hidemode 3",
-                "[fill]" +
-                        "[fill]" +
-                        "[fill]" +
-                        "[fill]" +
-                        "[fill]" +
-                        "[fill]" +
-                        "[fill]" +
-                        "[fill]" +
-                        "[fill]",
-                "[]" +
-                        "[]" +
-                        "[]" +
-                        "[]" +
-                        "[]" +
-                        "[]" +
-                        "[]" +
-                        "[]" +
-                        "[]"));
+        contentPane.setLayout(new BorderLayout());
 
         searchButton = new JButton("搜索");
         searchButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                cardLayout.show(mainPanel, "card5");  // 切换到card5
+                cardLayout.show(mainPanel, "card5");
             }
         });
-        contentPane.add(searchButton, "cell 4 0");
 
         homeButton = new JButton("首页");
         homeButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                cardLayout.show(mainPanel, "card1");  // 切换到card1
+                cardLayout.show(mainPanel, "card1");
             }
         });
-        contentPane.add(homeButton, "cell 2 8");
 
         dynamicButton = new JButton("动态");
         dynamicButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                cardLayout.show(mainPanel, "card2");  // 切换到card2
+                cardLayout.show(mainPanel, "card2");
             }
         });
-        contentPane.add(dynamicButton, "cell 4 8");
 
         shoppingButton = new JButton("购物车");
         shoppingButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                cardLayout.show(mainPanel, "card3");  // 切换到card3
+                cardLayout.show(mainPanel, "card3");
             }
         });
-        contentPane.add(shoppingButton, "cell 6 8");
 
         myButton = new JButton("我的");
         myButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                cardLayout.show(mainPanel, "card4");  // 切换到card4
+                cardLayout.show(mainPanel, "card4");
             }
         });
-        contentPane.add(myButton, "cell 8 8");
 
-        contentPane.add(mainPanel, "dock center");  // 将主面板添加到内容面板中
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 4)); // 设置按钮的布局为GridLayout，一行四列
+        buttonPanel.setLayout(new GridLayout(1, 4));
         buttonPanel.add(homeButton);
         buttonPanel.add(dynamicButton);
         buttonPanel.add(shoppingButton);
         buttonPanel.add(myButton);
 
-        // 将按钮面板放在界面的南方
+        contentPane.add(searchButton, BorderLayout.NORTH);
+        contentPane.add(mainPanel, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
-        // 设置主面板放在界面的中间
-        contentPane.add(mainPanel, BorderLayout.CENTER);
         pack();
         setLocationRelativeTo(getOwner());
     }
+
     public static void main(String[] args) {
         Jframe frame = new Jframe();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
