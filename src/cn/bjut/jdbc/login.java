@@ -4,6 +4,10 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+/**
+ * @author 郭yw          未完成，用户登录页面
+ */
+
 public class login extends JFrame {
     private JTextField textField1;
     private JPasswordField passwordField;
