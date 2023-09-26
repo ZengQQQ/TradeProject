@@ -1,140 +1,117 @@
 /*
  * Created by JFormDesigner on Tue Sep 26 09:27:07 CST 2023
- * 商家主界面登录
+ * 商家主界面
  */
-
 package cn.bjut.jdbc;
-
+import java.awt.*;
 import java.awt.event.*;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import javax.swing.*;
-import java.sql.*;
 
 public class MerchantInterFrm extends JFrame {
-
-    private DataBase data=new DataBase();
-    private JTextField usernameField;
-    private JPasswordField passwordField;
+    private JButton searchButton;
+    private JButton homeButton;
+    private JButton dynamicButton;
+    private JButton shoppingButton;
+    private JButton myButton;
 
     public MerchantInterFrm() {
-        setTitle("商家主界面");
-        setSize(700, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        initComponents();
+    }
 
-        // 创建登录界面
-        JPanel loginPanel = new JPanel();
-        JLabel usernameLabel = new JLabel("用户名:");
-        JLabel passwordLabel = new JLabel("密码:");
-        usernameField = new JTextField(20);
-        passwordField = new JPasswordField(20);
-        JButton loginButton = new JButton("登录");
+    private void initComponents() {
+        JPanel mainPanel = new JPanel();
+        CardLayout cardLayout = new CardLayout();
+        mainPanel.setLayout(cardLayout);
 
-        // 创建并添加一个JLabel来显示图片
-        //ImageIcon imageIcon = new ImageIcon("picture/---------"); // 替换成图片的路径
-        //JLabel imageLabel = new JLabel(imageIcon);
+        JPanel card1 = new JPanel();
+        card1.add(new JLabel("这是第一个界面"));
+        card1.setBackground(Color.RED);
 
+        JPanel card2 = new JPanel();
+        card2.add(new JLabel("这是第二个界面"));
+        card2.setBackground(Color.GREEN);
 
-        loginButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                int m_id = Integer.parseInt(usernameField.getText());
-                String m_psw = new String(passwordField.getPassword());
+        JPanel card3 = new JPanel();
+        card3.add(new JLabel("这是第三个界面"));
+        card3.setBackground(Color.BLUE);
 
-                // 验证商家登录信息，连接数据库执行验证操作
-                boolean loginSuccessful;
-                try {
-                    loginSuccessful = validateMerchantLogin(m_id, m_psw);//loginSuccessful的值表示登录成功没有
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
+        JPanel card4 = new JPanel();
+        card4.add(new JLabel("这是第四个界面"));
+        card4.setBackground(Color.YELLOW);
 
-                if (loginSuccessful) {
-                    // 登录成功后打开商家主页
-                    openMerchantHomePage();
-                } else {
-                    JOptionPane.showMessageDialog(null, "登录失败，请检查用户名和密码。");
-                }
+        JPanel card5 = new JPanel();
+        JTextField textField = new JTextField(10);
+        textField.setText("请输入搜索内容");
+        card5.add(textField);
+
+        mainPanel.add(card1, "card1");
+        mainPanel.add(card2, "card2");
+        mainPanel.add(card3, "card3");
+        mainPanel.add(card4, "card4");
+        mainPanel.add(card5, "card5");
+
+        Container contentPane = getContentPane();
+        contentPane.setLayout(new BorderLayout());
+
+        searchButton = new JButton("搜索");
+        searchButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainPanel, "card5");
             }
         });
 
-        loginPanel.add(usernameLabel);
-        loginPanel.add(usernameField);
-        loginPanel.add(passwordLabel);
-        loginPanel.add(passwordField);
-        loginPanel.add(loginButton);
-        //loginPanel.add(imageLabel);
-
-        // 创建主界面的其他组件和功能
-        // ...
-
-        // 添加登录界面到主窗口
-        add(loginPanel);
-    }
-
-    // 连接数据库，验证商家登录信息
-    private boolean validateMerchantLogin(int username, String password) throws Exception {
-        Connection conn = data.getCon();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        boolean loginSuccessful = false;
-
-        try {
-            conn = data.getCon();
-            String sql = "SELECT * FROM merchant WHERE m_id = ? AND m_psw = ?";
-            stmt = conn.prepareStatement(sql);//查询sql语句
-            stmt.setInt(1, username);//补全第一个？号
-            stmt.setString(2, password);//补全第二个？号
-            rs = stmt.executeQuery();//rs是一个结果集
-            //以下是选择要输出的结果集 供测试用
-            while (rs.next()) {
-                int id = rs.getInt("m_id"); // 根据表中的列名获取数据
-                String psw = rs.getString("m_psw");
-                String name = rs.getString("m_name");
-                System.out.println("ID: " + id +" "+ "paw: " + psw + " " + "name: " + name);
-                System.out.println("--------------------------");
+        homeButton = new JButton("首页");
+        homeButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainPanel, "card1");
             }
-            if (rs.first()) {
-                loginSuccessful = true; // 表示至少有一行匹配
-            } else {
-                loginSuccessful = false; // 没有匹配的行
+        });
+
+        dynamicButton = new JButton("动态");
+        dynamicButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainPanel, "card2");
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {//关闭
-            try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+        });
+
+        shoppingButton = new JButton("购物车");
+        shoppingButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainPanel, "card3");
             }
-        }
+        });
 
-        return loginSuccessful;
-    }
+        myButton = new JButton("我的");
+        myButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainPanel, "card4");
+            }
+        });
 
-    // 打开商家主页
-    private void openMerchantHomePage() {
-        // 创建商家主页的界面和功能
-        // ...
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 4));
+        buttonPanel.add(homeButton);
+        buttonPanel.add(dynamicButton);
+        buttonPanel.add(shoppingButton);
+        buttonPanel.add(myButton);
 
-        // 移除登录界面，添加商家主页界面到主窗口
-        getContentPane().removeAll();
-        // ...
+        contentPane.add(searchButton, BorderLayout.NORTH);
+        contentPane.add(mainPanel, BorderLayout.CENTER);
+        contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
-        // 刷新界面
-        revalidate();
-        repaint();
+        pack();
+        setLocationRelativeTo(getOwner());
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                MerchantInterFrm merchantInterFrm = new MerchantInterFrm();
-                merchantInterFrm.setVisible(true);
-            }
-        });
+        MerchantInterFrm frame = new MerchantInterFrm();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 }
 
