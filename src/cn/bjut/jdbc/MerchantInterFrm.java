@@ -156,6 +156,8 @@ public class MerchantInterFrm extends JFrame {
             Image scaledImage = originalIcon.getImage().getScaledInstance(150, 120, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             JLabel imageLabel = new JLabel(scaledIcon);
+
+            // 添加图片标签到productPanel
             productPanel.add(imageLabel, BorderLayout.WEST);
         } else {
             productPanel.add(new JLabel("--------暂时没有图片--------"), BorderLayout.WEST);
@@ -166,19 +168,25 @@ public class MerchantInterFrm extends JFrame {
         infoPanel.setLayout(new BorderLayout());
 
         // 添加商品相关信息，例如商品名称、描述等
-        // 创建商品信息标签
-        JLabel infoLabel = new JLabel("商品名称: " + product.getP_name() + " | 商品描述: " + product.getP_desc());
+        // 创建商品名称标签
+        JLabel nameLabel = new JLabel("商品名称: " + product.getP_name());
 
-        // 其他商品信息的标签，您可以根据需要添加更多
+        // 创建商品说明文本区域（自动换行）
+        JTextArea descTextArea = new JTextArea("商品价格: " + product.getP_price());
+        descTextArea.setLineWrap(true); // 自动换行
+        descTextArea.setWrapStyleWord(true); // 按单词换行
+        descTextArea.setEditable(false); // 文本区域不可编辑
 
-        // 将商品信息标签添加到 infoPanel
-        infoPanel.add(infoLabel, BorderLayout.CENTER);
-        // 将 infoPanel 添加到 productPanel
+        // 将商品名称标签和说明文本区域添加到infoPanel
+        infoPanel.add(nameLabel, BorderLayout.NORTH);
+        infoPanel.add(new JScrollPane(descTextArea), BorderLayout.CENTER);
+
+        // 将infoPanel添加到productPanel
         productPanel.add(infoPanel, BorderLayout.CENTER);
 
         // 创建按钮面板
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout()); // 使用 FlowLayout 排列按钮
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         // 创建上架和下架按钮
         JButton upButton = new JButton("上架");
@@ -190,11 +198,12 @@ public class MerchantInterFrm extends JFrame {
         buttonPanel.add(downButton);
         buttonPanel.add(detailsButton);
 
-        // 将按钮面板添加到 productPanel
+        // 将按钮面板添加到productPanel
         productPanel.add(buttonPanel, BorderLayout.EAST);
 
         return productPanel;
     }
+
 
     public static void main(String[] args) throws SQLException {
         MerchantInterFrm frame = new MerchantInterFrm(1);
