@@ -1,8 +1,9 @@
 package cn.bjut.jdbc;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
+
 
 public class DataControl {
 
@@ -78,6 +79,7 @@ public class DataControl {
 
     }
 
+
     public List<Product> MerchantProductQuery(int m_id) throws SQLException {//获得指定商家的所有商品
         List<Product> products = new ArrayList<>();
         Connection con = DataBase.OpenDB();
@@ -110,6 +112,45 @@ public class DataControl {
         return products;
     }
     
+
+    public void insert_cart(int u_id,int p_id,int quantity){//将商品表信息插入到购物车表中
+        DataBase dataBase=new DataBase();
+        dataBase.OpenDB();
+        // 创建一个LocalDateTime对象，表示当前日期和时间
+        LocalDateTime dateTime = LocalDateTime.now();
+        // 创建预编译语句对象
+        try {
+            // 定义插入语句，使用占位符代替具体的值
+            String sql = "insert into cart (p_id, u_id, join_time, quantity) values (?, ?, ?, ?)";
+            // 创建预编译语句对象
+            PreparedStatement pstmt = dataBase.getCon().prepareStatement(sql);
+            // 设置占位符的值，注意类型和顺序要与表结构一致
+            pstmt.setInt(1, p_id);
+            pstmt.setInt(2, u_id);
+            pstmt.setObject(3,dateTime);
+            pstmt.setInt(4, quantity);
+            // 执行插入操作，返回影响的行数
+            int rows = pstmt.executeUpdate();
+            // 判断是否插入成功
+            if (rows > 0) {
+                System.out.println("插入成功！");
+            } else {
+                System.out.println("插入失败！");
+            }
+        } catch (Exception e) {
+            // 捕获异常并打印
+            e.printStackTrace();
+        }
+        }
+
+    public static void main(String[] args) {
+        DataControl dataControl= new DataControl();
+        dataControl.insert_cart(1,1,1);
+    }
+
+
+
 }
+
 
 
