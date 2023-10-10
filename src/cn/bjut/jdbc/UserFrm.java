@@ -24,7 +24,7 @@ public class UserFrm extends JFrame {
         CardLayout cardLayout = new CardLayout();
         mainPanel.setLayout(cardLayout);
 
-        // 创建第一个界面
+        // 创建第一个界面,图片还没有添加
         JPanel card1 = new JPanel();
         card1.setLayout(new FlowLayout()); // 设置为流式布局
 
