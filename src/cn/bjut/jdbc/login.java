@@ -3,6 +3,7 @@ package cn.bjut.jdbc;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
+import java.util.List;
 import javax.swing.*;
 
 public class login extends JFrame {
@@ -36,15 +37,15 @@ public class login extends JFrame {
                 }
             } else if (role.equals("商家")) {
                 DataControl dataControlmer = new DataControl();
-                String merchantPsw = dataControlmer.getMerchantPsw(username);//得到商家密码
-                if (password.equals(merchantPsw)) {
+                List<Integer> merchantPswid = dataControlmer.getMerchantPsw(username);//得到商家密码
+                String psw= String.valueOf(merchantPswid.get(0));
+                if (password.equals(psw)) {
                     JOptionPane.showMessageDialog(this, "商家登录成功");
-                    MerchantInterFrm merchantFrame = new MerchantInterFrm();
+                    MerchantInterFrm merchantFrame = new MerchantInterFrm(merchantPswid.get(1));
                     merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    merchantFrame.setSize(400, 300);
+                    merchantFrame.setSize(1000, 900);
                     merchantFrame.setVisible(true);
                     dispose();
-
                     } else {
                         JOptionPane.showMessageDialog(this, "商家登录失败，请检查用户名和密码");
                     }
