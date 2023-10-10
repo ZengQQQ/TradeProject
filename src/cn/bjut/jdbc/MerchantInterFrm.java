@@ -1,8 +1,7 @@
 package cn.bjut.jdbc;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
@@ -15,10 +14,20 @@ public class MerchantInterFrm extends JFrame {
     private JButton downproject;
     private JButton evaluate;
     private JButton myButton;
+    public int m_id;
+
+    public int getM_id() {
+        return m_id;
+    }
+
+    public void setM_id(int m_id) {
+        this.m_id = m_id;
+    }
 
     private JPanel card1; // 用于显示商品的卡片
 
-    public MerchantInterFrm() {
+    public MerchantInterFrm(int m_id) {
+        this.m_id = m_id;
         initComponents();
     }
 
@@ -27,35 +36,42 @@ public class MerchantInterFrm extends JFrame {
         JPanel mainPanel = new JPanel();
         CardLayout cardLayout = new CardLayout();
         mainPanel.setLayout(cardLayout);
-
+        //第一个界面------------------------------------------------
         card1 = new JPanel();
-        card1.setLayout(new GridLayout(0, 1)); // 垂直布局
-        // 在第一个界面中显示所有商品
+        card1.setLayout(new BoxLayout(card1, BoxLayout.Y_AXIS)); // 使用垂直 BoxLayout 布局
+        JScrollPane scrollPane = new JScrollPane(card1);// 创建一个 JScrollPane 来包装 card1 面板
+        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();// 获取垂直滚动条
+        verticalScrollBar.setUnitIncrement(20);// 设置单次滚动单位的大小为 20 像素
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);// 设置垂直滚动条自动出现
+
         try {
             DataControl dataControl = new DataControl();
-            List<Product> products = dataControl.MerchantProductQuery(1); // 替换为您的商家ID
+            List<Product> products = dataControl.MerchantProductQuery(getM_id());
             for (Product product : products) {
                 JPanel productPanel = createProductPanel(product);
-                card1.add(productPanel, BorderLayout.AFTER_LINE_ENDS);
+                productPanel.setAlignmentX(Component.LEFT_ALIGNMENT); // 设置商品面板左对齐
+                card1.add(productPanel);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        mainPanel.add(card1, "card1");
-
+        mainPanel.add(scrollPane, "card1");
+        //第二个界面------------------------------------------------
         JPanel card2 = new JPanel();
         card2.add(new JLabel("这是第二个界面"));
         card2.setBackground(Color.GREEN);
-
+        //第三个界面------------------------------------------------
         JPanel card3 = new JPanel();
         card3.add(new JLabel("这是第三个界面"));
         card3.setBackground(Color.BLUE);
 
+        //第四个界面------------------------------------------------
         JPanel card4 = new JPanel();
         card4.add(new JLabel("这是第四个界面"));
         card4.setBackground(Color.YELLOW);
 
+        //搜索界面------------------------------------------------
         JPanel card5 = new JPanel();
         JTextField textField = new JTextField(10);
         textField.setText("请输入搜索内容");
@@ -67,11 +83,10 @@ public class MerchantInterFrm extends JFrame {
         mainPanel.add(card5, "card5");
 
 
-
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
 
-        // 按钮
+        // 按钮------------------------------------------------
         searchButton = new JButton("搜索");
         searchButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -79,7 +94,6 @@ public class MerchantInterFrm extends JFrame {
                 cardLayout.show(mainPanel, "card5");
             }
         });
-
         upproject = new JButton("商品管理");
         upproject.addMouseListener(new MouseAdapter() {
             @Override
@@ -122,13 +136,9 @@ public class MerchantInterFrm extends JFrame {
         contentPane.add(searchButton, BorderLayout.NORTH);
         contentPane.add(mainPanel, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
-
-
-
+        //----------------------------------------------------------------
         pack();
         setLocationRelativeTo(getOwner());
-
-
     }
 
     private JPanel createProductPanel(Product product) {
@@ -147,6 +157,8 @@ public class MerchantInterFrm extends JFrame {
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             JLabel imageLabel = new JLabel(scaledIcon);
             productPanel.add(imageLabel, BorderLayout.WEST);
+        } else {
+            productPanel.add(new JLabel("--------暂时没有图片--------"), BorderLayout.WEST);
         }
 
         // 创建商品信息面板
@@ -185,7 +197,7 @@ public class MerchantInterFrm extends JFrame {
     }
 
     public static void main(String[] args) throws SQLException {
-        MerchantInterFrm frame = new MerchantInterFrm();
+        MerchantInterFrm frame = new MerchantInterFrm(1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 900);
         frame.setVisible(true);
