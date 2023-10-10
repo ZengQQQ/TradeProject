@@ -22,7 +22,9 @@ public class login extends JFrame {
 
         if (role != null) {
             if (role.equals("用户")) {
-                if (username.equals("user") && password.equals("userpassword")) {
+                DataControl dataControluser = new DataControl();
+                String userPsw = dataControluser.getUserPsw(username);
+                if (password.equals(userPsw)) {
                     JOptionPane.showMessageDialog(this, "用户登录成功");
                     UserFrm userFrame = new UserFrm();
                     userFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,8 +35,8 @@ public class login extends JFrame {
                     JOptionPane.showMessageDialog(this, "用户登录失败，请检查用户名和密码");
                 }
             } else if (role.equals("商家")) {
-                DataControl dataControl = new DataControl();
-                String merchantPsw = dataControl.getMerchantPsw(username);//得到商家密码
+                DataControl dataControlmer = new DataControl();
+                String merchantPsw = dataControlmer.getMerchantPsw(username);//得到商家密码
                 if (password.equals(merchantPsw)) {
                     JOptionPane.showMessageDialog(this, "商家登录成功");
                     MerchantInterFrm merchantFrame = new MerchantInterFrm();
