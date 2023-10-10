@@ -81,7 +81,7 @@ public class DataControl {
         return answer;
 
     }
-    public void insert_cart(int u_id,int p_id,int quantity){//将商品信息插入到购物车中
+    public void insert_cart(int u_id,int p_id,int quantity){//将商品表信息插入到购物车表中
         DataBase dataBase=new DataBase();
         dataBase.OpenDB();
         // 创建一个java.sql.Date对象，表示当前日期
