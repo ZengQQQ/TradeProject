@@ -39,23 +39,26 @@ public class DataControl {
 
     }
 
-    public String getMerchantPsw(String account) throws SQLException {
+    public List<Integer> getMerchantPsw(String account) throws SQLException {
+        List<Integer> psw_id = new ArrayList<>();
         String answer;
-        String sql = "select m_psw from  merchant " + " where  m_acc" + " = ?";
+        int m_id;
+        String sql = "select m_psw,m_id from  merchant " + " where  m_acc" + " = ?";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
         stmt.setString(1, account);
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
-            answer = rs.getString("m_psw");
+            answer=rs.getString("m_psw");
+            psw_id.add(Integer.valueOf(answer));
+            psw_id.add(rs.getInt("m_id"));
         } else {
             answer = null;
         }
-
         if (con != null) {
             con.close();
         }
-        return answer;
+        return psw_id;
     }
 
     public String getAdminPsw(String account) throws SQLException {
