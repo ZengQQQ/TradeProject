@@ -7,6 +7,7 @@ public class Product {
     private String p_class;
     private String p_price;
     private String p_status;
+    private String p_img;
 
     public Product() {
     }
@@ -57,5 +58,13 @@ public class Product {
 
     public void setP_status(String p_status) {
         this.p_status = p_status;
+    }
+
+    public String getP_img() {
+        return p_img;
+    }
+
+    public void setP_img(String p_img) {
+        this.p_img = p_img;
     }
 }
