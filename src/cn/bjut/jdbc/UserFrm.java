@@ -24,27 +24,27 @@ public class UserFrm extends JFrame {
         CardLayout cardLayout = new CardLayout();
         mainPanel.setLayout(cardLayout);
 
-        // 创建第一个界面,图片还没有添加
-        JPanel card1 = new JPanel();
-        card1.setLayout(new FlowLayout()); // 设置为流式布局
+        // 创建第一个界面
+        // 创建一个网格布局管理器，指定4行6列
+        GridLayout gridLayout = new GridLayout (4, 6);
+// 设置网格之间的水平和垂直间距
+        gridLayout.setHgap (10);
+        gridLayout.setVgap (10);
+// 创建第一个界面，使用网格布局管理器
+        JPanel card1 = new JPanel (gridLayout);
 
-        // 创建一个滚动面板，包含第一个界面
-        JScrollPane scrollPane = new JScrollPane(card1);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 设置垂直滚动条总是可见
-        scrollPane.setPreferredSize(new Dimension(900, 900)); // 设置滚动面板的首选大小
-
-        // 连接数据库
+// 连接数据库
         DataBase dataBase=new DataBase();
         dataBase.OpenDB();
 
-        // 查询数据库中的商品信息
+// 查询数据库中的商品信息
         Statement stmt = null;
         try {
             stmt = dataBase.getCon().createStatement();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String query = "SELECT p_id, p_name, p_img FROM product";
+        String query = "SELECT p_id, p_name, p_img ,p_price FROM product";
         ResultSet rs = null;
         try {
             rs = stmt.executeQuery(query);
@@ -52,15 +52,15 @@ public class UserFrm extends JFrame {
             e.printStackTrace();
         }
 
-        // 遍历结果集，为每个商品创建一个按钮，并添加到第一个界面中
+// 遍历结果集，为每个商品创建一个按钮，并添加到第一个界面中
         while (true) {
             try {
                 if (!rs.next()) break;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            // 获取商品的id，名称和图片路径
-            int id = 0;
+            // 获取商品的id，名称，图片路径和价格
+            int id=0;
             try {
                 id = rs.getInt("p_id");
             } catch (SQLException e) {
@@ -72,17 +72,26 @@ public class UserFrm extends JFrame {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-//                String imagePath = null;
-//                try {
-//                    imagePath = rs.getString("p_img");
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
+            String imagePath = null;
+            try {
+                imagePath = rs.getString("p_img");
+                System.out.println(imagePath);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            double price = 0;
+            try {
+                price = rs.getDouble("p_price");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
             // 创建一个按钮，设置图标和文本
             JButton button = new JButton();
-            //button.setIcon(new ImageIcon(imagePath));
-            button.setText(name);
+            button.setIcon(new ImageIcon(imagePath+"")); // 设置按钮的图标
+            button.setText("<html>" + name + "<br>¥" + price + "</html>"); // 设置按钮的文本，使用html标签换行
+            button.setVerticalTextPosition(SwingConstants.BOTTOM); // 设置文本在图标下方
+            button.setHorizontalTextPosition(SwingConstants.CENTER); // 设置文本在图标中间
 
             // 为按钮添加点击事件监听器，可以根据需要实现不同的功能
             button.addActionListener(new ActionListener() {
@@ -97,7 +106,7 @@ public class UserFrm extends JFrame {
             card1.add(button);
         }
 
-        // 关闭数据库连接
+// 关闭数据库连接
         try {
             rs.close();
         } catch (SQLException e) {
@@ -114,12 +123,16 @@ public class UserFrm extends JFrame {
             e.printStackTrace();
         }
 
-        // 将滚动面板添加到主面板中，使用"card1"作为约束字符串
+// 创建一个滚动面板，包含第一个界面
+        JScrollPane scrollPane = new JScrollPane(card1);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 设置垂直滚动条总是可见
+
+// 将滚动面板添加到主面板中，使用"card1"作为约束字符串
         mainPanel.add(scrollPane, "card1");
+
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
-
         JPanel card2 = new JPanel();
         card2.add(new JLabel("这是第二个界面"));
         card2.setBackground(Color.GREEN);
@@ -205,6 +218,7 @@ public class UserFrm extends JFrame {
 
     public static void main(String[] args) {
         UserFrm frame = new UserFrm();
+        frame.setSize(500,600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
