@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.text.*;
+import java.time.LocalDateTime;
 
 public class DataControl {
 
@@ -84,10 +85,8 @@ public class DataControl {
     public void insert_cart(int u_id,int p_id,int quantity){//将商品表信息插入到购物车表中
         DataBase dataBase=new DataBase();
         dataBase.OpenDB();
-        // 创建一个java.sql.Date对象，表示当前日期
-        java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
-// 打印输出结果
-        System.out.println(currentDate); // 例如：2023-04-21
+        // 创建一个LocalDateTime对象，表示当前日期和时间
+        LocalDateTime dateTime = LocalDateTime.now();
         // 创建预编译语句对象
         try {
             // 定义插入语句，使用占位符代替具体的值
@@ -97,7 +96,7 @@ public class DataControl {
             // 设置占位符的值，注意类型和顺序要与表结构一致
             pstmt.setInt(1, p_id);
             pstmt.setInt(2, u_id);
-            pstmt.setDate(3,currentDate);
+            pstmt.setObject(3,dateTime);
             pstmt.setInt(4, quantity);
             // 执行插入操作，返回影响的行数
             int rows = pstmt.executeUpdate();
