@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.HashMap;
 /**
- * @author 郭yw          未完成(动态、我的页面内容)，用户登录进来之后的首页
+ * @author 郭yw          未完成(动态、购物车单价总价、主页商品分类、我的页面内容)，用户登录进来之后的首页
  */
 
 public class UserFrm extends JFrame {
@@ -167,7 +167,6 @@ public class UserFrm extends JFrame {
         contentPane.setLayout(new BorderLayout());
         JPanel card2 = new JPanel();
         card2.add(new JLabel("这是第二个界面"));
-        card2.setBackground(Color.GREEN);
 
 
 
@@ -247,7 +246,100 @@ public class UserFrm extends JFrame {
 
 
 //创建第四个界面
+        // 创建第四个界面，显示用户信息和功能按钮
         JPanel card4 = new JPanel();
+        card4.setLayout(new BorderLayout());
+        DataControl dataControl=new DataControl();
+
+// 创建一个标签，显示用户头像
+        JLabel avatarLabel = new JLabel();
+        avatarLabel.setIcon(new ImageIcon("D:\\test\\TradeProject\\src\\cn\\bjut\\jdbc\\pic\\2.png")); // 设置标签的图标为用户头像
+        avatarLabel.setHorizontalAlignment(SwingConstants.CENTER); // 设置标签在水平方向居中
+
+// 创建一个标签，显示用户名称
+        JLabel nameLabel = null;
+        try {
+            nameLabel = new JLabel(dataControl.getUserName(u_id));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        nameLabel.setFont(new Font("宋体", Font.BOLD, 24));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+// 创建一个按钮，实现修改密码的功能
+        JButton changePasswordButton = new JButton("修改密码");
+        changePasswordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 弹出一个对话框，让用户输入旧密码和新密码
+                JDialog dialog = new JDialog(UserFrm.this, "修改密码", true);
+                dialog.setLayout(new GridLayout(3, 2));
+                dialog.add(new JLabel("旧密码："));
+                JPasswordField oldPasswordField = new JPasswordField();
+                dialog.add(oldPasswordField);
+                dialog.add(new JLabel("新密码："));
+                JPasswordField newPasswordField = new JPasswordField();
+                dialog.add(newPasswordField);
+                JButton confirmButton = new JButton("确定");
+                confirmButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 获取用户输入的旧密码和新密码
+                        String oldPassword = new String(oldPasswordField.getPassword());
+                        String newPassword = new String(newPasswordField.getPassword());
+                        // 检查旧密码是否正确
+                        try {
+                            if (dataControl.getUserPsw(u_id).equals(oldPassword)) {
+                                // 调用UserDao的方法修改用户密码
+                                int result = updatePassword(dataControl.getUserName(u_id), newPassword);
+                                if (result == 1) {
+                                    JOptionPane.showMessageDialog(dialog, "修改失败！");
+                                } else {
+                                    JOptionPane.showMessageDialog(dialog, "修改成功！");
+                                    dialog.dispose();
+                                }
+                            } else { // 如果旧密码不正确，提示用户
+                                JOptionPane.showMessageDialog(dialog, "旧密码不正确！");
+                            }
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+                dialog.add(confirmButton);
+                JButton cancelButton = new JButton("取消");
+                cancelButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dialog.dispose(); // 关闭对话框
+                    }
+                });
+                dialog.add(cancelButton);
+                dialog.pack();
+                dialog.setLocationRelativeTo(UserFrm.this);
+                dialog.setVisible(true); // 显示对话框
+            }
+        });
+
+// 创建一个按钮，实现查看订单的功能
+        JButton viewOrderButton = new JButton("查看订单");
+        viewOrderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                // 跳转到一个新的界面，显示用户的订单信息
+//                OrderFrm orderFrm = new OrderFrm(u_id); // 创建一个OrderFrm对象，传入用户id作为参数
+//                orderFrm.setVisible(true); // 显示订单界面
+            }
+        });
+
+// 将各个组件添加到卡片中，使用不同的方位
+        card4.add(avatarLabel, BorderLayout.NORTH);
+        card4.add(nameLabel, BorderLayout.CENTER);
+        card4.add(changePasswordButton, BorderLayout.WEST);
+        card4.add(viewOrderButton, BorderLayout.EAST);
+
+// 将卡片添加到主面板中，使用"card4"作为约束字符串
+        mainPanel.add(card4, "card4");
 
 
 
@@ -323,6 +415,44 @@ public class UserFrm extends JFrame {
         cardLayout.show(mainPanel, "card1");
 
     }
+
+    // 修改用户密码的方法
+    public int updatePassword(String username, String newPassword) {
+        int result = 0; // 存储操作结果的变量，0表示失败，1表示成功
+        Connection conn = null; // 数据库连接对象
+        PreparedStatement ps = null; // 预编译语句对象
+        try {
+            DataBase dataBase=new DataBase();
+            dataBase.OpenDB();
+            conn=dataBase.getCon();
+            // 定义SQL语句
+            String sql = "UPDATE user SET u_psw = ? WHERE u_name = ?";
+            // 获取预编译语句对象
+            ps = conn.prepareStatement(sql);
+            // 设置参数
+            ps.setString(1, newPassword);
+            ps.setString(2, username);
+            // 执行更新
+            result = ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭资源
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+
     private JPanel createProductPanel(int id, String name, String imagePath, double price,String desc) {
         // 创建一个新的卡片对象
         JPanel productPanel = new JPanel();

@@ -39,6 +39,27 @@ public class DataControl {
         return answer;
 
     }
+
+    public String getUserPsw(int u_id) throws SQLException {
+        String answer;
+        String sql = "select u_psw from user " + " where  u_id" + " = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, u_id);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            answer = rs.getString("u_psw");
+        } else {
+            answer = null;
+        }
+
+        if (con != null) {
+            con.close();
+        }
+        return answer;
+
+    }
+
     public int getUserid(String account) throws SQLException {
         int id=0;
         String sql = "select u_id from user " + " where  u_acc" + " = ?";
@@ -56,6 +77,25 @@ public class DataControl {
             con.close();
         }
         return id;
+
+    }
+    public String getUserName(int u_id) throws SQLException {
+        String name=null;
+        String sql = "select u_name from user " + " where  u_id" + " = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, u_id);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            name = rs.getString("u_name");
+        } else {
+            name = null;
+        }
+
+        if (con != null) {
+            con.close();
+        }
+        return name;
 
     }
 
