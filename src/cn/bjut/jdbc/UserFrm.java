@@ -51,7 +51,7 @@ public class UserFrm extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String query = "SELECT p_id, p_name, p_img ,p_price FROM product";
+        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc FROM product";
         ResultSet rs = null;
         try {
             rs = stmt.executeQuery(query);
@@ -86,6 +86,13 @@ public class UserFrm extends JFrame {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            String desc = null;
+            try {
+                desc = rs.getString("p_desc");
+                System.out.println(imagePath);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             double price = 0;
             try {
                 price = rs.getDouble("p_price");
@@ -105,6 +112,7 @@ public class UserFrm extends JFrame {
             String finalName = name;
             String finalImagePath = imagePath;
             double finalPrice = price;
+            String finaldesc= desc;
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -112,7 +120,7 @@ public class UserFrm extends JFrame {
                     JPanel productPanel = productMap.get(finalId);
                     if (productPanel == null) {
                         // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
-                        productPanel = createProductPanel(finalId, finalName, finalImagePath, finalPrice);
+                        productPanel = createProductPanel(finalId, finalName, finalImagePath, finalPrice,finaldesc);
                         mainPanel.add(productPanel, "product" + finalId);
                         productMap.put(finalId, productPanel);
                     }
@@ -246,7 +254,7 @@ public class UserFrm extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
-    private JPanel createProductPanel(int id, String name, String imagePath, double price) {
+    private JPanel createProductPanel(int id, String name, String imagePath, double price,String desc) {
         // 创建一个新的卡片对象
         JPanel productPanel = new JPanel();
         productPanel.setLayout(new BorderLayout());
@@ -268,7 +276,7 @@ public class UserFrm extends JFrame {
 
         // 创建一个文本区域，显示商品描述
         JTextArea descriptionArea = new JTextArea();
-        descriptionArea.setText("这里是商品的描述。");
+        descriptionArea.setText(desc);
         descriptionArea.setLineWrap(true); // 设置自动换行
         descriptionArea.setEditable(false); // 设置不可编辑
 
