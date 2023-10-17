@@ -32,6 +32,8 @@ public class UserFrm extends JFrame {
         mainPanel.setLayout(cardLayout);
 
         // 创建第一个界面
+
+
         // 创建一个网格布局管理器，指定4行6列
         GridLayout gridLayout = new GridLayout (4, 6);
         // 设置网格之间的水平和垂直间距
@@ -150,11 +152,10 @@ public class UserFrm extends JFrame {
             e.printStackTrace();
         }
 
-// 创建一个滚动面板，包含第一个界面
+        // 创建一个滚动面板，包含第一个界面
         JScrollPane scrollPane = new JScrollPane(card1);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 设置垂直滚动条总是可见
-
-// 将滚动面板添加到主面板中，使用"card1"作为约束字符串
+        // 将滚动面板添加到主面板中，使用"card1"作为约束字符串
         mainPanel.add(scrollPane, "card1");
 
 
@@ -169,13 +170,13 @@ public class UserFrm extends JFrame {
         card2.setBackground(Color.GREEN);
 
 
-
+//创建第三个界面
 
         JPanel card3 = new JPanel();
         // 在card3界面中，创建一个JTable对象，并设置其列名和数据模型
         JTable cartTable = new JTable();
         // 定义表格的列名数组
-        String[] columnNames = {"用户ID", "商品ID", "加入时间", "数量"};
+        String[] columnNames = {"商品名称", "加入时间", "数量"};
         // 定义表格的数据数组，初始为空
         Object[][] data = {};
         // 创建一个表格模型对象，并传入列名和数据数组
@@ -209,10 +210,18 @@ public class UserFrm extends JFrame {
                     while (rs.next()) {
                         // 获取商品的id，加入时间和数量
                         int p_id = rs.getInt("p_id");
-                        String join_time = rs.getString("join_time");
-                        int quantity = rs.getInt("quantity");
-                        // 将这些信息添加到表格模型中的一行
-                        tableModel.addRow(new Object[]{u_id, p_id, join_time, quantity});
+                        Statement stmt1 = dataBase.getCon().createStatement();
+                        String query1 = "SELECT p_name FROM product WHERE p_id=" + p_id;
+                        ResultSet rs1 = stmt1.executeQuery(query1);
+                        while (rs1.next()) {
+                            String p_name = rs1.getString("p_name");
+                            String join_time = rs.getString("join_time");
+                            int quantity = rs.getInt("quantity");
+                            // 将这些信息添加到表格模型中的一行
+                            tableModel.addRow(new Object[]{p_name, join_time, quantity});
+                        }
+                        rs1.close();
+                        stmt1.close();
                     }
                     rs.close();
                     stmt.close();
@@ -225,11 +234,11 @@ public class UserFrm extends JFrame {
 
         card3.add(refreshButton);
 
-// 在card3界面中，添加一个JScrollPane对象，并将JTable对象作为其视图组件
+        // 在card3界面中，添加一个JScrollPane对象，并将JTable对象作为其视图组件
         JScrollPane scrollPane3 = new JScrollPane(cartTable);
         scrollPane3.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 设置垂直滚动条总是可见
 
-// 将JScrollPane对象添加到card3界面中
+        // 将JScrollPane对象添加到card3界面中
         card3.add(scrollPane3, BorderLayout.CENTER);
 
 
