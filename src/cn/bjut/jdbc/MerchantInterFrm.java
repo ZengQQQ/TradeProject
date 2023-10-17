@@ -151,7 +151,8 @@ public class MerchantInterFrm extends JFrame {
         public String FilephotoCopy(String newImgPath,String newImgName) {
                 String sourcePath = newImgPath;
                 System.out.println(sourcePath);
-                String destinationPath = "D:\\Documents\\Github\\TradeProject\\src\\Img\\" + newImgName;
+                String currentDirectory = System.getProperty("user.dir");
+                String destinationPath = currentDirectory + "\\src\\Img\\" + newImgName;
                 File sourceFile = new File(sourcePath);
                 File destinationFile = new File(destinationPath);
                 try {
