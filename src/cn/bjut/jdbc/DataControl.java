@@ -41,19 +41,14 @@ public class DataControl {
 
     public List<Integer> getMerchantPsw(String account) throws SQLException {
         List<Integer> psw_id = new ArrayList<>();
-        String answer;
-        int m_id;
         String sql = "select m_psw,m_id from  merchant " + " where  m_acc" + " = ?";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
         stmt.setString(1, account);
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
-            answer=rs.getString("m_psw");
-            psw_id.add(Integer.valueOf(answer));
+            psw_id.add(Integer.valueOf(rs.getString("m_psw")));
             psw_id.add(rs.getInt("m_id"));
-        } else {
-            answer = null;
         }
         if (con != null) {
             con.close();
@@ -152,7 +147,13 @@ public class DataControl {
     }
 
 
+    public boolean updateProduct(int pId, String newName, String newdesc, String newclass, double newPrice, String newsta, String newimg) {
 
+
+
+        return true;
+
+    }
 }
 
 
