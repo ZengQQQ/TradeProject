@@ -132,7 +132,7 @@ public class MerchantInterFrm extends JFrame {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     String newImgPath = fileChooser.getSelectedFile().getPath();
                     newImgName = new File(newImgPath).getName();
-                    FilephotoCopy(newImgPath);
+                    FilephotoCopy(newImgPath, newImgName);
                 }
             });
 
@@ -148,13 +148,12 @@ public class MerchantInterFrm extends JFrame {
 
 
         //复制图片文件
-        public String FilephotoCopy(String path) {
-                String sourcePath = path;
+        public String FilephotoCopy(String newImgPath,String newImgName) {
+                String sourcePath = newImgPath;
                 System.out.println(sourcePath);
-                String destinationPath = "D:\\Documents\\Github\\TradeProject\\src\\Img\\file.jpg";
+                String destinationPath = "D:\\Documents\\Github\\TradeProject\\src\\Img\\" + newImgName;
                 File sourceFile = new File(sourcePath);
                 File destinationFile = new File(destinationPath);
-
                 try {
                     Path source = sourceFile.toPath();
                     Path destination = destinationFile.toPath();
