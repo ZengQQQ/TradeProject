@@ -166,7 +166,7 @@ public class MerchantInterFrm extends JFrame {
                         product.getP_id(), newName, newdesc, newclass, newPrice, newStatus, newImgName
                 );
                 if (success) {
-                    JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改成功，请刷新界面", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改成功，请等待一会", "提示", JOptionPane.INFORMATION_MESSAGE);
                     refreshCard1();
                     dispose(); // 关闭窗口
                 } else {
@@ -175,7 +175,6 @@ public class MerchantInterFrm extends JFrame {
             });
 
             buttonPanel.add(updatephotoButton);
-
             getContentPane().add(panel, BorderLayout.CENTER);
             getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         }
