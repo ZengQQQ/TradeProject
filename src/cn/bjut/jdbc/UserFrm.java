@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.util.HashMap;
 /**
  * @author 郭yw          未完成(每个具体页面内容)，用户登录进来之后的首页
@@ -21,8 +22,6 @@ public class UserFrm extends JFrame {
     private CardLayout cardLayout = new CardLayout();
 
     private HashMap<Integer, JPanel> productMap = new HashMap<>();
-
-
 
     public UserFrm() {
         initComponents();
@@ -134,7 +133,7 @@ public class UserFrm extends JFrame {
             card1.add(button);
         }
 
-// 关闭数据库连接
+        // 关闭数据库连接
         try {
             rs.close();
         } catch (SQLException e) {
@@ -159,15 +158,80 @@ public class UserFrm extends JFrame {
         mainPanel.add(scrollPane, "card1");
 
 
+
+
+
+
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
         JPanel card2 = new JPanel();
         card2.add(new JLabel("这是第二个界面"));
         card2.setBackground(Color.GREEN);
 
+
+
+
         JPanel card3 = new JPanel();
-        card3.add(new JLabel("这是第三个界面"));
-        card3.setBackground(Color.BLUE);
+        // 在card3界面中，创建一个JTable对象，并设置其列名和数据模型
+        JTable cartTable = new JTable();
+        // 定义表格的列名数组
+        String[] columnNames = {"用户ID", "商品ID", "加入时间", "数量"};
+        // 定义表格的数据数组，初始为空
+        Object[][] data = {};
+        // 创建一个表格模型对象，并传入列名和数据数组
+        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
+        // 将表格模型设置给表格对象
+        cartTable.setModel(tableModel);
+        // 设置表格不可编辑
+        cartTable.setEnabled(false);
+        //设置刷新按钮
+        JButton refreshButton=new JButton();
+        refreshButton.setText("刷新");
+
+        // 在refreshButton的点击事件中，从cart表格中查询用户购物车中的商品信息，并更新JTable对象的数据模型
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 点击刷新按钮时，清空表格模型中的数据
+                tableModel.setRowCount(0);
+                // 连接数据库
+                DataBase dataBase=new DataBase();
+                dataBase.OpenDB();
+                // 获取当前用户的id
+               // int u_id = dataBase.getUserId();
+                int u_id = 1;
+                // 查询数据库中的cart表格中的用户购物车信息
+                Statement stmt = null;
+                try {
+                    stmt = dataBase.getCon().createStatement();
+                    String query = "SELECT p_id, join_time, quantity FROM cart WHERE u_id=" + u_id;
+                    ResultSet rs = stmt.executeQuery(query);
+                    while (rs.next()) {
+                        // 获取商品的id，加入时间和数量
+                        int p_id = rs.getInt("p_id");
+                        String join_time = rs.getString("join_time");
+                        int quantity = rs.getInt("quantity");
+                        // 将这些信息添加到表格模型中的一行
+                        tableModel.addRow(new Object[]{u_id, p_id, join_time, quantity});
+                    }
+                    rs.close();
+                    stmt.close();
+                    dataBase.getCon().close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        card3.add(refreshButton);
+
+// 在card3界面中，添加一个JScrollPane对象，并将JTable对象作为其视图组件
+        JScrollPane scrollPane3 = new JScrollPane(cartTable);
+        scrollPane3.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 设置垂直滚动条总是可见
+
+// 将JScrollPane对象添加到card3界面中
+        card3.add(scrollPane3, BorderLayout.CENTER);
+
 
         JPanel card4 = new JPanel();
         card4.add(new JLabel("这是第四个界面"));
@@ -271,14 +335,13 @@ public class UserFrm extends JFrame {
         // 创建一个滚动面板，包含文本区域
         JScrollPane descriptionPane = new JScrollPane(descriptionArea);
         descriptionPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 设置垂直滚动条总是可见
-
+        DataControl dataControl=new DataControl();
         // 创建一个按钮，实现加入购物车的功能
         JButton addToCartButton = new JButton("加入购物车");
         addToCartButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 这里可以写你想要实现的功能，比如将商品id添加到用户的购物车列表中，或者弹出一个提示框等
-                System.out.println("You added product " + id + " to your cart.");
+                dataControl.insert_cart(1,id,1);
             }
         });
 
