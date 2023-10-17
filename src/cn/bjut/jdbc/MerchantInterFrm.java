@@ -406,7 +406,7 @@ public class MerchantInterFrm extends JFrame {
         productPanel.setLayout(new BorderLayout());
 
         // 创建商品图片标签并添加到productPanel的西边
-        JLabel imageLabel = createImageLabel(product,250,250);
+        JLabel imageLabel = createImageLabel(product,350,250);
         productPanel.add(imageLabel, BorderLayout.WEST);
 
         // 创建商品信息面板
@@ -543,7 +543,7 @@ public class MerchantInterFrm extends JFrame {
     public static void main(String[] args) {
         MerchantInterFrm frame = new MerchantInterFrm(1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000, 900);
+        frame.setSize(1200, 1000);
         frame.setVisible(true);
     }
 }
