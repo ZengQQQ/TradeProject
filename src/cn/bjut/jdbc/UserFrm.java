@@ -23,11 +23,11 @@ public class UserFrm extends JFrame {
 
     private HashMap<Integer, JPanel> productMap = new HashMap<>();
 
-    public UserFrm() {
-        initComponents();
+    public UserFrm(int u_id) {
+        initComponents(u_id);
     }
 
-    private void initComponents() {
+    private void initComponents(int u_id) {
         // 设置主面板为卡片布局
         mainPanel.setLayout(cardLayout);
 
@@ -160,7 +160,7 @@ public class UserFrm extends JFrame {
 
 
 
-
+//创建第二个界面
 
 
         Container contentPane = getContentPane();
@@ -168,6 +168,8 @@ public class UserFrm extends JFrame {
         JPanel card2 = new JPanel();
         card2.add(new JLabel("这是第二个界面"));
         card2.setBackground(Color.GREEN);
+
+
 
 
 //创建第三个界面
@@ -199,8 +201,8 @@ public class UserFrm extends JFrame {
                 DataBase dataBase=new DataBase();
                 dataBase.OpenDB();
                 // 获取当前用户的id
-               // int u_id = dataBase.getUserId();
-                int u_id = 1;
+                DataControl dataControl=new DataControl();
+
                 // 查询数据库中的cart表格中的用户购物车信息
                 Statement stmt = null;
                 try {
@@ -242,9 +244,15 @@ public class UserFrm extends JFrame {
         card3.add(scrollPane3, BorderLayout.CENTER);
 
 
+
+
+//创建第四个界面
         JPanel card4 = new JPanel();
-        card4.add(new JLabel("这是第四个界面"));
-        card4.setBackground(Color.YELLOW);
+
+
+
+
+
 
         JPanel card5 = new JPanel();
         JTextField textField = new JTextField(10);
@@ -363,13 +371,6 @@ public class UserFrm extends JFrame {
 
         // 返回卡片对象
         return productPanel;
-    }
-
-    public static void main(String[] args) {
-        UserFrm frame = new UserFrm();
-        frame.setSize(500,600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
     }
 
 }
