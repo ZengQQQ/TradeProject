@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.HashMap;
 /**
- * @author 郭yw          未完成(每个具体页面内容)，用户登录进来之后的首页
+ * @author 郭yw          未完成(动态、我的页面内容)，用户登录进来之后的首页
  */
 
 public class UserFrm extends JFrame {
