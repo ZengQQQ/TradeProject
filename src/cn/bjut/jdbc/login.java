@@ -25,11 +25,12 @@ public class login extends JFrame {
             if (role.equals("用户")) {
                 DataControl dataControluser = new DataControl();
                 String userPsw = dataControluser.getUserPsw(username);
+                int u_id = dataControluser.getUserid(username);
                 if (password.equals(userPsw)) {
                     JOptionPane.showMessageDialog(this, "用户登录成功");
-                    UserFrm userFrame = new UserFrm();
+                    UserFrm userFrame = new UserFrm(u_id);
                     userFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    userFrame.setSize(400, 300);
+                    userFrame.setSize(500,600);
                     userFrame.setVisible(true);
                     dispose();
                 } else {
@@ -46,22 +47,22 @@ public class login extends JFrame {
                     merchantFrame.setSize(1000, 900);
                     merchantFrame.setVisible(true);
                     dispose();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "商家登录失败，请检查用户名和密码");
-                    }
-                } else if (role.equals("管理员")) {
-                    if (username.equals("admin") && password.equals("adminpassword")) {
-                        JOptionPane.showMessageDialog(this, "管理员登录成功");
-                        // AdminFrame adminFrame = new AdminFrame();
-                        // adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        // adminFrame.setSize(400, 300);
-                        // adminFrame.setVisible(true);
-                        // dispose();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "管理员登录失败，请检查用户名和密码");
-                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "商家登录失败，请检查用户名和密码");
+                }
+            } else if (role.equals("管理员")) {
+                if (username.equals("admin") && password.equals("adminpassword")) {
+                    JOptionPane.showMessageDialog(this, "管理员登录成功");
+                    // AdminFrame adminFrame = new AdminFrame();
+                    // adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    // adminFrame.setSize(400, 300);
+                    // adminFrame.setVisible(true);
+                    // dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "管理员登录失败，请检查用户名和密码");
                 }
             }
+        }
     }
 
     private void initComponents() {
@@ -76,7 +77,7 @@ public class login extends JFrame {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(5, 5, 5, 5); // 设置组件之间的间距
 
-        JLabel label1 = new JLabel("Username:");
+        JLabel label1 = new JLabel("Useracc:");
         constraints.gridx = 0; // 设置组件所在的列
         constraints.gridy = 0; // 设置组件所在的行
         contentPane.add(label1, constraints);
