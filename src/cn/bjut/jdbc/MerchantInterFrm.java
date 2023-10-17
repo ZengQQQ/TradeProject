@@ -47,6 +47,7 @@ public class MerchantInterFrm extends JFrame {
         private JRadioButton onSaleRadioButton;
         private JRadioButton offSaleRadioButton;
         private GridBagConstraints gbc = new GridBagConstraints();
+
         public ProductUpdateDialog(Product product) {
             this.product = product;
             this.newImgName = product.getP_img();
@@ -122,7 +123,7 @@ public class MerchantInterFrm extends JFrame {
             gbc.gridx = 1;
 
             //商品图片展示
-            imageLabel = createImageLabel(product,400,300);
+            imageLabel = createImageLabel(product, 400, 300);
             panel.add(imageLabel, gbc);
 
             // 创建修改图片按钮
@@ -178,6 +179,7 @@ public class MerchantInterFrm extends JFrame {
             getContentPane().add(panel, BorderLayout.CENTER);
             getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         }
+
         //刷新修改界面的图片
         private void refreshphoto() {
             // 获取项目路径
@@ -296,7 +298,7 @@ public class MerchantInterFrm extends JFrame {
             panel.add(new JLabel("商品图片:"), gbc);
             gbc.gridx = 1;
             // 在createProductPanel方法中添加图片标签
-            JLabel imageLabel = createImageLabel(product,400,300);
+            JLabel imageLabel = createImageLabel(product, 400, 300);
             panel.add(imageLabel, gbc);
 
             getContentPane().add(panel, BorderLayout.CENTER);
@@ -316,18 +318,7 @@ public class MerchantInterFrm extends JFrame {
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();// 获取垂直滚动条
         verticalScrollBar.setUnitIncrement(20);// 设置单次滚动单位的大小为 20 像素
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);// 设置垂直滚动条自动出现
-
-        try {
-            DataControl dataControl = new DataControl();
-            List<Product> products = dataControl.MerchantProductQuery(getM_id());
-            for (Product product : products) {
-                JPanel productPanel = createProductPanel(product);
-                productPanel.setAlignmentX(Component.LEFT_ALIGNMENT); // 设置商品面板左对齐
-                card1.add(productPanel);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        createproductcard();
 
         mainPanel.add(scrollPane, "card1");
         //第二个界面------------------------------------------------
@@ -431,7 +422,7 @@ public class MerchantInterFrm extends JFrame {
         productPanel.setLayout(new BorderLayout());
 
         // 创建商品图片标签并添加到productPanel的西边
-        JLabel imageLabel = createImageLabel(product,350,250);
+        JLabel imageLabel = createImageLabel(product, 350, 250);
         productPanel.add(imageLabel, BorderLayout.WEST);
 
         // 创建商品信息面板
@@ -489,7 +480,7 @@ public class MerchantInterFrm extends JFrame {
     }
 
     // 创建包含商品图片的JLabel
-    private JLabel createImageLabel(Product product,int width ,int height) {
+    private JLabel createImageLabel(Product product, int width, int height) {
         // 获取当前项目的绝对路径
         String projectPath = System.getProperty("user.dir");
 
@@ -521,6 +512,21 @@ public class MerchantInterFrm extends JFrame {
         return label;
     }
 
+
+    private void createproductcard() {
+        try {
+            DataControl dataControl = new DataControl();
+            List<Product> products = dataControl.MerchantProductQuery(getM_id());
+            for (Product product : products) {
+                JPanel productPanel = createProductPanel(product);
+                productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                card1.add(productPanel);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     private void refreshCard1() {
         card1.removeAll();
