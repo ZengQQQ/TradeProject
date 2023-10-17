@@ -185,6 +185,18 @@ public class MerchantInterFrm extends JFrame {
             // 获取项目路径
             String projectPath = System.getProperty("user.dir");
             // 构建新图片路径
+            ImageIcon updatedIcon = getImageIcon(projectPath);
+            // 获取图片对象
+            Image updatedImage = updatedIcon.getImage();
+            // 缩放图片（如果需要）
+            Image scaledImage = updatedImage.getScaledInstance(400, 300, Image.SCALE_SMOOTH);
+            // 创建一个新的 ImageIcon
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+            // 更新图片标签
+            imageLabel.setIcon(scaledIcon);
+        }
+
+        private ImageIcon getImageIcon(String projectPath) {
             String absoluteImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + newImgName;
             // 创建新的 ImageIcon
             ImageIcon updatedIcon;
@@ -196,23 +208,14 @@ public class MerchantInterFrm extends JFrame {
                 String defaultImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg";
                 updatedIcon = new ImageIcon(defaultImagePath);
             }
-            // 获取图片对象
-            Image updatedImage = updatedIcon.getImage();
-            // 缩放图片（如果需要）
-            Image scaledImage = updatedImage.getScaledInstance(400, 300, Image.SCALE_SMOOTH);
-            // 创建一个新的 ImageIcon
-            ImageIcon scaledIcon = new ImageIcon(scaledImage);
-            // 更新图片标签
-            imageLabel.setIcon(scaledIcon);
+            return updatedIcon;
         }
 
         //复制图片文件
         public boolean FilephotoCopy(String newImgPath, String newImgName) {
-            String sourcePath = newImgPath;
-            System.out.println(sourcePath);
             String currentDirectory = System.getProperty("user.dir");
             String destinationPath = currentDirectory + "\\src\\Img\\" + newImgName;
-            File sourceFile = new File(sourcePath);
+            File sourceFile = new File(newImgPath);
             File destinationFile = new File(destinationPath);
             try {
                 Path source = sourceFile.toPath();
@@ -426,6 +429,41 @@ public class MerchantInterFrm extends JFrame {
         productPanel.add(imageLabel, BorderLayout.WEST);
 
         // 创建商品信息面板
+        JPanel infoPanel = getjPanel(product);
+
+        // 添加商品按钮面板
+        JPanel buttonPanel = getPanel(product);
+
+        // 将商品信息面板和按钮面板添加到productPanel的中部
+        productPanel.add(infoPanel, BorderLayout.CENTER);
+        productPanel.add(buttonPanel, BorderLayout.EAST);
+
+        return productPanel;
+    }
+
+    private JPanel getPanel(Product product) {
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+
+        // 创建“修改”按钮并添加到按钮面板
+        JButton alertButton = new JButton("修改");
+        alertButton.addActionListener(e -> {
+            ProductUpdateDialog updateDialog = new ProductUpdateDialog(product);
+            updateDialog.setVisible(true);
+        });
+        buttonPanel.add(alertButton);
+
+        // 创建“详情”按钮并添加到按钮面板
+        JButton detailsButton = new JButton("详情");
+        detailsButton.addActionListener(e -> {
+            ProductDetailsDialog detailsDialog = new ProductDetailsDialog(product);
+            detailsDialog.setVisible(true);
+        });
+        buttonPanel.add(detailsButton);
+        return buttonPanel;
+    }
+
+    private static JPanel getjPanel(Product product) {
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridLayout(0, 1)); // 一个商品信息一行
 
@@ -451,32 +489,7 @@ public class MerchantInterFrm extends JFrame {
         }
 
         infoPanel.add(statusLabel);
-
-        // 添加商品按钮面板
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-
-        // 创建“修改”按钮并添加到按钮面板
-        JButton alertButton = new JButton("修改");
-        alertButton.addActionListener(e -> {
-            ProductUpdateDialog updateDialog = new ProductUpdateDialog(product);
-            updateDialog.setVisible(true);
-        });
-        buttonPanel.add(alertButton);
-
-        // 创建“详情”按钮并添加到按钮面板
-        JButton detailsButton = new JButton("详情");
-        detailsButton.addActionListener(e -> {
-            ProductDetailsDialog detailsDialog = new ProductDetailsDialog(product);
-            detailsDialog.setVisible(true);
-        });
-        buttonPanel.add(detailsButton);
-
-        // 将商品信息面板和按钮面板添加到productPanel的中部
-        productPanel.add(infoPanel, BorderLayout.CENTER);
-        productPanel.add(buttonPanel, BorderLayout.EAST);
-
-        return productPanel;
+        return infoPanel;
     }
 
     // 创建包含商品图片的JLabel
@@ -485,6 +498,21 @@ public class MerchantInterFrm extends JFrame {
         String projectPath = System.getProperty("user.dir");
 
         // 构建图片路径
+        ImageIcon originalIcon = getImageIcon(product, projectPath);
+        // 获取图片对象
+        Image originalImage = originalIcon.getImage();
+
+        // 缩放图片（如果需要）可以改图片的大小
+        Image scaledImage = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+
+        // 创建一个新的 ImageIcon
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+        // 创建一个 JLabel 并将缩放后的 ImageIcon 设置为其图标
+        return new JLabel(scaledIcon);
+    }
+
+    private static ImageIcon getImageIcon(Product product, String projectPath) {
         String relativeImagePath = product.getP_img();
         String absoluteImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + relativeImagePath;
         // 创建 ImageIcon
@@ -497,19 +525,7 @@ public class MerchantInterFrm extends JFrame {
             String defaultImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg";
             originalIcon = new ImageIcon(defaultImagePath);
         }
-        // 获取图片对象
-        Image originalImage = originalIcon.getImage();
-
-        // 缩放图片（如果需要）可以改图片的大小
-        Image scaledImage = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-
-        // 创建一个新的 ImageIcon
-        ImageIcon scaledIcon = new ImageIcon(scaledImage);
-
-        // 创建一个 JLabel 并将缩放后的 ImageIcon 设置为其图标
-        JLabel label = new JLabel(scaledIcon);
-
-        return label;
+        return originalIcon;
     }
 
 
