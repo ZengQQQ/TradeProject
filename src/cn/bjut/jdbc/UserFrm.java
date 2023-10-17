@@ -293,11 +293,11 @@ public class UserFrm extends JFrame {
                             if (dataControl.getUserPsw(u_id).equals(oldPassword)) {
                                 // 调用UserDao的方法修改用户密码
                                 int result = updatePassword(dataControl.getUserName(u_id), newPassword);
-                                if (result == 1) { // 如果返回值为1，说明修改成功
-                                    JOptionPane.showMessageDialog(dialog, "修改成功！");
-                                    dialog.dispose(); // 关闭对话框
-                                } else { // 如果返回值为0，说明修改失败
+                                if (result == 1) {
                                     JOptionPane.showMessageDialog(dialog, "修改失败！");
+                                } else {
+                                    JOptionPane.showMessageDialog(dialog, "修改成功！");
+                                    dialog.dispose();
                                 }
                             } else { // 如果旧密码不正确，提示用户
                                 JOptionPane.showMessageDialog(dialog, "旧密码不正确！");
@@ -425,8 +425,9 @@ public class UserFrm extends JFrame {
         try {
             DataBase dataBase=new DataBase();
             dataBase.OpenDB();
+            conn=dataBase.getCon();
             // 定义SQL语句
-            String sql = "UPDATE user SET password = ? WHERE username = ?";
+            String sql = "UPDATE user SET u_psw = ? WHERE u_name = ?";
             // 获取预编译语句对象
             ps = conn.prepareStatement(sql);
             // 设置参数
