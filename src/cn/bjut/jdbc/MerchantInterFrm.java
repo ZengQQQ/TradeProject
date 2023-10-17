@@ -572,10 +572,13 @@ public class MerchantInterFrm extends JFrame {
 
 
     public static void main(String[] args) {
-        MerchantInterFrm frame = new MerchantInterFrm(1);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1200, 1000);
-        frame.setVisible(true);
+        // 将Swing应用程序放在Event Dispatch Thread (EDT)中运行
+        SwingUtilities.invokeLater(() -> {
+            MerchantInterFrm frame = new MerchantInterFrm(1);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(1200, 1000);
+            frame.setVisible(true);
+        });
     }
 }
 
