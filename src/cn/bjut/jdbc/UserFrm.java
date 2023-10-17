@@ -268,7 +268,7 @@ public class UserFrm extends JFrame {
 
         // 创建一个文本区域，显示商品描述
         JTextArea descriptionArea = new JTextArea();
-        descriptionArea.setText("这里是商品的描述，你可以从数据库中获取，或者自己编写。");
+        descriptionArea.setText("这里是商品的描述。");
         descriptionArea.setLineWrap(true); // 设置自动换行
         descriptionArea.setEditable(false); // 设置不可编辑
 
