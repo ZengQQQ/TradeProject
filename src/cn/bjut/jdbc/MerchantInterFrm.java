@@ -459,31 +459,7 @@ public class MerchantInterFrm extends JFrame {
 
         return productPanel;
     }
-
-
-
-
-
-    private JLabel createImageLabel(Product product) { // 创建包含商品图片的JLabel
-        String relativeImagePath = product.getP_img();
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL imageURL = classLoader.getResource(relativeImagePath);
-
-        // 创建图片标签
-        JLabel imageLabel;
-
-        if (imageURL != null) {
-            ImageIcon originalIcon = new ImageIcon(imageURL);
-            // 调整图片大小
-            Image scaledImage = originalIcon.getImage().getScaledInstance(150, 120, Image.SCALE_SMOOTH);
-            ImageIcon scaledIcon = new ImageIcon(scaledImage);
-            imageLabel = new JLabel(scaledIcon);
-        } else {
-            imageLabel = new JLabel("----------图片不能显示---------");
-        }
-        return imageLabel;
-    }
-
+    
 
     public static void main(String[] args) throws SQLException {
         MerchantInterFrm frame = new MerchantInterFrm(1);
