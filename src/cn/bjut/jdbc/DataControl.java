@@ -39,6 +39,25 @@ public class DataControl {
         return answer;
 
     }
+    public int getUserid(String account) throws SQLException {
+        int id=0;
+        String sql = "select u_id from user " + " where  u_acc" + " = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, account);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            id = rs.getInt("u_id");
+        } else {
+            id = 0;
+        }
+
+        if (con != null) {
+            con.close();
+        }
+        return id;
+
+    }
 
     public List<Integer> getMerchantPsw(String account) throws SQLException {
         List<Integer> psw_id = new ArrayList<>();
