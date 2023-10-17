@@ -20,8 +20,9 @@ public class UserFrm extends JFrame {
     private JPanel mainPanel = new JPanel();
     private CardLayout cardLayout = new CardLayout();
 
-    // 创建一个HashMap来存储商品id和对应的卡片对象
     private HashMap<Integer, JPanel> productMap = new HashMap<>();
+
+
 
     public UserFrm() {
         initComponents();
@@ -34,17 +35,17 @@ public class UserFrm extends JFrame {
         // 创建第一个界面
         // 创建一个网格布局管理器，指定4行6列
         GridLayout gridLayout = new GridLayout (4, 6);
-// 设置网格之间的水平和垂直间距
+        // 设置网格之间的水平和垂直间距
         gridLayout.setHgap (10);
         gridLayout.setVgap (10);
-// 创建第一个界面，使用网格布局管理器
+        // 创建第一个界面，使用网格布局管理器
         JPanel card1 = new JPanel (gridLayout);
 
-// 连接数据库
+        // 连接数据库
         DataBase dataBase=new DataBase();
         dataBase.OpenDB();
 
-// 查询数据库中的商品信息
+        // 查询数据库中的商品信息
         Statement stmt = null;
         try {
             stmt = dataBase.getCon().createStatement();
@@ -59,7 +60,7 @@ public class UserFrm extends JFrame {
             e.printStackTrace();
         }
 
-// 遍历结果集，为每个商品创建一个按钮，并添加到第一个界面中
+        // 遍历结果集，为每个商品创建一个按钮，并添加到第一个界面中
         while (true) {
             try {
                 if (!rs.next()) break;
@@ -241,19 +242,6 @@ public class UserFrm extends JFrame {
         cardLayout.show(mainPanel, "card1");
 
     }
-
-
-    public void xiangxi(){
-        System.out.println("click");
-    }
-
-
-    public static void main(String[] args) {
-        UserFrm frame = new UserFrm();
-        frame.setSize(500,600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-    }
     private JPanel createProductPanel(int id, String name, String imagePath, double price,String desc) {
         // 创建一个新的卡片对象
         JPanel productPanel = new JPanel();
@@ -303,4 +291,13 @@ public class UserFrm extends JFrame {
 
         // 返回卡片对象
         return productPanel;
-    }}
+    }
+
+    public static void main(String[] args) {
+        UserFrm frame = new UserFrm();
+        frame.setSize(500,600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+
+}
