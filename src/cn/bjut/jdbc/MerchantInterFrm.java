@@ -2,12 +2,10 @@ package cn.bjut.jdbc;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -20,7 +18,17 @@ public class MerchantInterFrm extends JFrame {
     private JButton downproject;
     private JButton evaluate;
     private JButton myButton;
-    public int m_id;
+    private JButton refreshButton;
+    private CardLayout cardLayout = new CardLayout();
+    private JPanel mainPanel = new JPanel();
+    private JPanel card1;
+    private int m_id;
+
+
+    public MerchantInterFrm(int mid) {
+        this.m_id = mid;
+        initComponents();
+    }
 
     public int getM_id() {
         return m_id;
@@ -30,37 +38,24 @@ public class MerchantInterFrm extends JFrame {
         this.m_id = m_id;
     }
 
-    private JPanel card1; // 用于显示商品的卡片
-
-    public MerchantInterFrm(int m_id) {
-        this.m_id = m_id;
-        initComponents();
-    }
-
     public class ProductUpdateDialog extends JDialog {
         private Product product;
-
-        public String getNewImgName() {
-            return newImgName;
-        }
-
-        public void setNewImgName(String newImgName) {
-            this.newImgName = newImgName;
-        }
-
         private String newImgName; // 添加字段用于存储文件名
+
+        // 在initComponents方法中添加一个新的字段来保存商品图片的标签
+        private JLabel imageLabel;
         private JRadioButton onSaleRadioButton;
         private JRadioButton offSaleRadioButton;
 
         public ProductUpdateDialog(Product product) {
             this.product = product;
-            this.newImgName=product.getP_img();
+            this.newImgName = product.getP_img();
             initComponents();
         }
 
         private void initComponents() {
             setTitle("修改商品信息");
-            setSize(900, 500);
+            setSize(900, 600);
             setLocationRelativeTo(null); // 居中显示
 
             JPanel panel = new JPanel(new GridBagLayout());
@@ -126,9 +121,8 @@ public class MerchantInterFrm extends JFrame {
             panel.add(new JLabel("商品图片:"), gbc);
             gbc.gridx = 1;
 
-            // 为商品图片添加一个文本框
-            JTextField imgField = new JTextField(product.getP_img());
-            JLabel imageLabel = createImageLabel(product);
+            //商品图片展示
+            imageLabel = createImageLabel(product,400,300);
             panel.add(imageLabel, gbc);
 
             // 创建修改图片按钮
@@ -143,9 +137,12 @@ public class MerchantInterFrm extends JFrame {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     String newImgPath = fileChooser.getSelectedFile().getPath();
                     this.newImgName = new File(newImgPath).getName();
-                    FilephotoCopy(newImgPath, newImgName);
-                    System.out.println(newImgName+"1");
-
+                    boolean b = FilephotoCopy(newImgPath, newImgName);
+                    if (b) {
+                        JOptionPane.showMessageDialog(ProductUpdateDialog.this, "图片上传成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(ProductUpdateDialog.this, "图片上传失败失败", "错误", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             });
 
@@ -167,9 +164,8 @@ public class MerchantInterFrm extends JFrame {
                 boolean success = dataControl.updateProduct(
                         product.getP_id(), newName, newdesc, newclass, newPrice, newStatus, newImgName
                 );
-
                 if (success) {
-                    JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改成功，请刷新界面", "提示", JOptionPane.INFORMATION_MESSAGE);
                     dispose(); // 关闭窗口
                 } else {
                     JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
@@ -184,7 +180,7 @@ public class MerchantInterFrm extends JFrame {
 
 
         //复制图片文件
-        public String FilephotoCopy(String newImgPath, String newImgName) {
+        public boolean FilephotoCopy(String newImgPath, String newImgName) {
             String sourcePath = newImgPath;
             System.out.println(sourcePath);
             String currentDirectory = System.getProperty("user.dir");
@@ -198,11 +194,11 @@ public class MerchantInterFrm extends JFrame {
                 // 使用Files.copy方法复制文件
                 Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
                 System.out.println("文件复制成功");
-                return destinationPath;
+                return true;
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("文件复制失败");
-                return null;
+                return false;
             }
         }
     }
@@ -218,7 +214,7 @@ public class MerchantInterFrm extends JFrame {
 
         private void initComponents() {
             setTitle("商品详细信息");
-            setSize(900, 500);
+            setSize(900, 600);
             setLocationRelativeTo(null); // 居中显示
 
             JPanel panel = new JPanel(new GridBagLayout());
@@ -275,7 +271,7 @@ public class MerchantInterFrm extends JFrame {
             panel.add(new JLabel("商品图片:"), gbc);
             gbc.gridx = 1;
             // 在createProductPanel方法中添加图片标签
-            JLabel imageLabel = createImageLabel(product);
+            JLabel imageLabel = createImageLabel(product,400,300);
             panel.add(imageLabel, gbc);
 
             getContentPane().add(panel, BorderLayout.CENTER);
@@ -284,9 +280,10 @@ public class MerchantInterFrm extends JFrame {
 
     private void initComponents() {
         //主界面的创建
-        JPanel mainPanel = new JPanel();
-        CardLayout cardLayout = new CardLayout();
+
         mainPanel.setLayout(cardLayout);
+        JMenuBar menuBar = createMenuBar();
+        setJMenuBar(menuBar);
         //第一个界面------------------------------------------------
         card1 = new JPanel();
         card1.setLayout(new GridLayout(0, 2));
@@ -409,7 +406,7 @@ public class MerchantInterFrm extends JFrame {
         productPanel.setLayout(new BorderLayout());
 
         // 创建商品图片标签并添加到productPanel的西边
-        JLabel imageLabel = createImageLabel(product);
+        JLabel imageLabel = createImageLabel(product,250,250);
         productPanel.add(imageLabel, BorderLayout.WEST);
 
         // 创建商品信息面板
@@ -466,7 +463,8 @@ public class MerchantInterFrm extends JFrame {
         return productPanel;
     }
 
-    private JLabel createImageLabel(Product product) { // 创建包含商品图片的JLabel
+    // 创建包含商品图片的JLabel
+    private JLabel createImageLabel(Product product,int width ,int height) {
         // 获取当前项目的绝对路径
         String projectPath = System.getProperty("user.dir");
 
@@ -486,8 +484,8 @@ public class MerchantInterFrm extends JFrame {
         // 获取图片对象
         Image originalImage = originalIcon.getImage();
 
-        // 缩放图片（如果需要）
-        Image scaledImage = originalImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        // 缩放图片（如果需要）可以改图片的大小
+        Image scaledImage = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 
         // 创建一个新的 ImageIcon
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
@@ -499,10 +497,54 @@ public class MerchantInterFrm extends JFrame {
     }
 
 
-    public static void main(String[] args) throws SQLException {
+    private void refreshProducts() {
+        card1.removeAll();
+        try {
+            DataControl dataControl = new DataControl();
+            List<Product> products = dataControl.MerchantProductQuery(getM_id());
+            for (Product product : products) {
+                JPanel productPanel = createProductPanel(product);
+                productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                card1.add(productPanel);
+            }
+            card1.revalidate();
+            card1.repaint();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //创建菜单
+    private JMenuBar createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("菜单");
+        refreshButton = new JButton("刷新");
+        searchButton = new JButton("搜索");
+        refreshButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                refreshProducts();
+            }
+        });
+        searchButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainPanel, "card5");
+            }
+        });
+
+        menu.add(refreshButton);
+        menu.add(searchButton);
+        menuBar.add(menu);
+        return menuBar;
+    }
+
+
+    public static void main(String[] args) {
         MerchantInterFrm frame = new MerchantInterFrm(1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 900);
         frame.setVisible(true);
     }
 }
+
