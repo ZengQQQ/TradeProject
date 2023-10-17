@@ -2,6 +2,7 @@ package cn.bjut.jdbc;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -38,12 +39,22 @@ public class MerchantInterFrm extends JFrame {
 
     public class ProductUpdateDialog extends JDialog {
         private Product product;
+
+        public String getNewImgName() {
+            return newImgName;
+        }
+
+        public void setNewImgName(String newImgName) {
+            this.newImgName = newImgName;
+        }
+
         private String newImgName; // 添加字段用于存储文件名
         private JRadioButton onSaleRadioButton;
         private JRadioButton offSaleRadioButton;
 
         public ProductUpdateDialog(Product product) {
             this.product = product;
+            this.newImgName=product.getP_img();
             initComponents();
         }
 
@@ -131,62 +142,30 @@ public class MerchantInterFrm extends JFrame {
                 int returnVal = fileChooser.showOpenDialog(ProductUpdateDialog.this);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     String newImgPath = fileChooser.getSelectedFile().getPath();
-                    newImgName = new File(newImgPath).getName();
+                    this.newImgName = new File(newImgPath).getName();
                     FilephotoCopy(newImgPath, newImgName);
+                    System.out.println(newImgName+"1");
+
                 }
             });
 
             // 创建“修改”按钮
             // 在initComponents方法中创建修改按钮
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            JButton updateButton = createUpdateButton(product, nameField, descField, classField, newImgName, priceField, onSaleRadioButton);
-            buttonPanel.add(updateButton);
-
-            getContentPane().add(panel, BorderLayout.CENTER);
-            getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-        }
-
-
-        //复制图片文件
-        public String FilephotoCopy(String newImgPath,String newImgName) {
-                String sourcePath = newImgPath;
-                System.out.println(sourcePath);
-                String currentDirectory = System.getProperty("user.dir");
-                String destinationPath = currentDirectory + "\\src\\Img\\" + newImgName;
-                File sourceFile = new File(sourcePath);
-                File destinationFile = new File(destinationPath);
-                try {
-                    Path source = sourceFile.toPath();
-                    Path destination = destinationFile.toPath();
-
-                    // 使用Files.copy方法复制文件
-                    Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println("文件复制成功");
-                    return destinationPath;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println("文件复制失败");
-                    return null;
-                }
-        }
-
-
-        // 创建“修改”按钮
-        private JButton createUpdateButton(Product product, JTextField nameField, JTextField descField, JTextField classField, String imgField, JTextField priceField, JRadioButton onSaleRadioButton) {
-            JButton updateButton = new JButton("修改");
-            updateButton.addActionListener(e -> {
+            JButton updatephotoButton = new JButton("修改");
+            //添加修改图片按钮的事件
+            updatephotoButton.addActionListener(e -> {
                 // 获取文本框中的更新商品信息
                 String newName = nameField.getText();
                 String newdesc = descField.getText();
                 String newclass = classField.getText();
-                String newimg = imgField;
                 double newPrice = Double.parseDouble(priceField.getText());
                 // 获取单选框的选择
                 String newStatus = onSaleRadioButton.isSelected() ? "上架" : "下架";
                 // 更新商品信息
                 DataControl dataControl = new DataControl();
                 boolean success = dataControl.updateProduct(
-                        product.getP_id(), newName, newdesc, newclass, newPrice, newStatus, newimg
+                        product.getP_id(), newName, newdesc, newclass, newPrice, newStatus, newImgName
                 );
 
                 if (success) {
@@ -196,9 +175,36 @@ public class MerchantInterFrm extends JFrame {
                     JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
                 }
             });
-            return updateButton;
+
+            buttonPanel.add(updatephotoButton);
+
+            getContentPane().add(panel, BorderLayout.CENTER);
+            getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         }
 
+
+        //复制图片文件
+        public String FilephotoCopy(String newImgPath, String newImgName) {
+            String sourcePath = newImgPath;
+            System.out.println(sourcePath);
+            String currentDirectory = System.getProperty("user.dir");
+            String destinationPath = currentDirectory + "\\src\\Img\\" + newImgName;
+            File sourceFile = new File(sourcePath);
+            File destinationFile = new File(destinationPath);
+            try {
+                Path source = sourceFile.toPath();
+                Path destination = destinationFile.toPath();
+
+                // 使用Files.copy方法复制文件
+                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("文件复制成功");
+                return destinationPath;
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("文件复制失败");
+                return null;
+            }
+        }
     }
 
     public class ProductDetailsDialog extends JDialog {
@@ -459,7 +465,39 @@ public class MerchantInterFrm extends JFrame {
 
         return productPanel;
     }
-    
+
+    private JLabel createImageLabel(Product product) { // 创建包含商品图片的JLabel
+        // 获取当前项目的绝对路径
+        String projectPath = System.getProperty("user.dir");
+
+        // 构建图片路径
+        String relativeImagePath = product.getP_img();
+        String absoluteImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + relativeImagePath;
+        // 创建 ImageIcon
+        ImageIcon originalIcon;
+        File imageFile = new File(absoluteImagePath);
+        if (imageFile.exists()) {
+            originalIcon = new ImageIcon(absoluteImagePath);
+        } else {
+            // 图片路径不存在，使用默认图片
+            String defaultImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg";
+            originalIcon = new ImageIcon(defaultImagePath);
+        }
+        // 获取图片对象
+        Image originalImage = originalIcon.getImage();
+
+        // 缩放图片（如果需要）
+        Image scaledImage = originalImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+
+        // 创建一个新的 ImageIcon
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+        // 创建一个 JLabel 并将缩放后的 ImageIcon 设置为其图标
+        JLabel label = new JLabel(scaledIcon);
+
+        return label;
+    }
+
 
     public static void main(String[] args) throws SQLException {
         MerchantInterFrm frame = new MerchantInterFrm(1);
