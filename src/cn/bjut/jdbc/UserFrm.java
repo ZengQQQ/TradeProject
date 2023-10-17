@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import javax.swing.*;
+import java.util.HashMap;
 /**
  * @author 郭yw          未完成(每个具体页面内容)，用户登录进来之后的首页
  */
@@ -15,13 +16,19 @@ public class UserFrm extends JFrame {
     private JButton shoppingButton;
     private JButton myButton;
 
+    // 创建一个主面板和一个卡片布局管理器
+    private JPanel mainPanel = new JPanel();
+    private CardLayout cardLayout = new CardLayout();
+
+    // 创建一个HashMap来存储商品id和对应的卡片对象
+    private HashMap<Integer, JPanel> productMap = new HashMap<>();
+
     public UserFrm() {
         initComponents();
     }
 
     private void initComponents() {
-        JPanel mainPanel = new JPanel();
-        CardLayout cardLayout = new CardLayout();
+        // 设置主面板为卡片布局
         mainPanel.setLayout(cardLayout);
 
         // 创建第一个界面
@@ -93,12 +100,24 @@ public class UserFrm extends JFrame {
             button.setVerticalTextPosition(SwingConstants.BOTTOM); // 设置文本在图标下方
             button.setHorizontalTextPosition(SwingConstants.CENTER); // 设置文本在图标中间
 
-            // 为按钮添加点击事件监听器，可以根据需要实现不同的功能
+            // 为按钮添加点击事件监听器，跳转到商品详情卡片
+            int finalId = id;
+            String finalName = name;
+            String finalImagePath = imagePath;
+            double finalPrice = price;
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // 这里可以写你想要实现的功能，比如跳转到商品详情页面，或者加入购物车等
-                    System.out.println("You clicked on product " );
+                    // 根据商品id查找对应的卡片对象
+                    JPanel productPanel = productMap.get(finalId);
+                    if (productPanel == null) {
+                        // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
+                        productPanel = createProductPanel(finalId, finalName, finalImagePath, finalPrice);
+                        mainPanel.add(productPanel, "product" + finalId);
+                        productMap.put(finalId, productPanel);
+                    }
+                    // 切换到商品详情卡片
+                    cardLayout.show(mainPanel, "product" + finalId);
                 }
             });
 
@@ -208,13 +227,18 @@ public class UserFrm extends JFrame {
         contentPane.add(mainPanel, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
+// 显示第一个界面
         pack();
         setLocationRelativeTo(getOwner());
-
-        // 显示第一个界面
         cardLayout.show(mainPanel, "card1");
 
     }
+
+
+    public void xiangxi(){
+        System.out.println("click");
+    }
+
 
     public static void main(String[] args) {
         UserFrm frame = new UserFrm();
@@ -222,4 +246,53 @@ public class UserFrm extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
-}
+    private JPanel createProductPanel(int id, String name, String imagePath, double price) {
+        // 创建一个新的卡片对象
+        JPanel productPanel = new JPanel();
+        productPanel.setLayout(new BorderLayout());
+
+        // 创建一个标签，显示商品名称
+        JLabel nameLabel = new JLabel(name);
+        nameLabel.setFont(new Font("宋体", Font.BOLD, 24));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // 创建一个标签，显示商品图片
+        JLabel imageLabel = new JLabel();
+        imageLabel.setIcon(new ImageIcon(imagePath));
+
+        // 创建一个标签，显示商品价格
+        JLabel priceLabel = new JLabel("¥" + price);
+        priceLabel.setFont(new Font("宋体", Font.BOLD, 18));
+        priceLabel.setForeground(Color.RED);
+        priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // 创建一个文本区域，显示商品描述
+        JTextArea descriptionArea = new JTextArea();
+        descriptionArea.setText("这里是商品的描述，你可以从数据库中获取，或者自己编写。");
+        descriptionArea.setLineWrap(true); // 设置自动换行
+        descriptionArea.setEditable(false); // 设置不可编辑
+
+        // 创建一个滚动面板，包含文本区域
+        JScrollPane descriptionPane = new JScrollPane(descriptionArea);
+        descriptionPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 设置垂直滚动条总是可见
+
+        // 创建一个按钮，实现加入购物车的功能
+        JButton addToCartButton = new JButton("加入购物车");
+        addToCartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 这里可以写你想要实现的功能，比如将商品id添加到用户的购物车列表中，或者弹出一个提示框等
+                System.out.println("You added product " + id + " to your cart.");
+            }
+        });
+
+        // 将各个组件添加到卡片中，使用不同的方位
+        productPanel.add(nameLabel, BorderLayout.NORTH);
+        productPanel.add(imageLabel, BorderLayout.CENTER);
+        productPanel.add(priceLabel, BorderLayout.SOUTH);
+        productPanel.add(descriptionPane, BorderLayout.EAST);
+        productPanel.add(addToCartButton, BorderLayout.WEST);
+
+        // 返回卡片对象
+        return productPanel;
+    }}
