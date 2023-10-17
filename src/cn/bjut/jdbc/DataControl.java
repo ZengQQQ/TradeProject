@@ -1,4 +1,5 @@
 package cn.bjut.jdbc;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,10 +110,10 @@ public class DataControl {
         }
         return products;
     }
-    
 
-    public void insert_cart(int u_id,int p_id,int quantity){//将商品表信息插入到购物车表中
-        DataBase dataBase=new DataBase();
+
+    public void insert_cart(int u_id, int p_id, int quantity) {//将商品表信息插入到购物车表中
+        DataBase dataBase = new DataBase();
         dataBase.OpenDB();
         // 创建一个LocalDateTime对象，表示当前日期和时间
         LocalDateTime dateTime = LocalDateTime.now();
@@ -125,7 +126,7 @@ public class DataControl {
             // 设置占位符的值，注意类型和顺序要与表结构一致
             pstmt.setInt(1, p_id);
             pstmt.setInt(2, u_id);
-            pstmt.setObject(3,dateTime);
+            pstmt.setObject(3, dateTime);
             pstmt.setInt(4, quantity);
             // 执行插入操作，返回影响的行数
             int rows = pstmt.executeUpdate();
@@ -139,21 +140,56 @@ public class DataControl {
             // 捕获异常并打印
             e.printStackTrace();
         }
+    }
+
+
+    //在商家页面里修改商品信息
+    public boolean updateProduct(int m_id, String newName, String newdesc, String newclass, double newPrice, String newsta, String newimg) {
+        // 创建连接
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        DataBase dataBase = new DataBase();
+        try {
+            // 建立数据库连接
+            con = dataBase.OpenDB();
+            // 创建SQL更新语句
+            String sql = "UPDATE product SET p_name = ?, p_desc = ?, p_class = ?, p_price = ?, p_status = ?, p_img = ? WHERE m_id = ?";
+            // 创建 PreparedStatement 对象
+            preparedStatement = con.prepareStatement(sql);
+            // 设置参数
+            preparedStatement.setString(1, newName);
+            preparedStatement.setString(2, newdesc);
+            preparedStatement.setString(3, newclass);
+            preparedStatement.setDouble(4, newPrice);
+            preparedStatement.setString(5, newsta);
+            preparedStatement.setString(6, newimg);
+            preparedStatement.setInt(7, m_id);
+
+            // 执行更新
+            int rowsAffected = preparedStatement.executeUpdate();
+            // 如果更新成功，rowsAffected 应该为 1
+            return rowsAffected == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭连接
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+        return false;
+    }
 
     public static void main(String[] args) {
-        DataControl dataControl= new DataControl();
-        dataControl.insert_cart(1,1,1);
+        DataControl dataControl = new DataControl();
+        dataControl.insert_cart(1, 1, 1);
     }
 
 
-    public boolean updateProduct(int pId, String newName, String newdesc, String newclass, double newPrice, String newsta, String newimg) {
-
-
-
-        return true;
-
-    }
 }
 
 
