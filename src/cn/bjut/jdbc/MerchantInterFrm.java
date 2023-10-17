@@ -46,7 +46,7 @@ public class MerchantInterFrm extends JFrame {
         private JLabel imageLabel;
         private JRadioButton onSaleRadioButton;
         private JRadioButton offSaleRadioButton;
-
+        private GridBagConstraints gbc = new GridBagConstraints();
         public ProductUpdateDialog(Product product) {
             this.product = product;
             this.newImgName = product.getP_img();
@@ -59,7 +59,7 @@ public class MerchantInterFrm extends JFrame {
             setLocationRelativeTo(null); // 居中显示
 
             JPanel panel = new JPanel(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
+
             gbc.insets = new Insets(5, 5, 5, 5);
 
             gbc.gridx = 0;
@@ -140,6 +140,7 @@ public class MerchantInterFrm extends JFrame {
                     boolean b = FilephotoCopy(newImgPath, newImgName);
                     if (b) {
                         JOptionPane.showMessageDialog(ProductUpdateDialog.this, "图片上传成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        refreshphoto();
                     } else {
                         JOptionPane.showMessageDialog(ProductUpdateDialog.this, "图片上传失败失败", "错误", JOptionPane.ERROR_MESSAGE);
                     }
@@ -166,6 +167,7 @@ public class MerchantInterFrm extends JFrame {
                 );
                 if (success) {
                     JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改成功，请刷新界面", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    refreshCard1();
                     dispose(); // 关闭窗口
                 } else {
                     JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
@@ -177,7 +179,31 @@ public class MerchantInterFrm extends JFrame {
             getContentPane().add(panel, BorderLayout.CENTER);
             getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         }
-
+        //刷新修改界面的图片
+        private void refreshphoto() {
+            // 获取项目路径
+            String projectPath = System.getProperty("user.dir");
+            // 构建新图片路径
+            String absoluteImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + newImgName;
+            // 创建新的 ImageIcon
+            ImageIcon updatedIcon;
+            File updatedImageFile = new File(absoluteImagePath);
+            if (updatedImageFile.exists()) {
+                updatedIcon = new ImageIcon(absoluteImagePath);
+            } else {
+                // 图片路径不存在，使用默认图片
+                String defaultImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg";
+                updatedIcon = new ImageIcon(defaultImagePath);
+            }
+            // 获取图片对象
+            Image updatedImage = updatedIcon.getImage();
+            // 缩放图片（如果需要）
+            Image scaledImage = updatedImage.getScaledInstance(400, 300, Image.SCALE_SMOOTH);
+            // 创建一个新的 ImageIcon
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+            // 更新图片标签
+            imageLabel.setIcon(scaledIcon);
+        }
 
         //复制图片文件
         public boolean FilephotoCopy(String newImgPath, String newImgName) {
@@ -497,7 +523,7 @@ public class MerchantInterFrm extends JFrame {
     }
 
 
-    private void refreshProducts() {
+    private void refreshCard1() {
         card1.removeAll();
         try {
             DataControl dataControl = new DataControl();
@@ -523,7 +549,7 @@ public class MerchantInterFrm extends JFrame {
         refreshButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                refreshProducts();
+                refreshCard1();
             }
         });
         searchButton.addMouseListener(new MouseAdapter() {
