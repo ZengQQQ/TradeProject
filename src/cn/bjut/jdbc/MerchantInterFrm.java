@@ -4,7 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -31,6 +36,246 @@ public class MerchantInterFrm extends JFrame {
         initComponents();
     }
 
+    public class ProductUpdateDialog extends JDialog {
+        private Product product;
+        private String newImgName; // 添加字段用于存储文件名
+        private JRadioButton onSaleRadioButton;
+        private JRadioButton offSaleRadioButton;
+
+        public ProductUpdateDialog(Product product) {
+            this.product = product;
+            initComponents();
+        }
+
+        private void initComponents() {
+            setTitle("修改商品信息");
+            setSize(900, 500);
+            setLocationRelativeTo(null); // 居中显示
+
+            JPanel panel = new JPanel(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5);
+
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.anchor = GridBagConstraints.WEST;
+
+            panel.add(new JLabel("商品名称:"), gbc);
+            gbc.gridx = 1;
+            JTextField nameField = new JTextField(product.getP_name());
+            panel.add(nameField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            panel.add(new JLabel("商品描述:"), gbc);
+            gbc.gridx = 1;
+            JTextField descField = new JTextField(product.getP_desc());
+            panel.add(descField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            panel.add(new JLabel("商品类别:"), gbc);
+            gbc.gridx = 1;
+            JTextField classField = new JTextField(product.getP_class());
+            panel.add(classField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            panel.add(new JLabel("商品价格（元）:"), gbc);
+            gbc.gridx = 1;
+            JTextField priceField = new JTextField(String.valueOf(product.getP_price()));
+            panel.add(priceField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            panel.add(new JLabel("商品状态:"), gbc);
+            gbc.gridx = 1;
+
+            // 创建商品状态的单选框
+            ButtonGroup statusGroup = new ButtonGroup();
+            onSaleRadioButton = new JRadioButton("上架");
+            offSaleRadioButton = new JRadioButton("下架");
+
+            statusGroup.add(onSaleRadioButton);
+            statusGroup.add(offSaleRadioButton);
+
+            JPanel statusPanel = new JPanel();
+            statusPanel.add(onSaleRadioButton);
+            statusPanel.add(offSaleRadioButton);
+
+            // 根据商品状态设置默认选择
+            if (product.getP_status().equals("上架")) {
+                onSaleRadioButton.setSelected(true);
+            } else {
+                offSaleRadioButton.setSelected(true);
+            }
+            panel.add(statusPanel, gbc);
+            gbc.gridx = 0;
+            gbc.gridy++;
+            panel.add(new JLabel("商品图片:"), gbc);
+            gbc.gridx = 1;
+
+            // 为商品图片添加一个文本框
+            JTextField imgField = new JTextField(product.getP_img());
+            JLabel imageLabel = createImageLabel(product);
+            panel.add(imageLabel, gbc);
+
+            // 创建修改图片按钮
+            gbc.gridx = 2;
+            JButton changeImgButton = new JButton("修改图片");
+            panel.add(changeImgButton, gbc);
+
+            // 为修改图片按钮添加事件处理程序
+            changeImgButton.addActionListener(e -> {
+                JFileChooser fileChooser = new JFileChooser();
+                int returnVal = fileChooser.showOpenDialog(ProductUpdateDialog.this);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    String newImgPath = fileChooser.getSelectedFile().getPath();
+                    newImgName = new File(newImgPath).getName();
+                    FilephotoCopy(newImgPath);
+                }
+            });
+
+            // 创建“修改”按钮
+            // 在initComponents方法中创建修改按钮
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            JButton updateButton = createUpdateButton(product, nameField, descField, classField, newImgName, priceField, onSaleRadioButton);
+            buttonPanel.add(updateButton);
+
+            getContentPane().add(panel, BorderLayout.CENTER);
+            getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        }
+
+
+        //复制图片文件
+        public String FilephotoCopy(String path) {
+                String sourcePath = path;
+                System.out.println(sourcePath);
+                String destinationPath = "D:\\Documents\\Github\\TradeProject\\src\\Img\\file.jpg";
+                File sourceFile = new File(sourcePath);
+                File destinationFile = new File(destinationPath);
+
+                try {
+                    Path source = sourceFile.toPath();
+                    Path destination = destinationFile.toPath();
+
+                    // 使用Files.copy方法复制文件
+                    Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+                    System.out.println("文件复制成功");
+                    return destinationPath;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.out.println("文件复制失败");
+                    return null;
+                }
+        }
+
+
+        // 创建“修改”按钮
+        private JButton createUpdateButton(Product product, JTextField nameField, JTextField descField, JTextField classField, String imgField, JTextField priceField, JRadioButton onSaleRadioButton) {
+            JButton updateButton = new JButton("修改");
+            updateButton.addActionListener(e -> {
+                // 获取文本框中的更新商品信息
+                String newName = nameField.getText();
+                String newdesc = descField.getText();
+                String newclass = classField.getText();
+                String newimg = imgField;
+                double newPrice = Double.parseDouble(priceField.getText());
+                // 获取单选框的选择
+                String newStatus = onSaleRadioButton.isSelected() ? "上架" : "下架";
+                // 更新商品信息
+                DataControl dataControl = new DataControl();
+                boolean success = dataControl.updateProduct(
+                        product.getP_id(), newName, newdesc, newclass, newPrice, newStatus, newimg
+                );
+
+                if (success) {
+                    JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    dispose(); // 关闭窗口
+                } else {
+                    JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+            return updateButton;
+        }
+
+    }
+
+    public class ProductDetailsDialog extends JDialog {
+
+        private Product product;
+
+        public ProductDetailsDialog(Product product) {
+            this.product = product;
+            initComponents();
+        }
+
+        private void initComponents() {
+            setTitle("商品详细信息");
+            setSize(900, 500);
+            setLocationRelativeTo(null); // 居中显示
+
+            JPanel panel = new JPanel(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5);
+
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.anchor = GridBagConstraints.WEST;
+
+            panel.add(new JLabel("商品名称:"), gbc);
+            gbc.gridx = 1;
+            JLabel nameField = new JLabel(product.getP_name());
+            panel.add(nameField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            panel.add(new JLabel("商品描述:"), gbc);
+            gbc.gridx = 1;
+            JLabel descField = new JLabel(product.getP_desc());
+            panel.add(descField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            panel.add(new JLabel("商品类别:"), gbc);
+            gbc.gridx = 1;
+            JLabel classField = new JLabel(product.getP_class());
+            panel.add(classField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            panel.add(new JLabel("商品价格:"), gbc);
+            gbc.gridx = 1;
+            JLabel priceField = new JLabel(product.getP_price() + "元");
+            panel.add(priceField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            panel.add(new JLabel("商品状态:"), gbc);
+            gbc.gridx = 1;
+
+            // 创建商品状态
+            JLabel status = new JLabel();
+
+            // 根据商品状态设置默认选择
+            if (product.getP_status().equals("上架")) {
+                status.setText("上架");
+            } else {
+                status.setText("下架");
+            }
+            panel.add(status, gbc);
+            gbc.gridx = 0;
+            gbc.gridy++;
+            panel.add(new JLabel("商品图片:"), gbc);
+            gbc.gridx = 1;
+            // 在createProductPanel方法中添加图片标签
+            JLabel imageLabel = createImageLabel(product);
+            panel.add(imageLabel, gbc);
+
+            getContentPane().add(panel, BorderLayout.CENTER);
+        }
+    }
+
     private void initComponents() {
         //主界面的创建
         JPanel mainPanel = new JPanel();
@@ -38,7 +283,7 @@ public class MerchantInterFrm extends JFrame {
         mainPanel.setLayout(cardLayout);
         //第一个界面------------------------------------------------
         card1 = new JPanel();
-        card1.setLayout(new BoxLayout(card1, BoxLayout.Y_AXIS)); // 使用垂直 BoxLayout 布局
+        card1.setLayout(new GridLayout(0, 2));
         JScrollPane scrollPane = new JScrollPane(card1);// 创建一个 JScrollPane 来包装 card1 面板
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();// 获取垂直滚动条
         verticalScrollBar.setUnitIncrement(20);// 设置单次滚动单位的大小为 20 像素
@@ -87,14 +332,29 @@ public class MerchantInterFrm extends JFrame {
         contentPane.setLayout(new BorderLayout());
 
         // 按钮------------------------------------------------
+        // 创建按钮
         searchButton = new JButton("搜索");
+        upproject = new JButton("商品管理");
+        downproject = new JButton("暂定");
+        evaluate = new JButton("评价");
+        myButton = new JButton("我的");
+
+        // 设置按钮的高度（例如，将高度设置为 50 像素）
+        int buttonHeight = 45;
+        searchButton.setPreferredSize(new Dimension(searchButton.getPreferredSize().width, buttonHeight));
+        upproject.setPreferredSize(new Dimension(upproject.getPreferredSize().width, buttonHeight));
+        downproject.setPreferredSize(new Dimension(downproject.getPreferredSize().width, buttonHeight));
+        evaluate.setPreferredSize(new Dimension(evaluate.getPreferredSize().width, buttonHeight));
+        myButton.setPreferredSize(new Dimension(myButton.getPreferredSize().width, buttonHeight));
+
+        //设置动作
         searchButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card5");
             }
         });
-        upproject = new JButton("商品管理");
+
         upproject.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -102,7 +362,6 @@ public class MerchantInterFrm extends JFrame {
             }
         });
 
-        downproject = new JButton("暂定");
         downproject.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -110,7 +369,6 @@ public class MerchantInterFrm extends JFrame {
             }
         });
 
-        evaluate = new JButton("评价");
         evaluate.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -118,7 +376,6 @@ public class MerchantInterFrm extends JFrame {
             }
         });
 
-        myButton = new JButton("我的");
         myButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -143,65 +400,88 @@ public class MerchantInterFrm extends JFrame {
 
     private JPanel createProductPanel(Product product) {
         JPanel productPanel = new JPanel();
-
         productPanel.setLayout(new BorderLayout());
 
-        // 显示图片
+        // 创建商品图片标签并添加到productPanel的西边
+        JLabel imageLabel = createImageLabel(product);
+        productPanel.add(imageLabel, BorderLayout.WEST);
+
+        // 创建商品信息面板
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new GridLayout(0, 1)); // 一个商品信息一行
+
+        // 为商品信息面板添加线框
+        infoPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+
+        // 添加商品名称
+        JLabel nameLabel = new JLabel("商品名称: " + product.getP_name());
+        infoPanel.add(nameLabel);
+
+        // 添加商品价格
+        JLabel priceLabel = new JLabel("商品价格: " + product.getP_price() + "元");
+        infoPanel.add(priceLabel);
+
+        // 添加商品状态
+        JLabel statusLabel = new JLabel("商品状态: " + product.getP_status());
+
+        // 根据商品状态设置文本颜色
+        if ("上架".equals(product.getP_status())) {
+            statusLabel.setForeground(Color.GREEN);
+        } else if ("下架".equals(product.getP_status())) {
+            statusLabel.setForeground(Color.RED);
+        }
+
+        infoPanel.add(statusLabel);
+
+        // 添加商品按钮面板
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+
+        // 创建“修改”按钮并添加到按钮面板
+        JButton alertButton = new JButton("修改");
+        alertButton.addActionListener(e -> {
+            ProductUpdateDialog updateDialog = new ProductUpdateDialog(product);
+            updateDialog.setVisible(true);
+        });
+        buttonPanel.add(alertButton);
+
+        // 创建“详情”按钮并添加到按钮面板
+        JButton detailsButton = new JButton("详情");
+        detailsButton.addActionListener(e -> {
+            ProductDetailsDialog detailsDialog = new ProductDetailsDialog(product);
+            detailsDialog.setVisible(true);
+        });
+        buttonPanel.add(detailsButton);
+
+        // 将商品信息面板和按钮面板添加到productPanel的中部
+        productPanel.add(infoPanel, BorderLayout.CENTER);
+        productPanel.add(buttonPanel, BorderLayout.EAST);
+
+        return productPanel;
+    }
+
+
+
+
+
+    private JLabel createImageLabel(Product product) { // 创建包含商品图片的JLabel
         String relativeImagePath = product.getP_img();
         ClassLoader classLoader = getClass().getClassLoader();
         URL imageURL = classLoader.getResource(relativeImagePath);
+
+        // 创建图片标签
+        JLabel imageLabel;
+
         if (imageURL != null) {
             ImageIcon originalIcon = new ImageIcon(imageURL);
             // 调整图片大小
             Image scaledImage = originalIcon.getImage().getScaledInstance(150, 120, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
-            JLabel imageLabel = new JLabel(scaledIcon);
-
-            // 添加图片标签到productPanel
-            productPanel.add(imageLabel, BorderLayout.WEST);
+            imageLabel = new JLabel(scaledIcon);
         } else {
-            productPanel.add(new JLabel("--------暂时没有图片--------"), BorderLayout.WEST);
+            imageLabel = new JLabel("----------图片不能显示---------");
         }
-
-        // 创建商品信息面板
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new BorderLayout());
-
-        // 添加商品相关信息，例如商品名称、描述等
-        // 创建商品名称标签
-        JLabel nameLabel = new JLabel("商品名称: " + product.getP_name());
-
-        // 创建商品说明文本区域（自动换行）
-        JTextArea descTextArea = new JTextArea("商品价格: " + product.getP_price());
-        descTextArea.setLineWrap(true); // 自动换行
-        descTextArea.setWrapStyleWord(true); // 按单词换行
-        descTextArea.setEditable(false); // 文本区域不可编辑
-
-        // 将商品名称标签和说明文本区域添加到infoPanel
-        infoPanel.add(nameLabel, BorderLayout.NORTH);
-        infoPanel.add(new JScrollPane(descTextArea), BorderLayout.CENTER);
-
-        // 将infoPanel添加到productPanel
-        productPanel.add(infoPanel, BorderLayout.CENTER);
-
-        // 创建按钮面板
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-
-        // 创建上架和下架按钮
-        JButton upButton = new JButton("上架");
-        JButton downButton = new JButton("下架");
-        JButton detailsButton = new JButton("详情");
-
-        // 将按钮添加到按钮面板
-        buttonPanel.add(upButton);
-        buttonPanel.add(downButton);
-        buttonPanel.add(detailsButton);
-
-        // 将按钮面板添加到productPanel
-        productPanel.add(buttonPanel, BorderLayout.EAST);
-
-        return productPanel;
+        return imageLabel;
     }
 
 
