@@ -167,7 +167,6 @@ public class UserFrm extends JFrame {
         contentPane.setLayout(new BorderLayout());
         JPanel card2 = new JPanel();
         card2.add(new JLabel("这是第二个界面"));
-        card2.setBackground(Color.GREEN);
 
 
 
@@ -322,22 +321,22 @@ public class UserFrm extends JFrame {
             }
         });
 
-//// 创建一个按钮，实现查看订单的功能
-//        JButton viewOrderButton = new JButton("查看订单");
-//        viewOrderButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
+// 创建一个按钮，实现查看订单的功能
+        JButton viewOrderButton = new JButton("查看订单");
+        viewOrderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 //                // 跳转到一个新的界面，显示用户的订单信息
 //                OrderFrm orderFrm = new OrderFrm(u_id); // 创建一个OrderFrm对象，传入用户id作为参数
 //                orderFrm.setVisible(true); // 显示订单界面
-//            }
-//        });
+            }
+        });
 
 // 将各个组件添加到卡片中，使用不同的方位
         card4.add(avatarLabel, BorderLayout.NORTH);
         card4.add(nameLabel, BorderLayout.CENTER);
         card4.add(changePasswordButton, BorderLayout.WEST);
-//        card4.add(viewOrderButton, BorderLayout.EAST);
+        card4.add(viewOrderButton, BorderLayout.EAST);
 
 // 将卡片添加到主面板中，使用"card4"作为约束字符串
         mainPanel.add(card4, "card4");
