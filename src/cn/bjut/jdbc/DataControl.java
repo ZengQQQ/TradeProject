@@ -163,16 +163,16 @@ public class DataControl {
 
 
     //在商家页面里修改商品信息
-    public boolean updateProduct(int m_id, String newName, String newdesc, String newclass, double newPrice, String newsta, String newimg) {
+    public boolean updateProduct(int p_id, String newName, String newdesc, String newclass, double newPrice, String newsta, String newimg) {
         // 创建连接
         Connection con = null;
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         DataBase dataBase = new DataBase();
         try {
             // 建立数据库连接
             con = dataBase.OpenDB();
             // 创建SQL更新语句
-            String sql = "UPDATE product SET p_name = ?, p_desc = ?, p_class = ?, p_price = ?, p_status = ?, p_img = ? WHERE m_id = ?";
+            String sql = "UPDATE product SET p_name = ?, p_desc = ?, p_class = ?, p_price = ?, p_status = ?, p_img = ? WHERE p_id = ?";
             // 创建 PreparedStatement 对象
             preparedStatement = con.prepareStatement(sql);
             // 设置参数
@@ -182,7 +182,7 @@ public class DataControl {
             preparedStatement.setDouble(4, newPrice);
             preparedStatement.setString(5, newsta);
             preparedStatement.setString(6, newimg);
-            preparedStatement.setInt(7, m_id);
+            preparedStatement.setInt(7, p_id);
 
             // 执行更新
             int rowsAffected = preparedStatement.executeUpdate();
