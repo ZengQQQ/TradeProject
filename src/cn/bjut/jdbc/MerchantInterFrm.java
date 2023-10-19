@@ -10,7 +10,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MerchantInterFrm extends JFrame {
     private JButton searchButton;
@@ -55,42 +57,42 @@ public class MerchantInterFrm extends JFrame {
         }
 
         private void initComponents() {
+
+            int textFieldColumns = 50;
             setTitle("修改商品信息");
             setSize(900, 600);
             setLocationRelativeTo(null); // 居中显示
-
             JPanel panel = new JPanel(new GridBagLayout());
 
             gbc.insets = new Insets(5, 5, 5, 5);
-
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.anchor = GridBagConstraints.WEST;
 
             panel.add(new JLabel("商品名称:"), gbc);
             gbc.gridx = 1;
-            JTextField nameField = new JTextField(product.getP_name());
+            JTextField nameField = new JTextField(product.getP_name(),textFieldColumns);
             panel.add(nameField, gbc);
 
             gbc.gridx = 0;
             gbc.gridy++;
             panel.add(new JLabel("商品描述:"), gbc);
             gbc.gridx = 1;
-            JTextField descField = new JTextField(product.getP_desc());
+            JTextField descField = new JTextField(product.getP_desc(),textFieldColumns);
             panel.add(descField, gbc);
 
             gbc.gridx = 0;
             gbc.gridy++;
             panel.add(new JLabel("商品类别:"), gbc);
             gbc.gridx = 1;
-            JTextField classField = new JTextField(product.getP_class());
+            JTextField classField = new JTextField(product.getP_class(),textFieldColumns);
             panel.add(classField, gbc);
 
             gbc.gridx = 0;
             gbc.gridy++;
             panel.add(new JLabel("商品价格（元）:"), gbc);
             gbc.gridx = 1;
-            JTextField priceField = new JTextField(String.valueOf(product.getP_price()));
+            JTextField priceField = new JTextField(String.valueOf(product.getP_price()),textFieldColumns);
             panel.add(priceField, gbc);
 
             gbc.gridx = 0;
@@ -168,7 +170,7 @@ public class MerchantInterFrm extends JFrame {
                 );
                 if (success) {
                     JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改成功，请等待一会", "提示", JOptionPane.INFORMATION_MESSAGE);
-                    refreshCard1();
+                    refreshCard1Product(new Product(product.getP_id(), newName, newdesc, newclass, newPrice, newStatus, newImgName));
                     dispose(); // 关闭窗口
                 } else {
                     JOptionPane.showMessageDialog(ProductUpdateDialog.this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
@@ -220,7 +222,6 @@ public class MerchantInterFrm extends JFrame {
             try {
                 Path source = sourceFile.toPath();
                 Path destination = destinationFile.toPath();
-
                 // 使用Files.copy方法复制文件
                 Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
                 System.out.println("文件复制成功");
@@ -424,6 +425,9 @@ public class MerchantInterFrm extends JFrame {
         JPanel productPanel = new JPanel();
         productPanel.setLayout(new BorderLayout());
 
+        // 设置商品对象为面板的客户属性
+        productPanel.putClientProperty("product", product);
+
         // 创建商品图片标签并添加到productPanel的西边
         JLabel imageLabel = createImageLabel(product, 350, 250);
         productPanel.add(imageLabel, BorderLayout.WEST);
@@ -544,7 +548,7 @@ public class MerchantInterFrm extends JFrame {
 
     }
 
-    private void refreshCard1() {
+    private void refreshCard1All() {
         card1.removeAll();
         try {
             DataControl dataControl = new DataControl();
@@ -561,6 +565,32 @@ public class MerchantInterFrm extends JFrame {
         }
     }
 
+    //刷新修改后的商品信息
+    private void refreshCard1Product(Product updatedProduct) {
+        // 查找要更新的商品的位置
+        int index = -1;
+        Component[] components = card1.getComponents();
+        for (int i = 0; i < components.length; i++) {
+            if (components[i] instanceof JPanel) {
+                JPanel productPanel = (JPanel) components[i];
+                Product product = (Product) productPanel.getClientProperty("product");
+                if (product != null && product.getP_id() == updatedProduct.getP_id()) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+        // 如果找到了要更新的商品，将其删除，然后重新插入原来的位置
+        if (index >= 0) {
+            card1.remove(index);
+            JPanel productPanel = createProductPanel(updatedProduct);
+            productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card1.add(productPanel, index);
+            card1.revalidate();
+            card1.repaint();
+        }
+    }
+
     //创建菜单
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
@@ -570,7 +600,7 @@ public class MerchantInterFrm extends JFrame {
         refreshButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                refreshCard1();
+                refreshCard1All();
             }
         });
         searchButton.addMouseListener(new MouseAdapter() {
@@ -579,13 +609,11 @@ public class MerchantInterFrm extends JFrame {
                 cardLayout.show(mainPanel, "card5");
             }
         });
-
         menu.add(refreshButton);
         menu.add(searchButton);
         menuBar.add(menu);
         return menuBar;
     }
-
 
     public static void main(String[] args) {
         // 将Swing应用程序放在Event Dispatch Thread (EDT)中运行
