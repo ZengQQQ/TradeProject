@@ -2,6 +2,7 @@ package cn.bjut.jdbc;
 
 public class Product {
     private int p_id;
+    private int m_id;
     private String p_name;
     private String p_desc;
     private String p_class;
@@ -14,6 +15,16 @@ public class Product {
 
     public Product(int pId, String newName, String newdesc, String newclass, double newPrice, String newStatus, String newImgName) {
         this.p_id = pId;
+        this.p_name = newName;
+        this.p_desc = newdesc;
+        this.p_class =newclass;
+        this.p_price = String.valueOf(newPrice);
+        this.p_status = newStatus;
+        this.p_img = newImgName;
+    }
+
+    public Product(String newName, String newdesc, String newclass, double newPrice, String newStatus, String newImgName,int m_id) {
+        this.m_id=m_id;
         this.p_name = newName;
         this.p_desc = newdesc;
         this.p_class =newclass;
