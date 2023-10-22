@@ -243,12 +243,26 @@ public class DataControl {
         return false;
     }
 
+    //删除商品
+    public boolean  deleteProduct(int productId) throws SQLException {
+
+//        String sql = "select u_psw from user " + " where  u_acc" + " = ?";
+//        Connection con = DataBase.OpenDB();
+//        PreparedStatement stmt = con.prepareStatement(sql);
+
+        return  true;
+    }
+
     public static void main(String[] args) {
         DataControl dataControl = new DataControl();
         dataControl.insert_cart(1, 1, 1);
     }
 
 
+    public boolean addProduct( int m_is,String productName, String productDesc, String productClass, double productPrice,String productstste,String productimg) {
+
+        return true;
+    }
 }
 
 
