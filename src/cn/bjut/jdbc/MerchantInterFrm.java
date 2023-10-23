@@ -14,10 +14,10 @@ import java.util.List;
 
 public class MerchantInterFrm extends JFrame {
     private JButton searchButton;
-    private CardLayout cardLayout = new CardLayout();
-    private JPanel mainPanel = new JPanel();
+    private final CardLayout cardLayout = new CardLayout();
+    private final JPanel mainPanel = new JPanel();
     private JPanel card1;
-    private int m_id;
+    private final int m_id;
     public DataControl dataControl = new DataControl();
 
     public MerchantInterFrm(int mid) {
@@ -29,11 +29,6 @@ public class MerchantInterFrm extends JFrame {
         return m_id;
     }
 
-    public void setM_id(int m_id) {
-        this.m_id = m_id;
-    }
-
-
     public class ProductofJDialog extends JDialog {
         public Product product;
         public String newImgName; // 添加字段用于存储文件名
@@ -44,10 +39,6 @@ public class MerchantInterFrm extends JFrame {
         public JRadioButton offSaleRadioButton;
         public GridBagConstraints gbc = new GridBagConstraints();
         public JPanel panel = new JPanel(new GridBagLayout());
-
-        public ProductofJDialog() {
-            initComponents();
-        }
 
         public ProductofJDialog(Product product) {
             this.product = product;
@@ -385,6 +376,7 @@ public class MerchantInterFrm extends JFrame {
 
     //主界面的创建
     private void initComponents() {
+        setTitle("商家管理界面");
         mainPanel.setLayout(cardLayout);
         JMenuBar menuBar = createMenuBar();
         setJMenuBar(menuBar);
