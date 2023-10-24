@@ -9,8 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 public class ProductofDialog extends JDialog{
-    private DataControl dataControl;
-
+    public DataControl dataControl;
     public Product product;
     public String newImgName; // 添加字段用于存储文件名
 
@@ -21,7 +20,8 @@ public class ProductofDialog extends JDialog{
     public GridBagConstraints gbc = new GridBagConstraints();
     public JPanel panel = new JPanel(new GridBagLayout());
 
-    public ProductofDialog(Product product) {
+    public ProductofDialog(DataControl dataControl, Product product) {
+        this.dataControl = dataControl;
         this.product = product;
         this.newImgName = product.getP_img();
         initComponents();
@@ -132,42 +132,5 @@ public class ProductofDialog extends JDialog{
         }
         return false;
     }
-
-    // 创建包含商品图片的JLabel
-    public JLabel createImageLabel(Product product, int width, int height) {
-        // 获取当前项目的绝对路径
-        String projectPath = System.getProperty("user.dir");
-
-        // 构建图片路径
-        ImageIcon originalIcon = getImageIcon(product, projectPath);
-        // 获取图片对象
-        Image originalImage = originalIcon.getImage();
-
-        // 缩放图片（如果需要）可以改图片的大小
-        Image scaledImage = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-
-        // 创建一个新的 ImageIcon
-        ImageIcon scaledIcon = new ImageIcon(scaledImage);
-
-        // 创建一个 JLabel 并将缩放后的 ImageIcon 设置为其图标
-        return new JLabel(scaledIcon);
-    }
-
-    private static ImageIcon getImageIcon(Product product, String projectPath) {
-        String relativeImagePath = product.getP_img();
-        String absoluteImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + relativeImagePath;
-        // 创建 ImageIcon
-        ImageIcon originalIcon;
-        File imageFile = new File(absoluteImagePath);
-        if (imageFile.exists()) {
-            originalIcon = new ImageIcon(absoluteImagePath);
-        } else {
-            // 图片路径不存在，使用默认图片
-            String defaultImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg";
-            originalIcon = new ImageIcon(defaultImagePath);
-        }
-        return originalIcon;
-    }
-
 }
 
