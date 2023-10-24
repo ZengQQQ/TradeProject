@@ -1,5 +1,4 @@
 package cn.bjut.jdbc;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -169,7 +168,7 @@ public class DataControl {
         }
         return products;
     }
-
+    
 
     public void insert_cart(int u_id, int p_id, int quantity) {//将商品表信息插入到购物车表中
         DataBase dataBase = new DataBase();
@@ -253,7 +252,7 @@ public class DataControl {
         return  true;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         DataControl dataControl = new DataControl();
         dataControl.insert_cart(1, 1, 1);
     }
@@ -263,6 +262,138 @@ public class DataControl {
 
         return true;
     }
+
+
+
+//查找所有用户的信息，不用参数
+    public List<User> selectUserTable() throws SQLException {
+        String sql= "select *  from  user";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+
+        ResultSet rs = stmt.executeQuery();
+        List<User> userList = new ArrayList<User>();
+        while (rs.next()) {
+            String id = Integer.toString(rs.getInt("u_id"));
+            String acc = rs.getString("u_acc");
+            String psw = rs.getString("u_psw");
+            String name = rs.getString("u_name");
+            String sex = rs.getString("u_sex");
+            String tele = rs.getString("u_tele");
+
+            User user = new User(id, acc, psw, name, sex, tele);
+            userList.add(user);
+        }
+        con.close();
+        return userList;
+    }
+
+    public List<User> selectUserTable(String column_name,String new_value) throws SQLException {
+        String sql = "select * from user where " + column_name + " = ?";
+        Connection con = DataBase.OpenDB();
+
+        if(column_name.equals("u_name")){
+            sql = "select * from user where " + column_name + " like ?";
+            new_value = "%" + new_value + "%";
+        }
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, new_value);
+        ResultSet rs = stmt.executeQuery();
+        List<User> userList = new ArrayList<User>();
+        while(rs.next()){
+            String id = Integer.toString(rs.getInt("u_id"));
+            String acc = rs.getString("u_acc");
+            String psw = rs.getString("u_psw");
+            String name = rs.getString("u_name");
+            String sex = rs.getString("u_sex");
+            String tele = rs.getString("u_tele");
+
+            User user = new User(id,acc,psw,name,sex,tele);
+            userList.add(user);
+        }
+        con.close();
+        return userList;
+    }
+
+    //修改Usertable中的某一项的内容，根据u_id 来修改，输入修改的列名与修改值,成功返回相应的字符串
+    public String updateUserTable(int u_id, String column_name, String new_value) throws SQLException {
+        String sql = "UPDATE user SET " + column_name + " = ? WHERE u_id = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+
+        stmt.setString(1, new_value);
+        stmt.setInt(2, u_id);
+        int result = stmt.executeUpdate();
+        con.close();
+        if(result>0){
+            return "修改成功";
+        }
+        else{
+            return "修改失败";
+        }
+    }
+
+    //使用u_id来修改usertable，全部更新,
+    public String updateUserTable(int u_id, String new_u_acc, String new_u_psw, String new_u_name, String new_u_sex, String new_u_tele) throws SQLException {
+        String sql = "UPDATE user SET u_acc = ?, u_psw = ?, u_name = ?, u_sex = ?, u_tele = ? WHERE u_id = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+
+        stmt.setString(1, new_u_acc);
+        stmt.setString(2, new_u_psw);
+        stmt.setString(3, new_u_name);
+        stmt.setString(4, new_u_sex);
+        stmt.setString(5, new_u_tele);
+        stmt.setInt(6, u_id);
+
+        int result = stmt.executeUpdate();
+        con.close();
+
+        if(result > 0){
+            return "修改成功";
+        } else {
+            return "修改失败";
+        }
+    }
+
+    //根据u_id删除用户
+public String deleteUserTable(int u_id) throws SQLException {
+        String sql = "DELETE FROM user WHERE u_id = ?";
+        Connection con = DataBase.OpenDB();
+
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, u_id);
+        int result = stmt.executeUpdate();
+
+        con.close();
+    if(result > 0){
+        return "删除成功";
+    } else {
+        return "删除失败";
+    }
+}
+
+//插入一条新的用户信息，输入用户的所有信息，成功返回相应的字符串
+public String insertUserTable(String new_u_acc, String new_u_psw, String new_u_name, String new_u_sex, String new_u_tele) throws SQLException {
+    String sql = "INSERT INTO user (u_id, u_acc, u_psw, u_name, u_sex,  u_tele) VALUES (null, ?, ?, ?, ?, ?)";
+    Connection con = DataBase.OpenDB();
+    PreparedStatement stmt = con.prepareStatement(sql);
+    stmt.setString(1, new_u_acc);
+    stmt.setString(2, new_u_psw);
+    stmt.setString(3, new_u_name);
+    stmt.setString(4,new_u_sex);
+    stmt.setString(5, new_u_tele);
+
+    int result = stmt.executeUpdate();
+    con.close();
+    if(result > 0){
+        return "添加成功";
+    } else {
+        return "添加失败";
+    }
+
+    }
+
 }
 
 

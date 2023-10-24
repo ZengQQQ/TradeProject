@@ -23,11 +23,11 @@ public class UserFrm extends JFrame {
 
     private HashMap<Integer, JPanel> productMap = new HashMap<>();
 
-    public UserFrm(int u_id) {
+    public UserFrm(int u_id) throws SQLException {
         initComponents(u_id);
     }
 
-    private void initComponents(int u_id) {
+    private void initComponents(int u_id) throws SQLException {
         // 设置主面板为卡片布局
         mainPanel.setLayout(cardLayout);
 
@@ -122,7 +122,11 @@ public class UserFrm extends JFrame {
                     JPanel productPanel = productMap.get(finalId);
                     if (productPanel == null) {
                         // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
-                        productPanel = createProductPanel(finalId, finalName, finalImagePath, finalPrice,finaldesc);
+                        try {
+                            productPanel = createProductPanel(finalId, finalName, finalImagePath, finalPrice,finaldesc);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         mainPanel.add(productPanel, "product" + finalId);
                         productMap.put(finalId, productPanel);
                     }
@@ -200,7 +204,11 @@ public class UserFrm extends JFrame {
                 DataBase dataBase=new DataBase();
                 dataBase.OpenDB();
                 // 获取当前用户的id
-                DataControl dataControl=new DataControl();
+                try {
+                    DataControl dataControl=new DataControl();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
 
                 // 查询数据库中的cart表格中的用户购物车信息
                 Statement stmt = null;
@@ -453,7 +461,7 @@ public class UserFrm extends JFrame {
     }
 
 
-    private JPanel createProductPanel(int id, String name, String imagePath, double price,String desc) {
+    private JPanel createProductPanel(int id, String name, String imagePath, double price,String desc) throws SQLException {
         // 创建一个新的卡片对象
         JPanel productPanel = new JPanel();
         productPanel.setLayout(new BorderLayout());

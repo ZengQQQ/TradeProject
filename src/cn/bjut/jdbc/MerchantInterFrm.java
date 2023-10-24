@@ -18,9 +18,10 @@ public class MerchantInterFrm extends JFrame {
     private final JPanel mainPanel = new JPanel();
     private JPanel card1;
     private final int m_id;
-    public DataControl dataControl = new DataControl();
+    public DataControl dataControl;
 
-    public MerchantInterFrm(int mid) {
+    public MerchantInterFrm(int mid) throws SQLException {
+        dataControl = new DataControl();
         this.m_id = mid;
         initComponents();
     }
@@ -715,14 +716,14 @@ public class MerchantInterFrm extends JFrame {
         return menuBar;
     }
 
-    public static void main(String[] args) {
-        // 将Swing应用程序放在Event Dispatch Thread (EDT)中运行
-        SwingUtilities.invokeLater(() -> {
-            MerchantInterFrm frame = new MerchantInterFrm(1);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1200, 1000);
-            frame.setVisible(true);
-        });
-    }
+//    public static void main(String[] args) {
+//        // 将Swing应用程序放在Event Dispatch Thread (EDT)中运行
+//        SwingUtilities.invokeLater(() -> {
+//            MerchantInterFrm frame = new MerchantInterFrm(1);
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.setSize(1200, 1000);
+//            frame.setVisible(true);
+//        });
+//    }
 }
 
