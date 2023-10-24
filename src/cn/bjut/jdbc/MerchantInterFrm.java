@@ -1,10 +1,17 @@
 package cn.bjut.jdbc;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -14,7 +21,7 @@ public class MerchantInterFrm extends JFrame {
     private final JPanel mainPanel = new JPanel();
     private JPanel card1;
     private final int m_id;
-    private DataControl dataControl = new DataControl();
+    public DataControl dataControl = new DataControl();
 
     public MerchantInterFrm(int mid) throws SQLException {
         this.m_id = mid;
@@ -256,7 +263,7 @@ public class MerchantInterFrm extends JFrame {
         // 创建“修改”按钮并添加到按钮面板
         JButton alertButton = new JButton("修改");
         alertButton.addActionListener(e -> {
-            ProductUpdateDialog updateDialog = new ProductUpdateDialog(dataControl,product,this);
+            ProductUpdateDialog updateDialog = new ProductUpdateDialog(product);
             updateDialog.setVisible(true);
         });
         buttonPanel.add(alertButton);
@@ -264,7 +271,7 @@ public class MerchantInterFrm extends JFrame {
         // 创建“详情”按钮并添加到按钮面板
         JButton detailsButton = new JButton("详情");
         detailsButton.addActionListener(e -> {
-            ProductDetailsDialog detailsDialog = new ProductDetailsDialog(dataControl,product,this);
+            ProductDetailsDialog detailsDialog = new ProductDetailsDialog(product);
             detailsDialog.setVisible(true);
         });
         buttonPanel.add(detailsButton);
@@ -333,7 +340,7 @@ public class MerchantInterFrm extends JFrame {
     }
 
     // 创建包含商品图片的JLabel
-    public JLabel createImageLabel(Product product, int width, int height) {
+    private JLabel createImageLabel(Product product, int width, int height) {
         // 获取当前项目的绝对路径
         String projectPath = System.getProperty("user.dir");
 
@@ -352,13 +359,12 @@ public class MerchantInterFrm extends JFrame {
         return new JLabel(scaledIcon);
     }
 
-    public static ImageIcon getImageIcon(Product product, String projectPath) {
+    private static ImageIcon getImageIcon(Product product, String projectPath) {
         String relativeImagePath = product.getP_img();
         String absoluteImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + relativeImagePath;
         // 创建 ImageIcon
         ImageIcon originalIcon;
         File imageFile = new File(absoluteImagePath);
-        System.out.println(imageFile);
         if (imageFile.exists()) {
             originalIcon = new ImageIcon(absoluteImagePath);
         } else {
@@ -372,6 +378,7 @@ public class MerchantInterFrm extends JFrame {
 
     private void createproductcard() {
         try {
+            DataControl dataControl = new DataControl();
             List<Product> products = dataControl.MerchantProductQuery(getM_id());
             for (Product product : products) {
                 JPanel productPanel = createProductPanel(product);
@@ -383,7 +390,7 @@ public class MerchantInterFrm extends JFrame {
         }
 
     }
-    void refreshCard1All() {
+    private void refreshCard1All() {
         card1.removeAll();
         try {
             dataControl = new DataControl();
@@ -401,7 +408,7 @@ public class MerchantInterFrm extends JFrame {
     }
 
     //刷新修改后的商品信息
-     public void refreshCard1Product(Product updatedProduct) {
+    private void refreshCard1Product(Product updatedProduct) {
         // 查找要更新的商品的位置
         int index = -1;
         Component[] components = card1.getComponents();
@@ -450,7 +457,7 @@ public class MerchantInterFrm extends JFrame {
         });
 
         addProductButton.addActionListener(e -> {
-            ProductAddDialog detailsDialog = new ProductAddDialog(newproduct, dataControl, this,m_id);
+            ProductAddDialog detailsDialog = new ProductAddDialog(newproduct);
             detailsDialog.setVisible(true);
         });
         JPanel buttonPanel = new JPanel(new GridLayout(3, 0)); // Use GridLayout with 3 columns
