@@ -32,70 +32,6 @@ public class MerchantInterFrm extends JFrame {
         return m_id;
     }
 
-    public class MerchantInfoModifyDialog extends JDialog {
-        private  Merchant oldmerchant;
-        public MerchantInfoModifyDialog(Merchant merchant) {
-            this.oldmerchant =merchant;
-            initialize();
-        }
-        private void initialize() {
-            setTitle("修改您的信息");
-
-            // 创建文本字段，用于填入旧的商家信息
-            JTextField accountField = new JTextField(oldmerchant.getAcc(), 20);
-            JTextField nameField = new JTextField(oldmerchant.getM_name(), 20);
-            JTextField genderField = new JTextField(oldmerchant.getM_sex(), 20);
-            JTextField phoneField = new JTextField(oldmerchant.getM_tele(), 20);
-            // 创建 "保存" 按钮
-            JButton saveButton = new JButton("保存");
-            saveButton.addActionListener(e -> {
-                // 从文本字段中获取修改后的信息
-                String newAccount = accountField.getText();
-                String newName = nameField.getText();
-                String newGender = genderField.getText();
-                String newPhone = phoneField.getText();
-
-                // 验证性别（假设性别应为 "男" 或 "女"）
-                if (!newGender.equals("男") && !newGender.equals("女")) {
-                    JOptionPane.showMessageDialog(this, "性别必须是'男'或'女'", "错误", JOptionPane.ERROR_MESSAGE);
-                    return; // 不继续执行后续操作
-                }
-                // 验证电话号码（您可以使用正则表达式进行更复杂的验证）
-                if (!newPhone.matches("\\d{11}")) {
-                    JOptionPane.showMessageDialog(this, "电话号码必须为11位数字", "错误", JOptionPane.ERROR_MESSAGE);
-                    return; // 不继续执行后续操作
-                }
-
-                // 此时，性别和电话号码验证成功
-                // 您现在可以保存修改后的信息并显示成功消息
-                // 可以将信息保存到您的数据源
-                oldmerchant.setAcc(newAccount);
-                oldmerchant.setM_name(newName);
-                oldmerchant.setM_sex(newGender);
-                oldmerchant.setM_tele(newPhone);
-
-                JOptionPane.showMessageDialog(this, "信息修改成功", "成功", JOptionPane.INFORMATION_MESSAGE);
-                dispose();
-            });
-
-            // 添加组件到对话框的内容窗格
-            JPanel panel = new JPanel(new GridLayout(6, 2));
-            panel.add(new JLabel("账号名:"));
-            panel.add(accountField);
-            panel.add(new JLabel("姓名:"));
-            panel.add(nameField);
-            panel.add(new JLabel("性别:"));
-            panel.add(genderField);
-            panel.add(new JLabel("电话:"));
-            panel.add(phoneField);
-            panel.add(saveButton);
-
-            getContentPane().add(panel);
-            pack();
-            setLocationRelativeTo(null);  // 居中显示对话框
-        }
-
-    }
     //主界面的创建
     private void initComponents() throws SQLException {
         setTitle("商家管理界面");
@@ -263,7 +199,7 @@ public class MerchantInterFrm extends JFrame {
         // 创建“修改”按钮并添加到按钮面板
         JButton alertButton = new JButton("修改");
         alertButton.addActionListener(e -> {
-            ProductUpdateDialog updateDialog = new ProductUpdateDialog(product);
+            ProductUpdateDialog updateDialog = new ProductUpdateDialog(dataControl,product,this);
             updateDialog.setVisible(true);
         });
         buttonPanel.add(alertButton);
@@ -271,7 +207,7 @@ public class MerchantInterFrm extends JFrame {
         // 创建“详情”按钮并添加到按钮面板
         JButton detailsButton = new JButton("详情");
         detailsButton.addActionListener(e -> {
-            ProductDetailsDialog detailsDialog = new ProductDetailsDialog(product);
+            ProductDetailsDialog detailsDialog = new ProductDetailsDialog(dataControl,product,this);
             detailsDialog.setVisible(true);
         });
         buttonPanel.add(detailsButton);
@@ -340,7 +276,7 @@ public class MerchantInterFrm extends JFrame {
     }
 
     // 创建包含商品图片的JLabel
-    private JLabel createImageLabel(Product product, int width, int height) {
+    public JLabel createImageLabel(Product product, int width, int height) {
         // 获取当前项目的绝对路径
         String projectPath = System.getProperty("user.dir");
 
@@ -390,7 +326,7 @@ public class MerchantInterFrm extends JFrame {
         }
 
     }
-    private void refreshCard1All() {
+    public void refreshCard1All() {
         card1.removeAll();
         try {
             dataControl = new DataControl();
@@ -408,7 +344,7 @@ public class MerchantInterFrm extends JFrame {
     }
 
     //刷新修改后的商品信息
-    private void refreshCard1Product(Product updatedProduct) {
+    public void refreshCard1Product(Product updatedProduct) {
         // 查找要更新的商品的位置
         int index = -1;
         Component[] components = card1.getComponents();
@@ -457,7 +393,7 @@ public class MerchantInterFrm extends JFrame {
         });
 
         addProductButton.addActionListener(e -> {
-            ProductAddDialog detailsDialog = new ProductAddDialog(newproduct);
+            ProductAddDialog detailsDialog = new ProductAddDialog(dataControl,newproduct,this);
             detailsDialog.setVisible(true);
         });
         JPanel buttonPanel = new JPanel(new GridLayout(3, 0)); // Use GridLayout with 3 columns
