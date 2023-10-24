@@ -8,9 +8,9 @@ public class ProductAddDialog extends ProductofDialog {
     private int m_id;
     MerchantInterFrm mer;
 
-    public ProductAddDialog(Product product, DataControl dataControladd, MerchantInterFrm mer,int m_id) {
+    public ProductAddDialog(DataControl dataControladd,Product product , MerchantInterFrm mer) {
         super(dataControladd, product);
-        this.m_id = m_id;
+        this.m_id =mer.getM_id();
         this.mer = mer;
         initComponents();
     }
