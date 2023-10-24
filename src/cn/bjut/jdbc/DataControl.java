@@ -1,4 +1,5 @@
 package cn.bjut.jdbc;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +67,7 @@ public class DataControl {
     }
 
     public int getUserid(String account) throws SQLException {
-        int id=0;
+        int id = 0;
         String sql = "select u_id from user " + " where  u_acc" + " = ?";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
@@ -84,8 +85,9 @@ public class DataControl {
         return id;
 
     }
+
     public String getUserName(int u_id) throws SQLException {
-        String name=null;
+        String name = null;
         String sql = "select u_name from user " + " where  u_id" + " = ?";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
@@ -141,13 +143,13 @@ public class DataControl {
         return answer;
 
     }
-    //将商品表信息插入到购物车表中
 
 
-    public List<Product> MerchantProductQuery(int m_id) throws SQLException {//获得指定商家的所有商品
+    //获得指定商家的所有商品
+    public List<Product> MerchantProductQuery(int m_id) throws SQLException {
         List<Product> products = new ArrayList<>();
         Connection con = DataBase.OpenDB();
-        String sql = "SELECT p_id, p_name, p_desc, p_class, p_price, p_status, p_img " +
+        String sql = "SELECT p_id, p_name, p_desc, p_class, p_price, p_status,p_quantity, p_img " +
                 "FROM product " + "WHERE m_id = ?";
         PreparedStatement stmt = null;
         if (con != null) {
@@ -169,15 +171,135 @@ public class DataControl {
                 product.setP_class(rs.getString("p_class"));
                 product.setP_price(rs.getString("p_price"));
                 product.setP_status(rs.getString("p_status"));
+                product.setP_quantity(rs.getInt("p_quantity"));
                 product.setP_img(rs.getString("p_img"));
                 products.add(product);
             }
         }
         return products;
     }
-    
 
-    public void insert_cart(int u_id, int p_id, int quantity) {//将商品表信息插入到购物车表中
+    //获得指定商家的所有信息
+    public Merchant MerchantQuery(int m_id) throws SQLException {
+        Merchant merchant = new Merchant();
+        Connection con = DataBase.OpenDB();
+        String sql = "SELECT  m_acc,m_psw, m_name, m_sex,m_tele " +
+                "FROM merchant " + "WHERE m_id = ?";
+        PreparedStatement stmt = null;
+        if (con != null) {
+            stmt = con.prepareStatement(sql);
+        }
+        if (stmt != null) {
+            stmt.setInt(1, m_id);
+        }
+        ResultSet rs = null;
+        if (stmt != null) {
+            rs = stmt.executeQuery();
+        }
+        if (rs != null) {
+            while (rs.next()) {
+                merchant.setAcc(rs.getString("m_acc"));
+                merchant.setPsw(rs.getString("m_psw"));
+                merchant.setM_name(rs.getString("m_name"));
+                merchant.setM_sex(rs.getString("m_sex"));
+                merchant.setM_tele(rs.getString("m_tele"));
+            }
+        }
+        return merchant;
+    }
+
+    //在商家页面里修改商品信息
+    public boolean updateProduct(int p_id, String newName, String newdesc, String newclass, double newPrice, String newsta, int newquantity, String newimg) {
+        // 创建连接
+        Connection con = null;
+        PreparedStatement preparedStatement;
+        DataBase dataBase = new DataBase();
+        try {
+            // 建立数据库连接
+            con = dataBase.OpenDB();
+            // 创建SQL更新语句
+            String sql = "UPDATE product SET p_name = ?, p_desc = ?, p_class = ?, p_price = ?, p_status = ?,p_quantity = ?, p_img = ? WHERE p_id = ?";
+            // 创建 PreparedStatement 对象
+            preparedStatement = con.prepareStatement(sql);
+            // 设置参数
+            preparedStatement.setString(1, newName);
+            preparedStatement.setString(2, newdesc);
+            preparedStatement.setString(3, newclass);
+            preparedStatement.setDouble(4, newPrice);
+            preparedStatement.setString(5, newsta);
+            preparedStatement.setInt(6, newquantity);
+            preparedStatement.setString(7, newimg);
+            preparedStatement.setInt(8, p_id);
+            // 执行更新
+            int rowsAffected = preparedStatement.executeUpdate();
+            // 如果更新成功，rowsAffected 应该为 1
+            return rowsAffected == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //删除商品
+    public boolean deleteProduct(int productId) throws SQLException {
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        boolean deleted = false;
+        try {
+            // 创建连接
+            DataBase dataBase = new DataBase();
+            con = dataBase.OpenDB();
+            // 创建SQL删除语句
+            String deleteQuery = "DELETE FROM product WHERE p_id = ?";
+            // 准备并执行SQL语句
+            preparedStatement = con.prepareStatement(deleteQuery);
+            preparedStatement.setInt(1, productId);
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                // 如果成功删除了行，则返回true
+                deleted = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return deleted;
+    }
+
+    //添加商品
+    public boolean addProduct(int m_id, String productName, String productDesc, String productClass, double productPrice, String productState, int productQuantity, String productImg) throws SQLException {
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        boolean added = false;
+        try {
+            // 创建连接
+            DataBase dataBase = new DataBase();
+            con = dataBase.OpenDB();
+            // 创建SQL插入语句
+            String insertQuery = "INSERT INTO product (m_id, p_name, p_desc, p_class, p_price, p_status, p_quantity, p_img) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            // 准备并执行SQL语句
+            preparedStatement = con.prepareStatement(insertQuery);
+            preparedStatement.setInt(1, m_id);
+            preparedStatement.setString(2, productName);
+            preparedStatement.setString(3, productDesc);
+            preparedStatement.setString(4, productClass);
+            preparedStatement.setDouble(5, productPrice);
+            preparedStatement.setString(6, productState);
+            preparedStatement.setInt(7, productQuantity);
+            preparedStatement.setString(8, productImg);
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                // 如果成功插入了行，则返回true
+                added = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return added;
+    }
+
+    //将商品表信息插入到购物车表中
+    public void insert_cart(int u_id, int p_id, int quantity) {
         DataBase dataBase = new DataBase();
         dataBase.OpenDB();
         // 创建一个LocalDateTime对象，表示当前日期和时间
@@ -208,73 +330,9 @@ public class DataControl {
     }
 
 
-    //在商家页面里修改商品信息
-    public boolean updateProduct(int p_id, String newName, String newdesc, String newclass, double newPrice, String newsta, String newimg) {
-        // 创建连接
-        Connection con = null;
-        PreparedStatement preparedStatement;
-        DataBase dataBase = new DataBase();
-        try {
-            // 建立数据库连接
-            con = dataBase.OpenDB();
-            // 创建SQL更新语句
-            String sql = "UPDATE product SET p_name = ?, p_desc = ?, p_class = ?, p_price = ?, p_status = ?, p_img = ? WHERE p_id = ?";
-            // 创建 PreparedStatement 对象
-            preparedStatement = con.prepareStatement(sql);
-            // 设置参数
-            preparedStatement.setString(1, newName);
-            preparedStatement.setString(2, newdesc);
-            preparedStatement.setString(3, newclass);
-            preparedStatement.setDouble(4, newPrice);
-            preparedStatement.setString(5, newsta);
-            preparedStatement.setString(6, newimg);
-            preparedStatement.setInt(7, p_id);
-
-            // 执行更新
-            int rowsAffected = preparedStatement.executeUpdate();
-            // 如果更新成功，rowsAffected 应该为 1
-            return rowsAffected == 1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            // 关闭连接
-            try {
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    //删除商品
-    public boolean  deleteProduct(int productId) throws SQLException {
-
-//        String sql = "select u_psw from user " + " where  u_acc" + " = ?";
-//        Connection con = DataBase.OpenDB();
-//        PreparedStatement stmt = con.prepareStatement(sql);
-
-        return  true;
-    }
-
-    public static void main(String[] args) throws SQLException {
-        DataControl dataControl = new DataControl();
-        dataControl.insert_cart(1, 1, 1);
-    }
-
-
-    public boolean addProduct( int m_is,String productName, String productDesc, String productClass, double productPrice,String productstste,String productimg) {
-
-        return true;
-    }
-
-
-
-//查找所有用户的信息，不用参数
+    //查找所有用户的信息，不用参数
     public List<User> selectUserTable() throws SQLException {
-        String sql= "select *  from  user";
+        String sql = "select *  from  user";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
 
@@ -295,11 +353,11 @@ public class DataControl {
         return userList;
     }
 
-    public List<User> selectUserTable(String column_name,String new_value) throws SQLException {
+    public List<User> selectUserTable(String column_name, String new_value) throws SQLException {
         String sql = "select * from user where " + column_name + " = ?";
         Connection con = DataBase.OpenDB();
 
-        if(column_name.equals("u_name")){
+        if (column_name.equals("u_name")) {
             sql = "select * from user where " + column_name + " like ?";
             new_value = "%" + new_value + "%";
         }
@@ -307,7 +365,7 @@ public class DataControl {
         stmt.setString(1, new_value);
         ResultSet rs = stmt.executeQuery();
         List<User> userList = new ArrayList<User>();
-        while(rs.next()){
+        while (rs.next()) {
             String id = Integer.toString(rs.getInt("u_id"));
             String acc = rs.getString("u_acc");
             String psw = rs.getString("u_psw");
@@ -315,7 +373,7 @@ public class DataControl {
             String sex = rs.getString("u_sex");
             String tele = rs.getString("u_tele");
 
-            User user = new User(id,acc,psw,name,sex,tele);
+            User user = new User(id, acc, psw, name, sex, tele);
             userList.add(user);
         }
         con.close();
@@ -332,10 +390,9 @@ public class DataControl {
         stmt.setInt(2, u_id);
         int result = stmt.executeUpdate();
         con.close();
-        if(result>0){
+        if (result > 0) {
             return "修改成功";
-        }
-        else{
+        } else {
             return "修改失败";
         }
     }
@@ -356,7 +413,7 @@ public class DataControl {
         int result = stmt.executeUpdate();
         con.close();
 
-        if(result > 0){
+        if (result > 0) {
             return "修改成功";
         } else {
             return "修改失败";
@@ -364,7 +421,7 @@ public class DataControl {
     }
 
     //根据u_id删除用户
-public String deleteUserTable(int u_id) throws SQLException {
+    public String deleteUserTable(int u_id) throws SQLException {
         String sql = "DELETE FROM user WHERE u_id = ?";
         Connection con = DataBase.OpenDB();
 
@@ -373,34 +430,38 @@ public String deleteUserTable(int u_id) throws SQLException {
         int result = stmt.executeUpdate();
 
         con.close();
-    if(result > 0){
-        return "删除成功";
-    } else {
-        return "删除失败";
-    }
-}
-
-//插入一条新的用户信息，输入用户的所有信息，成功返回相应的字符串
-public String insertUserTable(String new_u_acc, String new_u_psw, String new_u_name, String new_u_sex, String new_u_tele) throws SQLException {
-    String sql = "INSERT INTO user (u_id, u_acc, u_psw, u_name, u_sex,  u_tele) VALUES (null, ?, ?, ?, ?, ?)";
-    Connection con = DataBase.OpenDB();
-    PreparedStatement stmt = con.prepareStatement(sql);
-    stmt.setString(1, new_u_acc);
-    stmt.setString(2, new_u_psw);
-    stmt.setString(3, new_u_name);
-    stmt.setString(4,new_u_sex);
-    stmt.setString(5, new_u_tele);
-
-    int result = stmt.executeUpdate();
-    con.close();
-    if(result > 0){
-        return "添加成功";
-    } else {
-        return "添加失败";
+        if (result > 0) {
+            return "删除成功";
+        } else {
+            return "删除失败";
+        }
     }
 
+    //插入一条新的用户信息，输入用户的所有信息，成功返回相应的字符串
+    public String insertUserTable(String new_u_acc, String new_u_psw, String new_u_name, String new_u_sex, String new_u_tele) throws SQLException {
+        String sql = "INSERT INTO user (u_id, u_acc, u_psw, u_name, u_sex,  u_tele) VALUES (null, ?, ?, ?, ?, ?)";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, new_u_acc);
+        stmt.setString(2, new_u_psw);
+        stmt.setString(3, new_u_name);
+        stmt.setString(4, new_u_sex);
+        stmt.setString(5, new_u_tele);
+
+        int result = stmt.executeUpdate();
+        con.close();
+        if (result > 0) {
+            return "添加成功";
+        } else {
+            return "添加失败";
+        }
+
     }
 
+    public static void main(String[] args) throws SQLException {
+        DataControl dataControl = new DataControl();
+        dataControl.insert_cart(1, 1, 1);
+    }
 }
 
 
