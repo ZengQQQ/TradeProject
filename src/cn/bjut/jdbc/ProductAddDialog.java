@@ -5,10 +5,13 @@ import java.sql.SQLException;
 
 //添加商品界面
 public class ProductAddDialog extends ProductofDialog {
+    private int m_id;
+    MerchantInterFrm mer;
 
-    private DataControl dataControladd;
-    public ProductAddDialog(Product product) {
-        super(product);
+    public ProductAddDialog(Product product, DataControl dataControladd, MerchantInterFrm mer,int m_id) {
+        super(dataControladd, product);
+        this.m_id = m_id;
+        this.mer = mer;
         initComponents();
     }
 
@@ -46,7 +49,7 @@ public class ProductAddDialog extends ProductofDialog {
         panel.add(statusPanel, gbc);
         gbc.gridy++;
 
-        imageLabel = createImageLabel(product, 400, 300);
+        imageLabel = mer.createImageLabel(product, 400, 300);
         panel.add(imageLabel, gbc);
         gbc.gridx = 2;
         //商品图片展示
@@ -83,13 +86,13 @@ public class ProductAddDialog extends ProductofDialog {
                 // 调用父类的方法
                 boolean success;
                 try {
-                    success = dataControladd.addProduct(m_id, newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName);
+                    success = dataControl.addProduct(m_id, newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
                 if (success) {
                     JOptionPane.showMessageDialog(this, "创建成功，请等待一会", "提示", JOptionPane.INFORMATION_MESSAGE);
-                    refreshCard1All();
+                    mer.refreshCard1All();
                     dispose(); // 关闭对话框
                 } else {
                     JOptionPane.showMessageDialog(this, "创建失败", "错误", JOptionPane.ERROR_MESSAGE);
