@@ -18,6 +18,10 @@ public class Merchant extends People{
         this.m_tele = m_tele;
     }
 
+    public Merchant() {
+        super();
+    }
+
     public String getM_name() {
         return m_name;
     }
