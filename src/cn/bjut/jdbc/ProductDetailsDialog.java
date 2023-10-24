@@ -4,8 +4,10 @@ import javax.swing.*;
 
 //详情界面
 public class ProductDetailsDialog extends ProductofDialog {
-    public ProductDetailsDialog(Product product) {
-        super(product);
+    MerchantInterFrm mer;
+    public ProductDetailsDialog(DataControl dataControl,Product product,MerchantInterFrm mer) {
+        super(dataControl, product);
+        this.mer = mer;
         initComponents();
     }
 
@@ -39,7 +41,7 @@ public class ProductDetailsDialog extends ProductofDialog {
         panel.add(status, gbc);
         gbc.gridy++;
         //商品图片展示
-        imageLabel = createImageLabel(product, 400, 300);
+        imageLabel = mer.createImageLabel(product, 400, 300);
         panel.add(imageLabel, gbc);
     }
 }
