@@ -5,6 +5,9 @@ public class People {
     private String acc;
     private String psw;
 
+    public People(){
+
+    }
     public People(String ID, String acc, String psw) {
         this.ID = ID;
         this.acc = acc;

@@ -2,11 +2,17 @@ package cn.bjut.jdbc;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.text.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDateTime;
 
 
 public class DataControl {
 
+
+    public DataControl() throws SQLException {
+    }
 
     public ResultSet executeQuery(String table_name, String colum_name, String x) throws SQLException {
 
@@ -135,6 +141,7 @@ public class DataControl {
         return answer;
 
     }
+    //将商品表信息插入到购物车表中
 
 
     public List<Product> MerchantProductQuery(int m_id) throws SQLException {//获得指定商家的所有商品

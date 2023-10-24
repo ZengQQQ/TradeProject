@@ -16,53 +16,51 @@ public class login extends JFrame {
     }
 
     private void button1MouseClicked(MouseEvent e) throws SQLException {
-        String username = textField1.getText();
+        String logname = textField1.getText();
         String password = new String(passwordField.getPassword());
         String role = (String) roleComboBox.getSelectedItem();
 
 
         if (role != null) {
+            DataControl dataControl = new DataControl();
             if (role.equals("用户")) {
-                DataControl dataControluser = new DataControl();
-                String userPsw = dataControluser.getUserPsw(username);
-                int u_id = dataControluser.getUserid(username);
-                if (password.equals(userPsw)) {
+                if (password.equals(dataControl.getUserPsw(logname))) {
                     JOptionPane.showMessageDialog(this, "用户登录成功");
-                    UserFrm userFrame = new UserFrm(u_id);
+                    UserFrm userFrame = new UserFrm(dataControl.getUserid(logname));
                     userFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    userFrame.setSize(500,600);
+                    userFrame.setSize(400, 300);
                     userFrame.setVisible(true);
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "用户登录失败，请检查用户名和密码");
                 }
             } else if (role.equals("商家")) {
-                DataControl dataControlmer = new DataControl();
-                List<Integer> merchantPswid = dataControlmer.getMerchantPsw(username);//得到商家密码
+                //String merchantPsw = dataControl.getMerchantPsw(logname);//得到商家密码
+                List<Integer> merchantPswid = dataControl.getMerchantPsw(logname);//得到商家密码
                 String psw= String.valueOf(merchantPswid.get(0));
                 if (password.equals(psw)) {
                     JOptionPane.showMessageDialog(this, "商家登录成功");
                     MerchantInterFrm merchantFrame = new MerchantInterFrm(merchantPswid.get(1));
                     merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    merchantFrame.setSize(1200, 1000);
+                    merchantFrame.setSize(1000, 900);
                     merchantFrame.setVisible(true);
                     dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "商家登录失败，请检查用户名和密码");
-                }
-            } else if (role.equals("管理员")) {
-                if (username.equals("admin") && password.equals("adminpassword")) {
-                    JOptionPane.showMessageDialog(this, "管理员登录成功");
-                    // AdminFrame adminFrame = new AdminFrame();
-                    // adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    // adminFrame.setSize(400, 300);
-                    // adminFrame.setVisible(true);
-                    // dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "管理员登录失败，请检查用户名和密码");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "商家登录失败，请检查用户名和密码");
+                    }
+                } else if (role.equals("管理员")) {
+                    if (password.equals(dataControl.getAdminPsw(logname))) {
+                        JOptionPane.showMessageDialog(this, "管理员登录成功");
+                         AdminFrame adminFrame = new AdminFrame();
+                         adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                         adminFrame.setSize(400, 300);
+                         adminFrame.setVisible(true);
+                         dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "管理员登录失败，请检查用户名和密码");
+                    }
                 }
             }
-        }
     }
 
     private void initComponents() {
@@ -77,7 +75,7 @@ public class login extends JFrame {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(5, 5, 5, 5); // 设置组件之间的间距
 
-        JLabel label1 = new JLabel("Useracc:");
+        JLabel label1 = new JLabel("Username:");
         constraints.gridx = 0; // 设置组件所在的列
         constraints.gridy = 0; // 设置组件所在的行
         contentPane.add(label1, constraints);
