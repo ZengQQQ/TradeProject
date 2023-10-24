@@ -1,7 +1,10 @@
 package cn.bjut.jdbc;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -18,10 +21,9 @@ public class MerchantInterFrm extends JFrame {
     private final JPanel mainPanel = new JPanel();
     private JPanel card1;
     private final int m_id;
-    public DataControl dataControl;
+    public DataControl dataControl = new DataControl();
 
     public MerchantInterFrm(int mid) throws SQLException {
-        dataControl = new DataControl();
         this.m_id = mid;
         initComponents();
     }
@@ -30,353 +32,72 @@ public class MerchantInterFrm extends JFrame {
         return m_id;
     }
 
-    public class ProductofJDialog extends JDialog {
-        public Product product;
-        public String newImgName; // 添加字段用于存储文件名
-
-        // 在initComponents方法中添加一个新的字段来保存商品图片的标签
-        public JLabel imageLabel;
-        public JRadioButton onSaleRadioButton;
-        public JRadioButton offSaleRadioButton;
-        public GridBagConstraints gbc = new GridBagConstraints();
-        public JPanel panel = new JPanel(new GridBagLayout());
-
-        public ProductofJDialog(Product product) {
-            this.product = product;
-            this.newImgName = product.getP_img();
-            initComponents();
+    public class MerchantInfoModifyDialog extends JDialog {
+        private  Merchant oldmerchant;
+        public MerchantInfoModifyDialog(Merchant merchant) {
+            this.oldmerchant =merchant;
+            initialize();
         }
+        private void initialize() {
+            setTitle("修改您的信息");
 
-        private void initComponents() {
-            setSize(900, 600);
-            setLocationRelativeTo(null); // 居中显示
-
-            gbc.insets = new Insets(5, 5, 5, 5);
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.anchor = GridBagConstraints.WEST;
-            panel.add(new JLabel("商品名称:"), gbc);
-            gbc.gridy++;
-            panel.add(new JLabel("商品描述:"), gbc);
-            gbc.gridy++;
-            panel.add(new JLabel("商品类别:"), gbc);
-            gbc.gridy++;
-            panel.add(new JLabel("商品价格（元）:"), gbc);
-            gbc.gridy++;
-            panel.add(new JLabel("商品状态:"), gbc);
-            gbc.gridy++;
-            panel.add(new JLabel("商品图片:"), gbc);
-            gbc.gridx = 1;
-
-            getContentPane().add(panel, BorderLayout.CENTER);
-        }
-
-        //刷新修改界面的图片
-        public void refreshphoto() {
-            // 获取项目路径
-            String projectPath = System.getProperty("user.dir");
-            // 构建新图片路径
-            ImageIcon updatedIcon = getImageIcon(projectPath);
-            // 获取图片对象
-            Image updatedImage = updatedIcon.getImage();
-            // 缩放图片（如果需要）
-            Image scaledImage = updatedImage.getScaledInstance(400, 300, Image.SCALE_SMOOTH);
-            // 创建一个新的 ImageIcon
-            ImageIcon scaledIcon = new ImageIcon(scaledImage);
-            // 更新图片标签
-            imageLabel.setIcon(scaledIcon);
-        }
-
-        public ImageIcon getImageIcon(String projectPath) {
-            String absoluteImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + newImgName;
-            // 创建新的 ImageIcon
-            ImageIcon updatedIcon;
-            File updatedImageFile = new File(absoluteImagePath);
-            if (updatedImageFile.exists()) {
-                updatedIcon = new ImageIcon(absoluteImagePath);
-            } else {
-                // 图片路径不存在，使用默认图片
-                String defaultImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg";
-                updatedIcon = new ImageIcon(defaultImagePath);
-            }
-            return updatedIcon;
-        }
-
-        //复制图片文件
-        public boolean FilephotoCopy(String newImgPath, String newImgName) {
-            String currentDirectory = System.getProperty("user.dir");
-            String destinationPath = currentDirectory + "\\src\\Img\\" + newImgName;
-            File sourceFile = new File(newImgPath);
-            File destinationFile = new File(destinationPath);
-            try {
-                Path source = sourceFile.toPath();
-                Path destination = destinationFile.toPath();
-                // 使用Files.copy方法复制文件
-                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("文件复制成功");
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("文件复制失败");
-                return false;
-            }
-        }
-
-        // 用于处理“Update”按钮功能的方法
-        protected boolean handleUpdateButton(String newName, String newDesc, String newClass, double newPrice, String newStatus) {
-            boolean success;
-            success = dataControl.updateProduct(product.getP_id(), newName, newDesc, newClass, newPrice, newStatus, newImgName);
-            return success;
-        }
-
-        // 用于处理“Change Image”按钮功能的方法
-        protected boolean handleChangeImageButton() {
-            JFileChooser fileChooser = new JFileChooser();
-            int returnVal = fileChooser.showOpenDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                String newImgPath = fileChooser.getSelectedFile().getPath();
-                newImgName = new File(newImgPath).getName();
-                boolean b = FilephotoCopy(newImgPath, newImgName);
-
-                if (b) {
-                    // Update the image label with the new image
-                    ImageIcon updatedIcon = getImageIcon(newImgName);
-                    imageLabel.setIcon(updatedIcon);
-                    // Revalidate and repaint the container to reflect the changes
-                    imageLabel.getParent().revalidate();
-                    imageLabel.getParent().repaint();
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
-    }
-
-    //更新界面
-    public class ProductUpdateDialog extends ProductofJDialog {
-        public ProductUpdateDialog(Product product) {
-            super(product);
-            initComponents();
-        }
-
-        private void initComponents() {
-            setTitle("修改商品信息");
-            int textFieldColumns = 50;
-            gbc.gridx = 1;
-            gbc.gridy = 0;
-            JTextField nameField = new JTextField(product.getP_name(), textFieldColumns);
-            panel.add(nameField, gbc);
-            gbc.gridy++;
-            JTextField descField = new JTextField(product.getP_desc(), textFieldColumns);
-            panel.add(descField, gbc);
-            gbc.gridy++;
-            JTextField classField = new JTextField(product.getP_class(), textFieldColumns);
-            panel.add(classField, gbc);
-            gbc.gridy++;
-            JTextField priceField = new JTextField(String.valueOf(product.getP_price()), textFieldColumns);
-            panel.add(priceField, gbc);
-            gbc.gridy++;
-            // 创建商品状态的单选框
-            ButtonGroup statusGroup = new ButtonGroup();
-            onSaleRadioButton = new JRadioButton("上架");
-            offSaleRadioButton = new JRadioButton("下架");
-            statusGroup.add(onSaleRadioButton);
-            statusGroup.add(offSaleRadioButton);
-            JPanel statusPanel = new JPanel();
-            statusPanel.add(onSaleRadioButton);
-            statusPanel.add(offSaleRadioButton);
-            // 根据商品状态设置默认选择
-            if (product.getP_status().equals("上架")) {
-                onSaleRadioButton.setSelected(true);
-            } else {
-                offSaleRadioButton.setSelected(true);
-            }
-            panel.add(statusPanel, gbc);
-            gbc.gridy++;
-            //商品图片展示
-            imageLabel = createImageLabel(product, 400, 300);
-            panel.add(imageLabel, gbc);
-            // 创建修改图片按钮
-            gbc.gridx = 2;
-
-            // 创建“Change Image”按钮
-            JButton changeImgButton = new JButton("修改图片");
-            panel.add(changeImgButton, gbc);
-            changeImgButton.addActionListener(e -> {
-                // 调用父类的方法
-                boolean b = handleChangeImageButton();
-                if (b) {
-                    refreshphoto();
-                    JOptionPane.showMessageDialog(this, "图片上传成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "图片上传失败失败", "错误", JOptionPane.ERROR_MESSAGE);
-                }
-            });
-            // 创建“Update”按钮
-            JButton updateButton = new JButton("修改");
-            updateButton.addActionListener(e -> {
-                // 从文本字段和单选按钮获取值
+            // 创建文本字段，用于填入旧的商家信息
+            JTextField accountField = new JTextField(oldmerchant.getAcc(), 20);
+            JTextField nameField = new JTextField(oldmerchant.getM_name(), 20);
+            JTextField genderField = new JTextField(oldmerchant.getM_sex(), 20);
+            JTextField phoneField = new JTextField(oldmerchant.getM_tele(), 20);
+            // 创建 "保存" 按钮
+            JButton saveButton = new JButton("保存");
+            saveButton.addActionListener(e -> {
+                // 从文本字段中获取修改后的信息
+                String newAccount = accountField.getText();
                 String newName = nameField.getText();
-                String newDesc = descField.getText();
-                String newClass = classField.getText();
-                double newPrice = Double.parseDouble(priceField.getText());
-                String newStatus = onSaleRadioButton.isSelected() ? "上架" : "下架";
+                String newGender = genderField.getText();
+                String newPhone = phoneField.getText();
 
-                // 调用父类的方法
-                boolean success = handleUpdateButton(newName, newDesc, newClass, newPrice, newStatus);
-
-                if (success) {
-                    JOptionPane.showMessageDialog(this, "修改成功，请等待一会", "提示", JOptionPane.INFORMATION_MESSAGE);
-                    refreshCard1Product(new Product(product.getP_id(), newName, newDesc, newClass, newPrice, newStatus, newImgName));
-                    dispose(); // 关闭对话框
-                } else {
-                    JOptionPane.showMessageDialog(this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
+                // 验证性别（假设性别应为 "男" 或 "女"）
+                if (!newGender.equals("男") && !newGender.equals("女")) {
+                    JOptionPane.showMessageDialog(this, "性别必须是'男'或'女'", "错误", JOptionPane.ERROR_MESSAGE);
+                    return; // 不继续执行后续操作
                 }
-            });
-
-
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            buttonPanel.add(updateButton);
-            getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-        }
-    }
-
-    //详情界面
-    public class ProductDetailsDialog extends ProductofJDialog {
-        public ProductDetailsDialog(Product product) {
-            super(product);
-            initComponents();
-        }
-
-        private void initComponents() {
-            setTitle("商品详细信息");
-            gbc.gridx = 1;
-            gbc.gridy = 0;
-            JLabel nameField = new JLabel(product.getP_name());
-            panel.add(nameField, gbc);
-            gbc.gridy++;
-            JLabel descField = new JLabel(product.getP_desc());
-            panel.add(descField, gbc);
-            gbc.gridy++;
-            JLabel classField = new JLabel(product.getP_class());
-            panel.add(classField, gbc);
-            gbc.gridy++;
-            JLabel priceField = new JLabel(product.getP_price() + "元");
-            panel.add(priceField, gbc);
-            gbc.gridy++;
-            // 创建商品状态
-            JLabel status = new JLabel();
-            // 根据商品状态设置默认选择
-            if (product.getP_status().equals("上架")) {
-                status.setText("上架");
-            } else {
-                status.setText("下架");
-            }
-            panel.add(status, gbc);
-            gbc.gridy++;
-            //商品图片展示
-            imageLabel = createImageLabel(product, 400, 300);
-            panel.add(imageLabel, gbc);
-        }
-    }
-
-    //添加商品界面
-    public class ProductAddDialog extends ProductofJDialog {
-        public ProductAddDialog(Product product) {
-            super(product);
-            initComponents();
-        }
-
-        private void initComponents() {
-            setTitle("添加商品信息");
-            int textFieldColumns = 50;
-            gbc.gridx = 1;
-            gbc.gridy = 0;
-            JTextField nameField = new JTextField(textFieldColumns);
-            panel.add(nameField, gbc);
-            gbc.gridy++;
-            JTextField descField = new JTextField(textFieldColumns);
-            panel.add(descField, gbc);
-            gbc.gridy++;
-            JTextField classField = new JTextField(textFieldColumns);
-            panel.add(classField, gbc);
-            gbc.gridy++;
-            JTextField priceField = new JTextField(textFieldColumns);
-            panel.add(priceField, gbc);
-            gbc.gridy++;
-            // 创建商品状态的单选框
-            ButtonGroup statusGroup = new ButtonGroup();
-            onSaleRadioButton = new JRadioButton("上架");
-            offSaleRadioButton = new JRadioButton("下架");
-            statusGroup.add(onSaleRadioButton);
-            statusGroup.add(offSaleRadioButton);
-            JPanel statusPanel = new JPanel();
-            statusPanel.add(onSaleRadioButton);
-            statusPanel.add(offSaleRadioButton);
-            // 根据商品状态设置选择
-            onSaleRadioButton.setSelected(true);
-            panel.add(statusPanel, gbc);
-            gbc.gridy++;
-
-            imageLabel = createImageLabel(product, 400, 300);
-            panel.add(imageLabel, gbc);
-            gbc.gridx = 2;
-            //商品图片展示
-
-            // 创建“Change Image”按钮
-            JButton upImgButton = new JButton("上传图片");
-            panel.add(upImgButton, gbc);
-            upImgButton.addActionListener(e -> {
-                // 调用父类的方法
-                boolean b = handleChangeImageButton();
-                gbc.gridx = 1;
-                panel.add(imageLabel, gbc);
-                refreshphoto();
-                if (b) {
-                    JOptionPane.showMessageDialog(this, "图片上传成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "图片上传失败失败", "错误", JOptionPane.ERROR_MESSAGE);
-                }
-            });
-            // 创建“创建”按钮
-            JButton createProductButton = new JButton("创建");
-            createProductButton.addActionListener(e -> {
-                // 从文本字段和单选按钮获取值
-                String newName = nameField.getText();
-                String newDesc = descField.getText();
-                String newClass = classField.getText();
-                String priceText = priceField.getText();
-                if (newName.isEmpty() || newDesc.isEmpty() || newClass.isEmpty() || priceText.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "请填写完整", "警告", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    double newPrice = Double.parseDouble(priceText);
-                    String newStatus = onSaleRadioButton.isSelected() ? "上架" : "下架";
-                    // 调用父类的方法
-                    boolean success = dataControl.addProduct(m_id, newName, newDesc, newClass, newPrice, newStatus, newImgName);
-                    if (success) {
-                        JOptionPane.showMessageDialog(this, "创建成功，请等待一会", "提示", JOptionPane.INFORMATION_MESSAGE);
-                        refreshCard1Product(new Product(newName, newDesc, newClass, newPrice, newStatus, newImgName, m_id));
-                        dispose(); // 关闭对话框
-                    } else {
-                        JOptionPane.showMessageDialog(this, "创建失败", "错误", JOptionPane.ERROR_MESSAGE);
-                    }
+                // 验证电话号码（您可以使用正则表达式进行更复杂的验证）
+                if (!newPhone.matches("\\d{11}")) {
+                    JOptionPane.showMessageDialog(this, "电话号码必须为11位数字", "错误", JOptionPane.ERROR_MESSAGE);
+                    return; // 不继续执行后续操作
                 }
 
+                // 此时，性别和电话号码验证成功
+                // 您现在可以保存修改后的信息并显示成功消息
+                // 可以将信息保存到您的数据源
+                oldmerchant.setAcc(newAccount);
+                oldmerchant.setM_name(newName);
+                oldmerchant.setM_sex(newGender);
+                oldmerchant.setM_tele(newPhone);
 
+                JOptionPane.showMessageDialog(this, "信息修改成功", "成功", JOptionPane.INFORMATION_MESSAGE);
+                dispose();
             });
 
+            // 添加组件到对话框的内容窗格
+            JPanel panel = new JPanel(new GridLayout(6, 2));
+            panel.add(new JLabel("账号名:"));
+            panel.add(accountField);
+            panel.add(new JLabel("姓名:"));
+            panel.add(nameField);
+            panel.add(new JLabel("性别:"));
+            panel.add(genderField);
+            panel.add(new JLabel("电话:"));
+            panel.add(phoneField);
+            panel.add(saveButton);
 
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            buttonPanel.add(createProductButton);
-            getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-
+            getContentPane().add(panel);
+            pack();
+            setLocationRelativeTo(null);  // 居中显示对话框
         }
-    }
 
+    }
     //主界面的创建
-    private void initComponents() {
+    private void initComponents() throws SQLException {
         setTitle("商家管理界面");
         mainPanel.setLayout(cardLayout);
         JMenuBar menuBar = createMenuBar();
@@ -399,11 +120,10 @@ public class MerchantInterFrm extends JFrame {
         JPanel card3 = new JPanel();
         card3.add(new JLabel("这是第三个界面"));
         card3.setBackground(Color.BLUE);
-
         //第四个界面------------------------------------------------
-        JPanel card4 = new JPanel();
-        card4.add(new JLabel("这是第四个界面"));
-        card4.setBackground(Color.YELLOW);
+        JPanel card4JPanel = getCard4(m_id);
+        // 将“我的信息”面板添加到 mainPanel
+        mainPanel.add(card4JPanel, "card4");
 
         //搜索界面------------------------------------------------
         JPanel card5 = new JPanel();
@@ -413,7 +133,6 @@ public class MerchantInterFrm extends JFrame {
 
         mainPanel.add(card2, "card2");
         mainPanel.add(card3, "card3");
-        mainPanel.add(card4, "card4");
         mainPanel.add(card5, "card5");
 
 
@@ -472,19 +191,49 @@ public class MerchantInterFrm extends JFrame {
             }
         });
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 4));
-        buttonPanel.add(upproject);
-        buttonPanel.add(downproject);
-        buttonPanel.add(evaluate);
-        buttonPanel.add(myButton);
+        JPanel buttonPanel2 = new JPanel();
+        buttonPanel2.setLayout(new GridLayout(1, 4));
+        buttonPanel2.add(upproject);
+        buttonPanel2.add(downproject);
+        buttonPanel2.add(evaluate);
+        buttonPanel2.add(myButton);
 
         contentPane.add(searchButton, BorderLayout.NORTH);
         contentPane.add(mainPanel, BorderLayout.CENTER);
-        contentPane.add(buttonPanel, BorderLayout.SOUTH);
+        contentPane.add(buttonPanel2, BorderLayout.SOUTH);
         //----------------------------------------------------------------
         pack();
         setLocationRelativeTo(getOwner());
+    }
+
+    private JPanel getCard4(int m_id) throws SQLException {
+        JPanel card4 = new JPanel(new GridBagLayout());
+        GridBagConstraints card4gbc = new GridBagConstraints();
+        card4gbc.insets = new Insets(1, 1, 5, 5);
+        card4gbc.gridx = 0;
+        card4gbc.gridy = 0;
+        card4gbc.anchor = GridBagConstraints.NORTH;
+        //获取商家信息
+        Merchant merchant =dataControl.MerchantQuery(m_id);
+        // 创建一个“修改”按钮
+        JButton modifyButton = new JButton("修改信息");
+        modifyButton.addActionListener(e -> {
+            // 打开一个对话框以修改信息
+            MerchantInfoModifyDialog modifyDialog = new MerchantInfoModifyDialog(merchant);
+            modifyDialog.setVisible(true);
+        });
+        // 将标签和文本字段添加到 card4 面板
+        card4.add(new JLabel("账号名: "+ merchant.getAcc()), card4gbc);
+        card4gbc.gridy++;
+        card4.add(new JLabel("昵称: "+ merchant.getM_name()), card4gbc);
+        card4gbc.gridy++;
+        card4.add(new JLabel("性别: "+ merchant.getM_sex()), card4gbc);
+        card4gbc.gridy++;
+        card4.add(new JLabel("电话: "+merchant.getM_tele()), card4gbc);
+        // 将“修改”按钮添加到信息下方
+        card4gbc.gridx = 1;
+        card4.add(modifyButton, card4gbc);
+        return card4;
     }
 
     private JPanel createProductPanel(Product product) {
@@ -508,6 +257,8 @@ public class MerchantInterFrm extends JFrame {
     private JPanel getPanel(Product product) {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        // 为按钮信息面板添加线框
+        buttonPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
         // 创建“修改”按钮并添加到按钮面板
         JButton alertButton = new JButton("修改");
@@ -574,6 +325,9 @@ public class MerchantInterFrm extends JFrame {
         // 添加商品状态
         JLabel statusLabel = new JLabel("商品状态: " + product.getP_status());
 
+        //添加商品数量
+        JLabel quantityLabel = new JLabel("商品数量: " + product.getP_quantity());
+        infoPanel.add(quantityLabel);
         // 根据商品状态设置文本颜色
         if ("上架".equals(product.getP_status())) {
             statusLabel.setForeground(Color.GREEN);
@@ -636,7 +390,6 @@ public class MerchantInterFrm extends JFrame {
         }
 
     }
-
     private void refreshCard1All() {
         card1.removeAll();
         try {
@@ -716,14 +469,19 @@ public class MerchantInterFrm extends JFrame {
         return menuBar;
     }
 
-//    public static void main(String[] args) {
-//        // 将Swing应用程序放在Event Dispatch Thread (EDT)中运行
-//        SwingUtilities.invokeLater(() -> {
-//            MerchantInterFrm frame = new MerchantInterFrm(1);
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            frame.setSize(1200, 1000);
-//            frame.setVisible(true);
-//        });
-//    }
+    public static void main(String[] args) {
+        // 将Swing应用程序放在Event Dispatch Thread (EDT)中运行
+        SwingUtilities.invokeLater(() -> {
+            MerchantInterFrm frame = null;
+            try {
+                frame = new MerchantInterFrm(1);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(1200, 1000);
+            frame.setVisible(true);
+        });
+    }
 }
 
