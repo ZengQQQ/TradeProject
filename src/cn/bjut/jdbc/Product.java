@@ -8,28 +8,31 @@ public class Product {
     private String p_class;
     private String p_price;
     private String p_status;
+    private int  p_quantity;
     private String p_img;
 
     public Product() {
     }
 
-    public Product(int pId, String newName, String newdesc, String newclass, double newPrice, String newStatus, String newImgName) {
-        this.p_id = pId;
+    public Product(int pid, String newName, String newdesc, String newclass, double newPrice, String newStatus,int newquantity, String newImgName) {
+        this.p_id = pid;
         this.p_name = newName;
         this.p_desc = newdesc;
         this.p_class =newclass;
         this.p_price = String.valueOf(newPrice);
         this.p_status = newStatus;
+        this.p_quantity=newquantity;
         this.p_img = newImgName;
     }
 
-    public Product(String newName, String newdesc, String newclass, double newPrice, String newStatus, String newImgName,int m_id) {
+    public Product(String newName, String newdesc, String newclass, double newPrice, String newStatus,int newquantity, String newImgName,int m_id) {
         this.m_id=m_id;
         this.p_name = newName;
         this.p_desc = newdesc;
         this.p_class =newclass;
         this.p_price = String.valueOf(newPrice);
         this.p_status = newStatus;
+        this.p_quantity=newquantity;
         this.p_img = newImgName;
     }
 
@@ -79,6 +82,14 @@ public class Product {
 
     public void setP_status(String p_status) {
         this.p_status = p_status;
+    }
+
+    public String getP_quantity() {
+        return String.valueOf(p_quantity);
+    }
+
+    public void setP_quantity(int p_quantity) {
+        this.p_quantity = p_quantity;
     }
 
     public String getP_img() {
