@@ -3,7 +3,7 @@ package cn.bjut.jdbc;
 import javax.swing.*;
 import java.awt.*;
 
-//更新界面
+//商品更新界面
 public class ProductUpdateDialog extends ProductofDialog {
 
     private MerchantInterFrm mer;
