@@ -49,7 +49,7 @@ public class MerchantInterFrm extends JFrame {
 
         mainPanel.add(scrollPane, "card1");
         //第二个界面------------------------------------------------
-        JPanel card2 = new JPanel();
+        JPanel card2 = new ForumPage(dataControl.selectMerchant(m_id),"merchant");
         card2.add(new JLabel("这是第二个界面"));
         card2.setBackground(Color.GREEN);
         //第三个界面------------------------------------------------
