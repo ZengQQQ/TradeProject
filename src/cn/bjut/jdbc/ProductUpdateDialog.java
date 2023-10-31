@@ -6,10 +6,10 @@ import java.awt.*;
 //商品更新界面
 public class ProductUpdateDialog extends ProductofDialog {
 
-    private MerchantInterFrm mer;
-    public ProductUpdateDialog(DataControl dataControl,Product product,MerchantInterFrm mer) {
+    private  MerchantProductFrm merProduct;
+    public ProductUpdateDialog(DataControl dataControl,Product product,MerchantProductFrm merProduct) {
         super(dataControl, product);
-        this.mer = mer;
+        this.merProduct = merProduct;
         initComponents();
     }
 
@@ -52,7 +52,7 @@ public class ProductUpdateDialog extends ProductofDialog {
         gbc.gridy++;
 
         //商品图片展示
-        imageLabel = mer.createImageLabel(product, 400, 300);
+        imageLabel = merProduct.createImageLabel(product, 400, 300);
         panel.add(imageLabel, gbc);
         // 创建修改图片按钮
         gbc.gridx = 2;
@@ -86,7 +86,7 @@ public class ProductUpdateDialog extends ProductofDialog {
 
             if (success) {
                 JOptionPane.showMessageDialog(this, "修改成功，请等待一会", "提示", JOptionPane.INFORMATION_MESSAGE);
-               mer.refreshCard1Product(new Product(product.getP_id(), newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName));
+                merProduct.refreshCard1Product(new Product(product.getP_id(), newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName));
                 dispose(); // 关闭对话框
             } else {
                 JOptionPane.showMessageDialog(this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
