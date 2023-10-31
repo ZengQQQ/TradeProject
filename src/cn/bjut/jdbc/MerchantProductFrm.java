@@ -18,7 +18,6 @@ public class MerchantProductFrm extends JPanel {
     }
 
     public void initComponent() {
-
         setLayout(new GridLayout(0, 2));
         createproductcard();
 
