@@ -29,7 +29,7 @@ public class MerchantProductFrm extends JPanel {
         // 设置商品对象为面板的客户属性
         productPanel.putClientProperty("product", product);
         // 创建商品图片标签并添加到productPanel的西边
-        JLabel imageLabel = createImageLabel(product, 350, 250);
+        JLabel imageLabel = createImageLabel(product, 350, 300);
         productPanel.add(imageLabel, BorderLayout.WEST);
         // 创建商品信息面板
         JPanel infoPanel = getjPanel(product);
