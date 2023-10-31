@@ -163,7 +163,7 @@ public class MerchantProductFrm extends JPanel {
     }
 
 
-    private void createproductcard() {
+    public void createproductcard() {
         try {
             DataControl dataControl = new DataControl();
             List<Product> products = dataControl.MerchantProductQuery(merchantInterFrm.getM_id());
