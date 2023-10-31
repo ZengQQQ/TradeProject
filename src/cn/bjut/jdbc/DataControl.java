@@ -401,6 +401,22 @@ public String insertUserTable(String new_u_acc, String new_u_psw, String new_u_n
 
     }
 
+    //查找某一商家的信息，m-id
+    public Merchant selectMerchant(int m_id) throws SQLException {
+        String sql = "select * from merchant where m_id = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, m_id);
+        ResultSet rs = stmt.executeQuery();
+
+        String id = Integer.toString(rs.getInt("m_id"));
+        String acc = rs.getString("m_acc");
+        String psw = rs.getString("m_psw");
+        String name = rs.getString("m_name");
+        String sex = rs.getString("m_sex");
+        String tele = rs.getString("m_tele");
+        return new Merchant(id,acc,psw,name,sex,tele);
+    }
 }
 
 

@@ -1,94 +1,108 @@
 package cn.bjut.jdbc;
 
-import java.util.Date;import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.*;
+import java.util.List;
 
 public class ForumPage extends JPanel {
-    private JTextArea postTextArea;
-    private JButton postButton;
-    private JPanel postPanel;
 
-    private DataControl data = new DataControl();
+    private User user;
+    private Merchant merchant;
+    private String flag;
+    private List<CommentBar> commentBars;
 
-    public ForumPage(User user) throws SQLException {
+    public ForumPage(User user,String flag) {
+        this.user = user;
+        this.flag = flag;
+        this.merchant = null;
         initComponents();
     }
 
+    public ForumPage(Merchant merchant,String flag) {
+        this.merchant = merchant;
+        this.flag = flag;
+        this.user = null;
+        initComponents();
+    }
+
+
     private void initComponents() {
 
-        // 发表帖子区域
-        postTextArea = new JTextArea(5, 30);
-        postButton = new JButton("发表");
-        postButton.addActionListener(new ActionListener() {
+        JPanel commentPanel = new JPanel();
+        commentPanel.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        for (CommentBar comment : commentBars) {
+            commentPanel.add(comment);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(commentPanel);
+        this.add(scrollPane,BorderLayout.CENTER);
+
+
+        JButton newCommentButton = new JButton("New Comment");
+        newCommentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // 处理发表帖子逻辑
-                String postContent = postTextArea.getText();
-                // 将内容保存到数据库
-                // 刷新帖子列表
+                openNewCommentDialog();
             }
         });
-
-        // 帖子列表面板
-        postPanel = new JPanel();
-        postPanel.setLayout(new BoxLayout(postPanel, BoxLayout.Y_AXIS));
-        JScrollPane scrollPane = new JScrollPane(postPanel);
-
-        JPanel inputPanel = new JPanel();
-        inputPanel.add(new JScrollPane(postTextArea));
-        inputPanel.add(postButton);
-
-        JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-        contentPane.add(inputPanel, BorderLayout.SOUTH);
-
-        this.add(contentPane);
+        add(newCommentButton, BorderLayout.SOUTH);
     }
 
-    // 更新帖子列表的方法，从数据库中读取帖子并显示在postPanel中
-    private void updatePostList() {
-        postPanel.removeAll(); // 清空已有的帖子列表
-        try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database", "username", "password");
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM posts");
-            while (rs.next()) {
-                int postID = rs.getInt("post_id");
-                String postContent = rs.getString("post_content");
-                JButton replyButton = new JButton("回复");
-                replyButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        openReplyDialog(postID);
-                    }
-                });
-                postPanel.add(new JLabel(postContent));
-                postPanel.add(replyButton);
-            }
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    private void openNewCommentDialog() {
+        NewCommentDialog newCommentDialog = new NewCommentDialog();
+        newCommentDialog.setVisible(true);
+    }
+
+    public class NewCommentDialog extends JDialog {
+
+        private JTextField commentTextField = new JTextField(20);
+        private JButton postButton = new JButton("提交");
+
+        private JButton cancelButton = new JButton("取消");
+
+        public NewCommentDialog() {
+            initComponents();
         }
-        postPanel.revalidate(); // 更新UI
+
+        private void initComponents() {
+            setTitle("New Comment");
+            setModal(true);
+
+            JPanel panel = new JPanel();
+            panel.add(new JLabel("评论内容: "));
+            panel.add(commentTextField, BorderLayout.CENTER);
+
+            JPanel buttonPanel = new JPanel(new BoxLayout(postButton, BoxLayout.X_AXIS));
+            buttonPanel.add(postButton);
+            buttonPanel.add(Box.createHorizontalStrut(10));
+            buttonPanel.add(cancelButton);
+
+            panel.add(buttonPanel, BorderLayout.SOUTH);
+            cancelButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    dispose(); // 关闭对话框
+                }
+            });
+
+            postButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    String commentText = commentTextField.getText();
+                    // 在这里可以对评论进行处理
+                    // TODO: 保存评论到数据库
+                    dispose(); // 关闭对话框
+                }
+            });
+
+            add(panel);
+            pack();
+        }
+
+        public CommentBar getComment() {
+
+            return null;
+
+        }
     }
 
-    private void openReplyDialog(int postID) {
-        ReplyDialog replyDialog = new ReplyDialog(this, postID);
-        replyDialog.setVisible(true);
-    }
-
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(new Runnable() {
-//            public void run() {
-//                ForumPage forumPage = new ForumPage();
-//                forumPage.setVisible(true);
-//            }
-//        });
-//    }
 }

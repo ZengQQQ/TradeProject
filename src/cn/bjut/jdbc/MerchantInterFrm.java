@@ -376,7 +376,7 @@ public class MerchantInterFrm extends JFrame {
     }
 
     //主界面的创建
-    private void initComponents() {
+    private void initComponents() throws SQLException {
         setTitle("商家管理界面");
         mainPanel.setLayout(cardLayout);
         JMenuBar menuBar = createMenuBar();
@@ -392,7 +392,7 @@ public class MerchantInterFrm extends JFrame {
 
         mainPanel.add(scrollPane, "card1");
         //第二个界面------------------------------------------------
-        JPanel card2 = new JPanel();
+        JPanel card2 = new ForumPage(dataControl.selectMerchant(m_id),"merchant");
         card2.add(new JLabel("这是第二个界面"));
         card2.setBackground(Color.GREEN);
         //第三个界面------------------------------------------------
