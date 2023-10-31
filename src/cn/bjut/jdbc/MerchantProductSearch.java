@@ -106,7 +106,7 @@ public class MerchantProductSearch extends JPanel {
         productPanel.setLayout(new BorderLayout());
         productPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1)); // 添加边框以分隔产品
         productPanel.putClientProperty("product", product);
-        JLabel imageLabel = createImageLabel(product, 350, 250);
+        JLabel imageLabel = createImageLabel(product, 350, 280);
         productPanel.add(imageLabel, BorderLayout.WEST);
         JPanel infoPanel = createInfoPanel(product);
         productPanel.add(infoPanel, BorderLayout.CENTER);
