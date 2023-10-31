@@ -2,7 +2,7 @@ package cn.bjut.jdbc;
 
 import javax.swing.*;
 
-//详情界面
+//商品详情界面
 public class ProductDetailsDialog extends ProductofDialog {
     MerchantInterFrm mer;
     public ProductDetailsDialog(DataControl dataControl,Product product,MerchantInterFrm mer) {

@@ -456,6 +456,128 @@ public class DataControl {
 
     }
 
+
+    //查找所有商家的信息，不用参数
+    public List<Merchant> selectMerchantTable() throws SQLException {
+        String sql = "select *  from  merchant";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+
+        ResultSet rs = stmt.executeQuery();
+        List<Merchant> merchantList = new ArrayList<>();
+        while (rs.next()) {
+            String id = Integer.toString(rs.getInt("m_id"));
+            String acc = rs.getString("m_acc");
+            String psw = rs.getString("m_psw");
+            String name = rs.getString("m_name");
+            String sex = rs.getString("m_sex");
+            String tele = rs.getString("m_tele");
+
+            Merchant mer = new Merchant(id, acc, psw, name, sex, tele);
+            merchantList.add(mer);
+        }
+        con.close();
+        return merchantList;
+    }
+
+    public List<Merchant> selectMerTable(String column_name, String new_value) throws SQLException {
+        String sql = "select * from merchant where " + column_name + " = ?";
+        Connection con = DataBase.OpenDB();
+        if (column_name.equals("m_name")) {
+            sql = "select * from merchant where " + column_name + " like ?";
+            new_value = "%" + new_value + "%";
+        }
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, new_value);
+        ResultSet rs = stmt.executeQuery();
+        List<Merchant> merList = new ArrayList<>();
+        while (rs.next()) {
+            String id = Integer.toString(rs.getInt("m_id"));
+            String acc = rs.getString("m_acc");
+            String psw = rs.getString("m_psw");
+            String name = rs.getString("m_name");
+            String sex = rs.getString("m_sex");
+            String tele = rs.getString("m_tele");
+            Merchant mer = new Merchant(id, acc, psw, name, sex, tele);
+            merList.add(mer);
+        }
+        con.close();
+        return merList;
+    }
+
+    //修改Merchanttable中的某一项的内容，根据m_id 来修改，输入修改的列名与修改值,成功返回相应的字符串
+    public String updateMerTable(int m_id, String column_name, String new_value) throws SQLException {
+        String sql = "UPDATE merchant SET " + column_name + " = ? WHERE m_id = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+
+        stmt.setString(1, new_value);
+        stmt.setInt(2, m_id);
+        int result = stmt.executeUpdate();
+        con.close();
+        if (result > 0) {
+            return "修改成功";
+        } else {
+            return "修改失败";
+        }
+    }
+    //使用m_id来修改merchanttable，全部更新,
+    public String updateMerTable(int m_id, String new_m_acc, String new_m_psw, String new_m_name, String new_m_sex, String new_m_tele) throws SQLException {
+        String sql = "UPDATE merchant SET m_acc = ?, m_psw = ?, m_name = ?, m_sex = ?, m_tele = ? WHERE m_id = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, new_m_acc);
+        stmt.setString(2, new_m_psw);
+        stmt.setString(3, new_m_name);
+        stmt.setString(4, new_m_sex);
+        stmt.setString(5, new_m_tele);
+        stmt.setInt(6, m_id);
+        int result = stmt.executeUpdate();
+        con.close();
+        if (result > 0) {
+            return "修改成功";
+        } else {
+            return "修改失败";
+        }
+    }
+
+    //根据m_id删除用户
+    public String deleteMerTable(int m_id) throws SQLException {
+        String sql = "DELETE FROM merchant WHERE m_id = ?";
+        Connection con = DataBase.OpenDB();
+
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, m_id);
+        int result = stmt.executeUpdate();
+        con.close();
+        if (result > 0) {
+            return "删除成功";
+        } else {
+            return "删除失败";
+        }
+    }
+
+    //插入一条新的商家信息，输入商家的所有信息，成功返回相应的字符串
+    public String insertMerTable(String new_m_acc, String new_m_psw, String new_m_name, String new_m_sex, String new_m_tele) throws SQLException {
+        String sql = "INSERT INTO merchant (m_id, m_acc, m_psw, m_name, m_sex,  m_tele) VALUES (null, ?, ?, ?, ?, ?)";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, new_m_acc);
+        stmt.setString(2, new_m_psw);
+        stmt.setString(3, new_m_name);
+        stmt.setString(4, new_m_sex);
+        stmt.setString(5, new_m_tele);
+
+        int result = stmt.executeUpdate();
+        con.close();
+        if (result > 0) {
+            return "添加成功";
+        } else {
+            return "添加失败";
+        }
+
+    }
+
     public static void main(String[] args) throws SQLException {
         DataControl dataControl = new DataControl();
         dataControl.insert_cart(1, 1, 1);
