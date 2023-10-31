@@ -1,8 +1,6 @@
 package cn.bjut.jdbc;
+
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.text.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -170,6 +168,7 @@ public class DataControl {
                 product.setP_class(rs.getString("p_class"));
                 product.setP_price(rs.getString("p_price"));
                 product.setP_status(rs.getString("p_status"));
+                product.setP_quantity(rs.getInt("p_quantity"));
                 product.setP_img(rs.getString("p_img"));
                 products.add(product);
             }
@@ -521,6 +520,7 @@ public class DataControl {
             return "修改失败";
         }
     }
+
     //使用m_id来修改merchanttable，全部更新,
     public String updateMerTable(int m_id, String new_m_acc, String new_m_psw, String new_m_name, String new_m_sex, String new_m_tele) throws SQLException {
         String sql = "UPDATE merchant SET m_acc = ?, m_psw = ?, m_name = ?, m_sex = ?, m_tele = ? WHERE m_id = ?";
@@ -583,6 +583,7 @@ public class DataControl {
         dataControl.insert_cart(1, 1, 1);
         dataControl.selectReplyTable("1");
     }
+
     //查找某一商家的信息，m-id
     public Merchant selectMerchant(int m_id) throws SQLException {
         String sql = "select * from merchant where m_id = ?";
@@ -590,14 +591,14 @@ public class DataControl {
         PreparedStatement stmt = con.prepareStatement(sql);
         stmt.setInt(1, m_id);
         ResultSet rs = stmt.executeQuery();
-        if(rs.next()) {
+        if (rs.next()) {
             String id = Integer.toString(rs.getInt("m_id"));
             String acc = rs.getString("m_acc");
             String psw = rs.getString("m_psw");
             String name = rs.getString("m_name");
             String sex = rs.getString("m_sex");
             String tele = rs.getString("m_tele");
-            return new Merchant(id,acc,psw,name,sex,tele);
+            return new Merchant(id, acc, psw, name, sex, tele);
         }
         return null;
     }
@@ -608,7 +609,7 @@ public class DataControl {
                 "     COALESCE(u.u_name, m.m_name) as author_name, " +
                 "      f.f_time, f.f_con,f.flag  FROM forum f " +
                 "  LEFT JOIN user u ON f.u_id = u.u_id  " +
-                "  LEFT JOIN merchant m ON f.m_id = m.m_id  "+
+                "  LEFT JOIN merchant m ON f.m_id = m.m_id  " +
                 "  WHERE f.reply_to = ?";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
@@ -627,7 +628,7 @@ public class DataControl {
 
     //查找评论表，有回复id的不用返回，返回论坛发表的评论
     public List<CommentBar> selectForumList() throws SQLException {
-        String sql ="SELECT f.f_id, " +
+        String sql = "SELECT f.f_id, " +
                 "       COALESCE(u.u_name, m.m_name) as author_name, " +
                 "       f.f_time, " +
                 "       f.f_con,  " +
@@ -639,18 +640,77 @@ public class DataControl {
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
-       List<CommentBar> commentBarList = new ArrayList<CommentBar>();
-        while(rs.next()){
+        List<CommentBar> commentBarList = new ArrayList<CommentBar>();
+        while (rs.next()) {
             String id = Integer.toString(rs.getInt("f_id"));
             String author_name = rs.getString("author_name");
             String f_time = rs.getString("f_time");
-            String f_con =  rs.getString("f_con");
+            String f_con = rs.getString("f_con");
             String flag = rs.getString("flag");
-            CommentBar commentBar = new CommentBar(id,author_name,f_time,f_con,flag);
+            CommentBar commentBar = new CommentBar(id, author_name, f_time, f_con, flag);
         }
 
         return commentBarList;
     }
+
+    //搜索商品信息
+    public List<Product> searchProducts(int m_id, String searchType, String searchValue) throws SQLException {
+        List<Product> productList = new ArrayList<>();
+        Connection con = DataBase.OpenDB();
+        String sql = "SELECT * FROM product WHERE m_id = ?";
+        if (searchType != null && searchValue != null) {
+            switch (searchType) {
+                case "商品名称":
+                    sql += " AND p_name LIKE ?";
+                    break;
+                case "类别":
+                    sql += " AND p_class LIKE ?";
+                    break;
+                case "价格":
+                    // Assuming you want to search by price range, adjust the SQL as needed
+                    sql += " AND p_price = ?";
+                    break;
+                case "状态":
+                    sql += " AND p_status LIKE ?";
+                    break;
+                case "数量":
+                    sql += " AND p_quantity = ?"; // Use '=' to find products with a specific quantity
+                    break;
+                default:
+                    break;
+            }
+        }
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, m_id);
+        if (searchType != null && searchValue != null) {
+            int parameterIndex = 2; // Start after the m_id parameter
+            if (searchType.equals("数量")) {
+                stmt.setInt(parameterIndex, Integer.parseInt(searchValue));
+            } else {
+                stmt.setString(parameterIndex, "%" + searchValue + "%");
+            }
+        }
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Product product = new Product();
+            product.setP_id(rs.getInt("p_id"));
+            product.setP_name(rs.getString("p_name"));
+            product.setP_desc(rs.getString("p_desc"));
+            product.setP_class(rs.getString("p_class"));
+            product.setP_price(String.valueOf(rs.getDouble("p_price")));
+            product.setP_status(rs.getString("p_status"));
+            product.setP_img(rs.getString("p_img"));
+            product.setP_quantity(rs.getInt("p_quantity"));
+
+            productList.add(product);
+        }
+        rs.close();
+        stmt.close();
+        con.close();
+        return productList;
+    }
+
+
 }
 
 
