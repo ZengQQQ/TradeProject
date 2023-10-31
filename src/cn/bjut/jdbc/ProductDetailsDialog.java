@@ -4,10 +4,10 @@ import javax.swing.*;
 
 //商品详情界面
 public class ProductDetailsDialog extends ProductofDialog {
-    MerchantInterFrm mer;
-    public ProductDetailsDialog(DataControl dataControl,Product product,MerchantInterFrm mer) {
+    private  MerchantProductFrm merproduct;
+    public ProductDetailsDialog(DataControl dataControl,Product product,MerchantProductFrm merproduct) {
         super(dataControl, product);
-        this.mer = mer;
+        this.merproduct =merproduct;
         initComponents();
     }
 
@@ -41,7 +41,7 @@ public class ProductDetailsDialog extends ProductofDialog {
         panel.add(status, gbc);
         gbc.gridy++;
         //商品图片展示
-        imageLabel = mer.createImageLabel(product, 400, 300);
+        imageLabel = merproduct.createImageLabel(product, 400, 300);
         panel.add(imageLabel, gbc);
     }
 }
