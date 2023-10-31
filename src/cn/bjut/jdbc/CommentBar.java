@@ -17,17 +17,17 @@ public class CommentBar extends JPanel {
     private String userName;
     private String time;
     private String content;
-    private int replyCount;//回复的id有多少个
+    private String flag;
+    //private int replyCount;//回复的id有多少个
     private List<Comment> replies;
 
-    public CommentBar(String ID,String userName, String time, String content, int replyCount) {
+    public CommentBar(String ID,String userName, String time, String content, String flag) {
         this.ID = ID;
         this.userName = userName;
         this.time = time;
         this.content = content;
-        this.replyCount = replyCount;
-        this.replies = new ArrayList<>();
-
+        this.flag = flag;
+        //this.replyCount = replyCount;
         initComponents();
     }
 
@@ -45,9 +45,13 @@ public class CommentBar extends JPanel {
 
         JPanel bottomPanel = new JPanel();
 
-        JButton viewRepliesButton = new JButton("View Replies (" + this.replyCount+ ")");
+        JButton viewRepliesButton = new JButton("View Replies  ");
         viewRepliesButton.addActionListener(e -> {
-            viewReplies(this);
+            try {
+                viewReplies(this);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         JButton replyButton = new JButton("Reply");
         replyButton.addActionListener(e -> {
@@ -56,7 +60,6 @@ public class CommentBar extends JPanel {
 
         bottomPanel.add(viewRepliesButton, BorderLayout.EAST);
         bottomPanel.add(replyButton, BorderLayout.WEST);
-
 
 
         add(topPanel);
@@ -85,30 +88,35 @@ public class CommentBar extends JPanel {
         return replies;
     }
 
-    public int getReplyCount() {
-        return replyCount;
+    public String getID() {
+        return ID;
     }
 
 
-
-    private void viewReplies(CommentBar commentBar) {
-        RepliesDialog repliesDialog = new RepliesDialog(replies);
+//查看当前评论的回复
+    private void viewReplies(CommentBar commentBar) throws SQLException {
+        RepliesDialog repliesDialog = new RepliesDialog(this.ID);
         repliesDialog.setVisible(true);
     }
-
+    //回复当前某一条评论
     public void openReplyDialog(CommentBar commentBar) {
         NewCommentDialog newCommentDialog = new NewCommentDialog();
         newCommentDialog.setVisible(true);
     }
 
     public class RepliesDialog extends JDialog {
-        private List<Comment> replyList;
-        public RepliesDialog(List<Comment> replyList) {
-            this.replyList = replyList;
+        private String ID;
+        public RepliesDialog(String ID) throws SQLException {
+            this.ID = ID;
             initComponents();
         }
 
-        private void initComponents() {
+        private void initComponents() throws SQLException {
+
+            setTitle("Replies");
+            DataControl data = new DataControl();
+
+            List<Comment> replyList = data.selectReplyTable(ID);
 
             JScrollPane scrollPane = new JScrollPane();
             for(Comment reply : replyList){
@@ -126,10 +134,12 @@ public class CommentBar extends JPanel {
         private String name;
         private String time;
         private String content;
-        public replyBar(String name,String time,String content){
+        private String flag;
+        public replyBar(String name,String time,String content,String flag){
             this.name = name;
             this.time = time;
             this.content = content;
+            this.flag = flag;
             initComponents();
         }
 
@@ -137,6 +147,7 @@ public class CommentBar extends JPanel {
             this.name = comment.getUserName();
             this.time = comment.getTime();
             this.content = comment.getContent();
+            this.flag = comment.getFlag();
             initComponents();
         }
         public void initComponents(){
@@ -149,8 +160,18 @@ public class CommentBar extends JPanel {
 
             JLabel contentLabel = new JLabel("Content: " + content);
 
+            JPanel bottomPanel = new JPanel();
+            bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
+
+            JLabel label = new JLabel("来自: " + flag);
+            label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+            bottomPanel.add(Box.createHorizontalGlue()); // 左侧填充
+            bottomPanel.add(label);
+
             add(topPanel);
             add(contentLabel);
+            add(bottomPanel);
             setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         }
 
@@ -158,29 +179,7 @@ public class CommentBar extends JPanel {
 
 
 
-    public class Comment{
-        private String userName;
-        private String time;
-        private String content;
 
-        public Comment(String userName, String time, String content) {
-            this.userName = userName;
-            this.time = time;
-            this.content = content;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public String getTime() {
-            return time;
-        }
-
-        public String getContent() {
-            return content;
-        }
-    }
     public class NewCommentDialog extends JDialog {
 
         private JTextField commentTextField = new JTextField(20);

@@ -3,6 +3,8 @@ package cn.bjut.jdbc;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ForumPage extends JPanel {
@@ -12,17 +14,21 @@ public class ForumPage extends JPanel {
     private String flag;
     private List<CommentBar> commentBars;
 
-    public ForumPage(User user,String flag) {
+    private DataControl dataControl = new DataControl();
+
+    public ForumPage(User user,String flag) throws SQLException {
         this.user = user;
         this.flag = flag;
         this.merchant = null;
+        this.commentBars = getCommentBars();
         initComponents();
     }
 
-    public ForumPage(Merchant merchant,String flag) {
+    public ForumPage(Merchant merchant,String flag) throws SQLException {
         this.merchant = merchant;
         this.flag = flag;
         this.user = null;
+        this.commentBars = getCommentBars();
         initComponents();
     }
 
@@ -52,6 +58,13 @@ public class ForumPage extends JPanel {
     private void openNewCommentDialog() {
         NewCommentDialog newCommentDialog = new NewCommentDialog();
         newCommentDialog.setVisible(true);
+    }
+
+
+    public List<CommentBar> getCommentBars() throws SQLException {
+        List<CommentBar> commentBars = dataControl.selectForumList();
+
+        return commentBars;
     }
 
     public class NewCommentDialog extends JDialog {
