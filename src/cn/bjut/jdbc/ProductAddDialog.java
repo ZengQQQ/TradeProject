@@ -6,10 +6,12 @@ import java.sql.SQLException;
 //添加商品界面
 public class ProductAddDialog extends ProductofDialog {
     private int m_id;
-    MerchantInterFrm mer;
+    private  MerchantInterFrm mer;
+    private  MerchantProductFrm merproduct;
 
-    public ProductAddDialog(DataControl dataControladd,Product product , MerchantInterFrm mer) {
+    public ProductAddDialog(DataControl dataControladd,Product product , MerchantInterFrm mer,MerchantProductFrm merproduct) {
         super(dataControladd, product);
+        this.merproduct=merproduct;
         this.m_id =mer.getM_id();
         this.mer = mer;
         initComponents();
@@ -49,7 +51,7 @@ public class ProductAddDialog extends ProductofDialog {
         panel.add(statusPanel, gbc);
         gbc.gridy++;
 
-        imageLabel = mer.createImageLabel(product, 400, 300);
+        imageLabel = merproduct.createImageLabel(product, 400, 300);
         panel.add(imageLabel, gbc);
         gbc.gridx = 2;
         //商品图片展示
