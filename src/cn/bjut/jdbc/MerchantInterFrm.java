@@ -406,9 +406,8 @@ public class MerchantInterFrm extends JFrame {
     }
 
     public static void main(String[] args) {
-        // 将Swing应用程序放在Event Dispatch Thread (EDT)中运行
         SwingUtilities.invokeLater(() -> {
-            MerchantInterFrm frame = null;
+            MerchantInterFrm frame;
             try {
                 frame = new MerchantInterFrm(1);
             } catch (SQLException e) {
