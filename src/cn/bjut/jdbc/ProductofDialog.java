@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-
+//商品界面父类
 public class ProductofDialog extends JDialog{
     public DataControl dataControl;
     public Product product;
