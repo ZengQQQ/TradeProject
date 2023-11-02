@@ -23,6 +23,26 @@ public class DataControl {
 
     }
 
+    public int find_p_id(int u_id,String join_time) throws SQLException {
+        int p_id=0;
+        String sql = "select p_id from cart " + " WHERE u_id=" + u_id + " AND join_time='" + join_time + "'";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            p_id=rs.getInt("p_id");
+        } else {
+            p_id = 0;
+        }
+        if (con != null) {
+            con.close();
+        }
+        return p_id;
+    }
+
+
+
+
     public String getUserPsw(String account) throws SQLException {
         String answer;
         String sql = "select u_psw from user " + " where  u_acc" + " = ?";
@@ -62,6 +82,108 @@ public class DataControl {
         return answer;
 
     }
+
+    public void insertOrUpdateCart(int u_id, int p_id) {
+        DataBase dataBase = new DataBase();
+        dataBase.OpenDB();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        try {
+            // 查询购物车中是否已存在该商品
+            String query = "SELECT * FROM cart WHERE p_id=? AND u_id=?";
+            PreparedStatement pstmt = dataBase.getCon().prepareStatement(query);
+            pstmt.setInt(1, p_id);
+            pstmt.setInt(2, u_id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                // 商品已存在，执行更新操作
+                int quantity = rs.getInt("quantity") + 1;
+                String updateQuery = "UPDATE cart SET quantity=?, join_time=? WHERE p_id=? AND u_id=?";
+                PreparedStatement updateStmt = dataBase.getCon().prepareStatement(updateQuery);
+                updateStmt.setInt(1, quantity);
+                updateStmt.setObject(2, currentDateTime);
+                updateStmt.setInt(3, p_id);
+                updateStmt.setInt(4, u_id);
+                int rowsUpdated = updateStmt.executeUpdate();
+
+                if (rowsUpdated > 0) {
+                    System.out.println("更新成功！");
+                } else {
+                    System.out.println("更新失败！");
+                }
+            } else {
+                // 商品不存在，执行插入操作
+                String insertQuery = "INSERT INTO cart (p_id, u_id, join_time, quantity) VALUES (?, ?, ?, 1)";
+                PreparedStatement insertStmt = dataBase.getCon().prepareStatement(insertQuery);
+                insertStmt.setInt(1, p_id);
+                insertStmt.setInt(2, u_id);
+                insertStmt.setObject(3, currentDateTime);
+                int rowsInserted = insertStmt.executeUpdate();
+
+                if (rowsInserted > 0) {
+                    System.out.println("插入成功！");
+                } else {
+                    System.out.println("插入失败！");
+                }
+            }
+
+            // 关闭资源
+            rs.close();
+            pstmt.close();
+            dataBase.getCon().close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public void insertOrderFromCart(int u_id, int p_id) {
+        DataBase dataBase = new DataBase();
+        dataBase.OpenDB();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        try {
+            // 查询购物车中是否存在该商品
+            String query = "SELECT * FROM cart WHERE p_id=? AND u_id=?";
+            PreparedStatement pstmt = dataBase.getCon().prepareStatement(query);
+            pstmt.setInt(1, p_id);
+            pstmt.setInt(2, u_id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                int quantity = rs.getInt("quantity");
+
+                // 将购物车内容插入订单表
+                String insertQuery = "INSERT INTO orders (p_id, u_id, buy_time, quantity) VALUES (?, ?, ?, ?)";
+                PreparedStatement insertStmt = dataBase.getCon().prepareStatement(insertQuery);
+                insertStmt.setInt(1, p_id);
+                insertStmt.setInt(2, u_id);
+                insertStmt.setObject(3, currentDateTime);
+                insertStmt.setInt(4, quantity);
+                int rowsInserted = insertStmt.executeUpdate();
+
+                if (rowsInserted > 0) {
+                    System.out.println("插入成功！");
+                } else {
+                    System.out.println("插入失败！");
+                }
+            } else {
+                System.out.println("购物车中不存在该商品！");
+            }
+
+            // 关闭资源
+            rs.close();
+            pstmt.close();
+            dataBase.getCon().close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 
     public int getUserid(String account) throws SQLException {
         int id = 0;
