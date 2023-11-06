@@ -958,8 +958,8 @@ public class DataControl {
         return orderInfoList;
     }
 
-    //根据一定的信息查找订单
-    public List<Order> searchOrders(int m_id, String productType, String userType,String dateType, String productf, String userf, String quantityf, String totalpricef, String datef) throws SQLException {
+    // 根据一定的信息查找订单
+    public List<Order> searchOrders(int m_id, String productType, String userType, String dateType, String productf, String userf, String quantityf, String totalpricef, String datef) throws SQLException {
         List<Order> orderList = new ArrayList<>();
         Connection con = DataBase.OpenDB();
 
@@ -1031,7 +1031,7 @@ public class DataControl {
             if (datef != null && !datef.isEmpty()) {
                 switch (dateType) {
                     case "日期":
-                        // Check if the input is a valid date (e.g., "2023.2.26")
+                        // 检查输入是否为有效日期格式（例如 "2023.2.26"）
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.M.d");
                         try {
                             Date inputDate = dateFormat.parse(datef);
@@ -1046,40 +1046,39 @@ public class DataControl {
                         }
                         break;
                     case "年":
-                        // Check if the input is a valid year (e.g., "2023")
+                        // 检查输入是否为有效年份（例如 "2023"）
                         try {
                             int year = Integer.parseInt(datef);
                             whereClause += "AND YEAR(o.buy_time) = ? ";
                             parameters.add(year);
                         } catch (NumberFormatException e) {
-                            // Handle invalid year format
+                            // 处理无效的年份格式
                         }
                         break;
                     case "月":
-                        // Check if the input is a valid month (e.g., "2")
+                        // 检查输入是否为有效月份（例如 "2"）
                         try {
                             int month = Integer.parseInt(datef);
                             whereClause += "AND MONTH(o.buy_time) = ? ";
                             parameters.add(month);
                         } catch (NumberFormatException e) {
-                            // Handle invalid month format
+                            // 处理无效的月份格式
                         }
                         break;
                     case "日":
-                        // Check if the input is a valid day (e.g., "5")
+                        // 检查输入是否为有效日期（例如 "5"）
                         try {
                             int day = Integer.parseInt(datef);
                             whereClause += "AND DAY(o.buy_time) = ? ";
                             parameters.add(day);
                         } catch (NumberFormatException e) {
-                            // Handle invalid day format
+                            // 处理无效的日期格式
                         }
                         break;
                     default:
                         break;
                 }
             }
-
 
             sql += joinProduct + joinUser + whereClause;
 
@@ -1128,7 +1127,7 @@ public class DataControl {
             JOptionPane.showMessageDialog(null, "订单结果没有找到", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
             return null;
         } else if (orderList.isEmpty() && (totalpricef != null && !totalpricef.isEmpty() || (productType.equals("价格") && (productf != null && !productf.isEmpty())))) {
-            // Perform a secondary query to find the closest orders based on the specified criteria
+            // 执行次要查询以根据指定的条件找到最接近的订单
             JOptionPane.showMessageDialog(null, "订单结果没有找到，给您价格最接近的3个订单", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
             List<Order> closestOrders = findClosestOrders(productf, totalpricef, m_id);
             return closestOrders;
@@ -1137,12 +1136,14 @@ public class DataControl {
         return orderList;
     }
 
+
+    // 找到最接近的订单
     private List<Order> findClosestOrders(String productPrice, String totalPrice, int m_id) throws SQLException {
         List<Order> closestOrders = new ArrayList<>();
         Connection con = DataBase.OpenDB();
 
         try {
-            // Construct the SQL query based on the available criteria
+            // 构建 SQL 查询基于可用的条件
             String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity, o.totalprice, p.p_name, p.p_desc, p.p_class, p.p_price, u.u_name, u.u_sex, u.u_tele " +
                     "FROM orders o " +
                     "INNER JOIN product p ON o.p_id = p.p_id " +
@@ -1150,39 +1151,38 @@ public class DataControl {
                     "WHERE o.m_id = ? ";
 
             if (totalPrice != null && !totalPrice.isEmpty()) {
-                try {
-//                    Double totalPrice2  = Double.parseDouble(totalPrice);
+                //    Double totalPrice2  = Double.parseDouble(totalPrice);
 //                    double rounded = Math.round(totalPrice2 * 10) / 10.0;
 //                    if (rounded == totalPrice2) {
 //                        sql += "AND CAST(o.totalprice AS DECIMAL(10, 1)) = ? ";
 //                    } else {
 //                        sql += "AND CAST(o.totalprice AS DECIMAL(10, 2)) = ? ";
 //                    }
+                try {
                     sql += "ORDER BY ABS(o.totalprice - ?) LIMIT 3";
                 } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Invalid totalprice format.");
+                    throw new IllegalArgumentException("无效的总价格式。");
                 }
             } else if (productPrice != null && !productPrice.isEmpty()) {
-                Double productPrice2 = Double.parseDouble(productPrice);
-                try {
-//                    double rounded = Math.round(productPrice2 * 10) / 10.0;
+                //    double rounded = Math.round(productPrice2 * 10) / 10.0;
 //                    if (rounded == productPrice2) {
 //                        sql += "AND CAST(p.p_price AS DECIMAL(10, 1)) = ? ";
 //                    } else {
 //                        sql += "AND CAST(p.p_price AS DECIMAL(10, 2)) = ? ";
 //                    }
-                    sql += "ORDER BY ABS(p_price - ?) LIMIT 3";
+                try {
+                    sql += "ORDER BY ABS(p.p_price - ?) LIMIT 3";
                 } catch (NumberFormatException e) {
-                    // Handle the case where productPrice is not a valid number
-                    throw new IllegalArgumentException("Invalid product price format.");
+                    // 处理 productPrice 不是有效数字的情况
+                    throw new IllegalArgumentException("无效的商品价格格式。");
                 }
             }
 
-            // Execute the query
+            // 执行查询
             PreparedStatement stmt = con.prepareStatement(sql);
-            int parameterIndex = 1;  // Start with the first parameter
+            int parameterIndex = 1;  // 从第一个参数开始
 
-            stmt.setInt(parameterIndex, m_id);  // Set the first parameter
+            stmt.setInt(parameterIndex, m_id);  // 设置第一个参数
             if (totalPrice != null && !totalPrice.isEmpty()) {
                 stmt.setDouble(2, Double.parseDouble(totalPrice));
             } else if (productPrice != null && !productPrice.isEmpty()) {
@@ -1211,7 +1211,6 @@ public class DataControl {
 
                 order.setProduct(product);
                 order.setUser(user);
-                System.out.println(order.getProduct().getP_desc());
 
                 closestOrders.add(order);
             }
