@@ -1,28 +1,21 @@
 package cn.bjut.jdbc;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.List;
 
 public class MerchantInterFrm extends JFrame {
-    private JButton searchButton = new JButton("搜索");
+    private JButton searchproductButton = new JButton("搜索商品");
     private final CardLayout cardLayout = new CardLayout();
     public  JPanel mainPanel = new JPanel();
     private final int m_id;
 
     public DataControl dataControl = new DataControl();
     private  MerchantProductFrm merproduct;
+    private MerchantOrdersFrm merorder;
 
     public MerchantInterFrm(int mid) throws SQLException {
         this.m_id = mid;
@@ -50,7 +43,7 @@ public class MerchantInterFrm extends JFrame {
             detailsDialog.setVisible(true);
         });
 
-        topPanel.add(searchButton);
+        topPanel.add(searchproductButton);
         topPanel.add(addProductButton);
         // 将搜索按钮和商品展示部分添加到MerchantProductFrm
         card1.add(topPanel, BorderLayout.NORTH);
@@ -62,9 +55,14 @@ public class MerchantInterFrm extends JFrame {
 
         mainPanel.add(scrollPane, "card1");
         //第二个界面------------------------------------------------
-        JPanel card2 = new JPanel();
-        card2.add(new JLabel("这是第二个界面"));
-        card2.setBackground(Color.GREEN);
+        JPanel card2 = new JPanel(new BorderLayout());
+        JPanel topPanel2 = new JPanel(new GridLayout(1, 1));
+        JButton searchorderButton = new JButton("搜索订单");
+        topPanel2.add(searchorderButton);
+        merorder = new MerchantOrdersFrm(dataControl,m_id);
+
+        card2.add(topPanel2,BorderLayout.NORTH);
+        card2.add(merorder,BorderLayout.CENTER);
 
         mainPanel.add(card2, "card2");
         //第三个界面------------------------------------------------
@@ -78,15 +76,19 @@ public class MerchantInterFrm extends JFrame {
         // 将“我的信息”面板添加到 mainPanel
         mainPanel.add(card4JPanel, "card4");
 
-        //搜索界面------------------------------------------------
-        MerchantProductSearch search = new MerchantProductSearch(dataControl,this);
-        mainPanel.add(search, "card5");
+        //搜索商品界面------------------------------------------------
+        MerchantProductSearch searchproduct = new MerchantProductSearch(dataControl,this);
+        mainPanel.add(searchproduct, "card5");
+
+        //搜索订单界面
+        MerchantOrdersSearch searchorder = new MerchantOrdersSearch(dataControl,merorder);
+        mainPanel.add(searchorder, "card6");
 
         // 按钮------------------------------------------------
         // 创建按钮
 
         JButton upproject = new JButton("商品管理");
-        JButton downproject = new JButton("订单管理");
+        JButton downproject = new JButton("订单");
         JButton evaluate = new JButton("论坛");
         JButton myButton = new JButton("我的");
 
@@ -98,10 +100,17 @@ public class MerchantInterFrm extends JFrame {
         myButton.setPreferredSize(new Dimension(myButton.getPreferredSize().width, buttonHeight));
 
         //设置动作
-        searchButton.addMouseListener(new MouseAdapter() {
+        searchproductButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card5");
+            }
+        });
+
+        searchorderButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainPanel, "card6");
             }
         });
 
@@ -181,7 +190,7 @@ public class MerchantInterFrm extends JFrame {
     }
 
 
-    public void refreshCard1All() {
+    public void refreshCard1() {
         merproduct.removeAll();
         try {
             List<Product> products = dataControl.MerchantProductQuery(getM_id());
@@ -197,27 +206,40 @@ public class MerchantInterFrm extends JFrame {
         }
     }
 
-    //创建菜单
+    public void refreshCard2() {
+        merorder.refreshData();
+    }
+
+
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("菜单");
-        JButton refreshButton = new JButton("刷新");
 
+        JButton refreshButton1 = new JButton("刷新商品");
+        JButton refreshButton2 = new JButton("刷新订单");
 
-
-        refreshButton.addMouseListener(new MouseAdapter() {
+        refreshButton1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                refreshCard1All();
+                refreshCard1();
             }
         });
 
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 0));
-        buttonPanel.add(refreshButton);
+        refreshButton2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                refreshCard2();
+            }
+        });
+
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 1));
+        buttonPanel.add(refreshButton1);
+        buttonPanel.add(refreshButton2); // Add the "刷新订单" button
         menu.add(buttonPanel);
         menuBar.add(menu);
         return menuBar;
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
