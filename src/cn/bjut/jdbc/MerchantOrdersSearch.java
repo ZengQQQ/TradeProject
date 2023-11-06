@@ -9,16 +9,16 @@ import java.util.List;
 public class MerchantOrdersSearch extends JPanel {
     private final DataControl data;
     private final MerchantOrdersFrm merorderFrm;
-    private JComboBox<String> productsearchBox;
-    private JComboBox<String> usersearchBox;
-    private JTextField searchproductField;
-    private JTextField usersearchField;
+    private JComboBox<String> productsearchBox= new JComboBox<>(new String[]{"商品名称", "类别", "价格", "数量"});
+    private JComboBox<String> usersearchBox = new JComboBox<>(new String[]{"用户名", "性别", "电话"});
+    private JComboBox<String> datesearchBox= new JComboBox<>(new String[]{"日期", "年", "月", "日"});
+    private JTextField searchproductField= new JTextField(20);
+    private JTextField usersearchField= new JTextField(20);
     private JTextField quantityField = new JTextField(20);
     private JTextField totalPriceField = new JTextField(20);
     private JTextField dateField = new JTextField(20);
     private MerchantOrdersFrm orderDisplayPanel;
     private JPanel ordersPanel ;
-    private static final String[] SEARCH_TYPES = {"商品名称", "类别", "价格", "数量"};
 
     public MerchantOrdersSearch(DataControl data, MerchantOrdersFrm parentFrame) throws SQLException {
         this.data = data;
@@ -44,12 +44,6 @@ public class MerchantOrdersSearch extends JPanel {
         JPanel searchPanel = new JPanel();
         JPanel topSearchPanel = new JPanel();
         JPanel bottomSearchPanel = new JPanel();
-
-        productsearchBox = new JComboBox<>(SEARCH_TYPES);
-        searchproductField = new JTextField(20);
-
-        usersearchBox = new JComboBox<>(new String[]{"用户名", "性别", "电话"});
-        usersearchField = new JTextField(20);
 
         JButton searchButton = new JButton("查找");
         JButton allButton = new JButton("显示全部");
@@ -97,18 +91,20 @@ public class MerchantOrdersSearch extends JPanel {
         c.insets = new Insets(0, 0, 0, 0);
         c.gridx = 0;
         c.gridy = 0;
-        bottomSearchPanel.add(new JLabel("商品数量："), c);
+        bottomSearchPanel.add(new JLabel("购买商品数量："), c);
         c.gridx = 1;
         bottomSearchPanel.add(quantityField, c);
 
         c.gridx = 2;
-        bottomSearchPanel.add(new JLabel("商品总价格："), c);
+        bottomSearchPanel.add(new JLabel("订单总价格："), c);
         c.gridx = 3;
         bottomSearchPanel.add(totalPriceField, c);
 
         c.gridx = 4;
         bottomSearchPanel.add(new JLabel("购买时间："), c);
         c.gridx = 5;
+        bottomSearchPanel.add(datesearchBox, c);
+        c.gridx=6;
         bottomSearchPanel.add(dateField, c);
 
         searchPanel.setLayout(new GridLayout(2, 1));
@@ -134,9 +130,10 @@ public class MerchantOrdersSearch extends JPanel {
         String userf = usersearchField.getText();
         String quantityf = quantityField.getText();
         String totalpricef = totalPriceField.getText();
+        String dateType = (String) datesearchBox.getSelectedItem();
         String datef = dateField.getText();
 
-        List<Order> orders = data.searchOrders( merorderFrm.m_id,productType, userType, productf, userf, quantityf, totalpricef, datef);
+        List<Order> orders = data.searchOrders( merorderFrm.m_id,productType, userType,dateType, productf, userf, quantityf, totalpricef, datef);
 
         if (orders != null) {
             // Clear the existing order display panel
