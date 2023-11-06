@@ -1,5 +1,6 @@
 package cn.bjut.jdbc;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +24,14 @@ public class DataControl {
 
     }
 
-    public int find_p_id(int u_id,String join_time) throws SQLException {
-        int p_id=0;
+    public int find_p_id(int u_id, String join_time) throws SQLException {
+        int p_id = 0;
         String sql = "select p_id from cart " + " WHERE u_id=" + u_id + " AND join_time='" + join_time + "'";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
-            p_id=rs.getInt("p_id");
+            p_id = rs.getInt("p_id");
         } else {
             p_id = 0;
         }
@@ -39,8 +40,6 @@ public class DataControl {
         }
         return p_id;
     }
-
-
 
 
     public String getUserPsw(String account) throws SQLException {
@@ -138,7 +137,6 @@ public class DataControl {
     }
 
 
-
     public void insertOrderFromCart(int u_id, int p_id) {
         DataBase dataBase = new DataBase();
         dataBase.OpenDB();
@@ -181,8 +179,6 @@ public class DataControl {
             e.printStackTrace();
         }
     }
-
-
 
 
     public int getUserid(String account) throws SQLException {
@@ -775,12 +771,13 @@ public class DataControl {
         return commentBarList;
     }
 
-    //搜索商品信息
+    //根据选项搜索商品信息
     public List<Product> searchProducts(int m_id, String searchType, String searchValue) throws SQLException {
         List<Product> productList = new ArrayList<>();
         Connection con = DataBase.OpenDB();
         String sql = "SELECT * FROM product WHERE m_id = ?";
-        if (searchType != null && searchValue != null) {
+
+        if (searchType != null && !searchType.isEmpty() && searchValue != null && !searchValue.isEmpty()) {
             switch (searchType) {
                 case "商品名称":
                     sql += " AND p_name LIKE ?";
@@ -789,14 +786,19 @@ public class DataControl {
                     sql += " AND p_class LIKE ?";
                     break;
                 case "价格":
-                    // Assuming you want to search by price range, adjust the SQL as needed
-                    sql += " AND p_price = ?";
+                    double priceValue = Double.parseDouble(searchValue);
+                    double rounded = Math.round(priceValue * 10) / 10.0;
+                    if (rounded == priceValue) {
+                        sql += " AND CAST(p_price AS DECIMAL(10, 1)) = ?";
+                    } else {
+                        sql += " AND CAST(p_price AS DECIMAL(10, 2)) = ?";
+                    }
                     break;
                 case "状态":
                     sql += " AND p_status LIKE ?";
                     break;
                 case "数量":
-                    sql += " AND p_quantity = ?"; // Use '=' to find products with a specific quantity
+                    sql += " AND p_quantity = ?";
                     break;
                 default:
                     break;
@@ -804,32 +806,371 @@ public class DataControl {
         }
         PreparedStatement stmt = con.prepareStatement(sql);
         stmt.setInt(1, m_id);
-        if (searchType != null && searchValue != null) {
-            int parameterIndex = 2; // Start after the m_id parameter
+
+        if (searchType != null && !searchType.isEmpty() && searchValue != null && !searchValue.isEmpty()) {
+            int parameterIndex = 2;
+
             if (searchType.equals("数量")) {
                 stmt.setInt(parameterIndex, Integer.parseInt(searchValue));
+            } else if (searchType.equals("价格")) {
+                double price = Double.parseDouble(searchValue);
+                stmt.setDouble(parameterIndex, price);
             } else {
                 stmt.setString(parameterIndex, "%" + searchValue + "%");
             }
         }
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-            Product product = new Product();
-            product.setP_id(rs.getInt("p_id"));
-            product.setP_name(rs.getString("p_name"));
-            product.setP_desc(rs.getString("p_desc"));
-            product.setP_class(rs.getString("p_class"));
-            product.setP_price(String.valueOf(rs.getDouble("p_price")));
-            product.setP_status(rs.getString("p_status"));
-            product.setP_img(rs.getString("p_img"));
-            product.setP_quantity(rs.getInt("p_quantity"));
 
-            productList.add(product);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            do {
+                Product product = new Product();
+                product.setP_id(rs.getInt("p_id"));
+                product.setP_name(rs.getString("p_name"));
+                product.setP_desc(rs.getString("p_desc"));
+                product.setP_class(rs.getString("p_class"));
+                product.setP_price(String.valueOf(rs.getDouble("p_price")));
+                product.setP_status(rs.getString("p_status"));
+                product.setP_img(rs.getString("p_img"));
+                product.setP_quantity(rs.getInt("p_quantity"));
+                productList.add(product);
+            } while (rs.next());
+            rs.close();
+            stmt.close();
+            con.close();
+            return productList;
+        } else {
+            rs.close();
+            stmt.close();
+            if (searchType.equals("价格") && productList.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "商品结果没有找到，给您价格最接近的5个商品", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
+                // Perform a secondary query to find the closest products based on the specified price value
+                List<Product> closestProducts = findClosestProducts(searchValue, m_id);
+                return closestProducts;
+            }
+            return productList;
         }
-        rs.close();
-        stmt.close();
-        con.close();
-        return productList;
+    }
+
+    private List<Product> findClosestProducts(String searchValue, int m_id) {
+        List<Product> closestProducts = new ArrayList<>();
+        Connection con = DataBase.OpenDB();
+
+        try {
+            String sql = "SELECT * FROM product WHERE m_id = ? ORDER BY ABS(p_price - ?) LIMIT 5";
+
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, m_id);
+
+            double priceValue = Double.parseDouble(searchValue);
+            stmt.setDouble(2, priceValue);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setP_id(rs.getInt("p_id"));
+                product.setP_name(rs.getString("p_name"));
+                product.setP_desc(rs.getString("p_desc"));
+                product.setP_class(rs.getString("p_class"));
+                product.setP_price(String.valueOf(rs.getDouble("p_price")));
+                product.setP_status(rs.getString("p_status"));
+                product.setP_img(rs.getString("p_img"));
+                product.setP_quantity(rs.getInt("p_quantity"));
+                closestProducts.add(product);
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return closestProducts;
+    }
+
+
+    //根据m_id查找订单有关的用户和商品
+    public List<Order> getOrderInfoByM_id(int m_id) throws SQLException {
+        List<Order> orderInfoList = new ArrayList<>();
+
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            // 编写SQL查询语句，根据m_id查找订单、用户和商品信息
+            String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity,o.totalprice, " +
+                    "p.p_name, p.p_desc, p.p_class, p.p_price, p.p_status, p.p_quantity, p.p_img, " +
+                    "u.u_acc, u.u_name, u.u_sex, u.u_tele " +
+                    "FROM orders o " +
+                    "INNER JOIN product p ON o.p_id = p.p_id AND o.m_id = p.m_id " +
+                    "INNER JOIN user u ON o.u_id = u.u_id " +
+                    "WHERE o.m_id = ?";
+            // 创建PreparedStatement对象，设置参数并执行查询
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1, m_id);
+            rs = stmt.executeQuery();
+
+            // 处理查询结果
+            while (rs.next()) {
+                Order orderInfo = new Order();
+                orderInfo.setP_id(rs.getInt("p_id"));
+                orderInfo.setU_id(rs.getInt("u_id"));
+                orderInfo.setBuytime(rs.getString("buy_time"));
+                orderInfo.setQuantity(rs.getInt("quantity"));
+                orderInfo.setTotalprice(String.valueOf(rs.getDouble("totalprice")));
+
+                Product product = new Product();
+                product.setP_name(rs.getString("p_name"));
+                product.setP_desc(rs.getString("p_desc"));
+                product.setP_class(rs.getString("p_class"));
+                product.setP_price(String.valueOf(rs.getDouble("p_price")));
+                product.setP_status(rs.getString("p_status"));
+                product.setP_quantity(rs.getInt("p_quantity"));
+                product.setP_img(rs.getString("p_img"));
+
+                User user = new User();
+                user.setID(String.valueOf(rs.getInt("u_id")));
+                user.setAcc(rs.getString("u_acc"));
+                user.setU_name(rs.getString("u_name"));
+                user.setU_sex(rs.getString("u_sex"));
+                user.setU_tele(rs.getString("u_tele"));
+
+                orderInfo.setProduct(product);
+                orderInfo.setUser(user);
+
+                orderInfoList.add(orderInfo);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭数据库连接和资源
+            rs.close();
+            stmt.close();
+            con.close();
+        }
+        return orderInfoList;
+    }
+
+    //根据一定的信息查找订单
+    public List<Order> searchOrders(int m_id, String productType, String userType, String productf, String userf, String quantityf, String totalpricef, String datef) throws SQLException {
+        List<Order> orderList = new ArrayList<>();
+        Connection con = DataBase.OpenDB();
+
+        try {
+            String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity,o.totalprice, p.p_name, p.p_desc, p.p_class, p.p_price, u.u_name, u.u_sex, u.u_tele FROM orders o ";
+            String joinProduct = "INNER JOIN product p ON o.p_id = p.p_id ";
+            String joinUser = "INNER JOIN user u ON o.u_id = u.u_id ";
+            String whereClause = "WHERE o.m_id = ? ";
+            List<Object> parameters = new ArrayList<>();
+            parameters.add(m_id);
+
+            if (productf != null && !productf.isEmpty() && !productType.isEmpty()) {
+                switch (productType) {
+                    case "商品名称":
+                        whereClause += "AND p.p_name LIKE ? ";
+                        parameters.add("%" + productf + "%");
+                        break;
+                    case "类别":
+                        whereClause += "AND p.p_class LIKE ? ";
+                        parameters.add("%" + productf + "%");
+                        break;
+                    case "价格":
+                        double rounded = Math.round(Double.parseDouble(productf) * 10) / 10.0;
+                        if (rounded == Double.parseDouble(productf)) {
+                            whereClause += "AND CAST(p.p_price AS DECIMAL(10, 1)) = ? ";
+                        } else {
+                            whereClause += "AND CAST(p.p_price AS DECIMAL(10, 2)) = ? ";
+                        }
+                        parameters.add(Double.parseDouble(productf));
+                        break;
+                    case "数量":
+                        whereClause += "AND o.quantity = ? ";
+                        parameters.add(Integer.parseInt(productf));
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (userType != null && !userType.isEmpty()) {
+                switch (userType) {
+                    case "用户名":
+                        whereClause += "AND u.u_name LIKE ? ";
+                        parameters.add("%" + userf + "%");
+                        break;
+                    case "性别":
+                        whereClause += "AND u.u_sex LIKE ? ";
+                        parameters.add("%" + userf + "%");
+                        break;
+                    case "电话":
+                        whereClause += "AND u.u_tele LIKE ? ";
+                        parameters.add("%" + userf + "%");
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (quantityf != null && !quantityf.isEmpty()) {
+                whereClause += "AND o.quantity = ? ";
+                parameters.add(Integer.parseInt(quantityf));
+            }
+
+            if (totalpricef != null && !totalpricef.isEmpty()) {
+                whereClause += "AND o.totalprice = ? ";
+                parameters.add(Double.parseDouble(totalpricef));
+            }
+
+            if (datef != null && !datef.isEmpty()) {
+                whereClause += "AND o.buy_time = ? ";
+                parameters.add(datef);
+            }
+
+            sql += joinProduct + joinUser + whereClause;
+
+            PreparedStatement stmt = con.prepareStatement(sql);
+            for (int i = 0; i < parameters.size(); i++) {
+                stmt.setObject(i + 1, parameters.get(i));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Order order = new Order();
+                order.setP_id(rs.getInt("p_id"));
+                order.setU_id(rs.getInt("u_id"));
+                order.setBuytime(rs.getString("buy_time"));
+                order.setQuantity(rs.getInt("quantity"));
+                order.setTotalprice(String.valueOf(rs.getDouble("totalprice")));
+
+                Product product = new Product();
+                product.setP_name(rs.getString("p_name"));
+                product.setP_desc(rs.getString("p_desc"));
+                product.setP_class(rs.getString("p_class"));
+                product.setP_price(rs.getString("p_price"));
+
+                User user = new User();
+                user.setU_name(rs.getString("u_name"));
+                user.setU_sex(rs.getString("u_sex"));
+                user.setU_tele(rs.getString("u_tele"));
+
+                order.setProduct(product);
+                order.setUser(user);
+
+                orderList.add(order);
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (orderList.isEmpty() && (userf != null && !userf.isEmpty() || quantityf != null && !quantityf.isEmpty() || datef != null && !datef.isEmpty())) {
+            JOptionPane.showMessageDialog(null, "订单结果没有找到", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
+            return null;
+        } else if (orderList.isEmpty() && (totalpricef != null && !totalpricef.isEmpty() || (productType.equals("价格") && (productf != null && !productf.isEmpty())))) {
+            // Perform a secondary query to find the closest orders based on the specified criteria
+            JOptionPane.showMessageDialog(null, "订单结果没有找到，给您价格最接近的3个订单", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
+            List<Order> closestOrders = findClosestOrders(productf, totalpricef, m_id);
+            return closestOrders;
+        }
+
+        return orderList;
+    }
+
+    private List<Order> findClosestOrders(String productPrice, String totalPrice, int m_id) throws SQLException {
+        List<Order> closestOrders = new ArrayList<>();
+        Connection con = DataBase.OpenDB();
+
+        try {
+            // Construct the SQL query based on the available criteria
+            String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity, o.totalprice, p.p_name, p.p_desc, p.p_class, p.p_price, u.u_name, u.u_sex, u.u_tele " +
+                    "FROM orders o " +
+                    "INNER JOIN product p ON o.p_id = p.p_id " +
+                    "INNER JOIN user u ON o.u_id = u.u_id " +
+                    "WHERE o.m_id = ? ";
+
+            if (totalPrice != null && !totalPrice.isEmpty()) {
+                try {
+//                    Double totalPrice2  = Double.parseDouble(totalPrice);
+//                    double rounded = Math.round(totalPrice2 * 10) / 10.0;
+//                    if (rounded == totalPrice2) {
+//                        sql += "AND CAST(o.totalprice AS DECIMAL(10, 1)) = ? ";
+//                    } else {
+//                        sql += "AND CAST(o.totalprice AS DECIMAL(10, 2)) = ? ";
+//                    }
+                    sql += "ORDER BY ABS(o.totalprice - ?) LIMIT 3";
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Invalid totalprice format.");
+                }
+            } else if (productPrice != null && !productPrice.isEmpty()) {
+                Double productPrice2 = Double.parseDouble(productPrice);
+                try {
+//                    double rounded = Math.round(productPrice2 * 10) / 10.0;
+//                    if (rounded == productPrice2) {
+//                        sql += "AND CAST(p.p_price AS DECIMAL(10, 1)) = ? ";
+//                    } else {
+//                        sql += "AND CAST(p.p_price AS DECIMAL(10, 2)) = ? ";
+//                    }
+                    sql += "ORDER BY ABS(p_price - ?) LIMIT 3";
+                } catch (NumberFormatException e) {
+                    // Handle the case where productPrice is not a valid number
+                    throw new IllegalArgumentException("Invalid product price format.");
+                }
+            }
+
+            // Execute the query
+            PreparedStatement stmt = con.prepareStatement(sql);
+            int parameterIndex = 1;  // Start with the first parameter
+
+            stmt.setInt(parameterIndex, m_id);  // Set the first parameter
+            if (totalPrice != null && !totalPrice.isEmpty()) {
+                stmt.setDouble(2, Double.parseDouble(totalPrice));
+            } else if (productPrice != null && !productPrice.isEmpty()) {
+                stmt.setDouble(2, Double.parseDouble(productPrice));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Order order = new Order();
+                order.setP_id(rs.getInt("p_id"));
+                order.setU_id(rs.getInt("u_id"));
+                order.setBuytime(rs.getString("buy_time"));
+                order.setQuantity(rs.getInt("quantity"));
+                order.setTotalprice(String.valueOf(rs.getDouble("totalprice")));
+
+                Product product = new Product();
+                product.setP_name(rs.getString("p_name"));
+                product.setP_desc(rs.getString("p_desc"));
+                product.setP_class(rs.getString("p_class"));
+                product.setP_price(rs.getString("p_price"));
+
+                User user = new User();
+                user.setU_name(rs.getString("u_name"));
+                user.setU_sex(rs.getString("u_sex"));
+                user.setU_tele(rs.getString("u_tele"));
+
+                order.setProduct(product);
+                order.setUser(user);
+                System.out.println(order.getProduct().getP_desc());
+
+                closestOrders.add(order);
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (NumberFormatException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return closestOrders;
     }
 
 
