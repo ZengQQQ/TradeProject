@@ -2,7 +2,10 @@ package cn.bjut.jdbc;
 
 import javax.swing.*;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.time.LocalDateTime;
 
@@ -956,7 +959,7 @@ public class DataControl {
     }
 
     //根据一定的信息查找订单
-    public List<Order> searchOrders(int m_id, String productType, String userType, String productf, String userf, String quantityf, String totalpricef, String datef) throws SQLException {
+    public List<Order> searchOrders(int m_id, String productType, String userType,String dateType, String productf, String userf, String quantityf, String totalpricef, String datef) throws SQLException {
         List<Order> orderList = new ArrayList<>();
         Connection con = DataBase.OpenDB();
 
@@ -1026,9 +1029,57 @@ public class DataControl {
             }
 
             if (datef != null && !datef.isEmpty()) {
-                whereClause += "AND o.buy_time = ? ";
-                parameters.add(datef);
+                switch (dateType) {
+                    case "日期":
+                        // Check if the input is a valid date (e.g., "2023.2.26")
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.M.d");
+                        try {
+                            Date inputDate = dateFormat.parse(datef);
+                            String startDate = new SimpleDateFormat("yyyy-MM-dd").format(inputDate);
+                            String endDate = new SimpleDateFormat("yyyy-MM-dd").format(inputDate) + " 23:59:59";
+
+                            whereClause += "AND o.buy_time >= ? AND o.buy_time <= ? ";
+                            parameters.add(startDate);
+                            parameters.add(endDate);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
+                    case "年":
+                        // Check if the input is a valid year (e.g., "2023")
+                        try {
+                            int year = Integer.parseInt(datef);
+                            whereClause += "AND YEAR(o.buy_time) = ? ";
+                            parameters.add(year);
+                        } catch (NumberFormatException e) {
+                            // Handle invalid year format
+                        }
+                        break;
+                    case "月":
+                        // Check if the input is a valid month (e.g., "2")
+                        try {
+                            int month = Integer.parseInt(datef);
+                            whereClause += "AND MONTH(o.buy_time) = ? ";
+                            parameters.add(month);
+                        } catch (NumberFormatException e) {
+                            // Handle invalid month format
+                        }
+                        break;
+                    case "日":
+                        // Check if the input is a valid day (e.g., "5")
+                        try {
+                            int day = Integer.parseInt(datef);
+                            whereClause += "AND DAY(o.buy_time) = ? ";
+                            parameters.add(day);
+                        } catch (NumberFormatException e) {
+                            // Handle invalid day format
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
+
 
             sql += joinProduct + joinUser + whereClause;
 
