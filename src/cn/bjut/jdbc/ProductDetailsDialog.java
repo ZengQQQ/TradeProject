@@ -41,7 +41,7 @@ public class ProductDetailsDialog extends ProductofDialog {
         panel.add(status, gbc);
         gbc.gridy++;
         //商品图片展示
-        imageLabel = merproduct.createImageLabel(product, 400, 300);
+        imageLabel = merproduct.createImageLabel(product, 350, 300);
         panel.add(imageLabel, gbc);
     }
 }

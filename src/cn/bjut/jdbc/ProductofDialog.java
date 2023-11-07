@@ -31,7 +31,7 @@ public class ProductofDialog extends JDialog{
         setSize(900, 600);
         setLocationRelativeTo(null); // 居中显示
 
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(5, 0, 5, 0);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;

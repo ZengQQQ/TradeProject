@@ -11,8 +11,8 @@ public class MerchantProductFrm extends JPanel {
     private MerchantInterFrm merchantInterFrm;
     private DataControl data;
 
-    public MerchantProductFrm(MerchantInterFrm mer,DataControl data) {
-        this.data=data;
+    public MerchantProductFrm(MerchantInterFrm mer, DataControl data) {
+        this.data = data;
         this.merchantInterFrm = mer;
         initComponent();
     }
@@ -50,7 +50,7 @@ public class MerchantProductFrm extends JPanel {
         // 创建“修改”按钮并添加到按钮面板
         JButton alertButton = new JButton("修改");
         alertButton.addActionListener(e -> {
-            ProductUpdateDialog updateDialog = new ProductUpdateDialog(data,product,this);
+            ProductUpdateDialog updateDialog = new ProductUpdateDialog(data, product, this);
             updateDialog.setVisible(true);
         });
         buttonPanel.add(alertButton);
@@ -58,7 +58,7 @@ public class MerchantProductFrm extends JPanel {
         // 创建“详情”按钮并添加到按钮面板
         JButton detailsButton = new JButton("详情");
         detailsButton.addActionListener(e -> {
-            ProductDetailsDialog detailsDialog = new ProductDetailsDialog(data,product,this);
+            ProductDetailsDialog detailsDialog = new ProductDetailsDialog(data, product, this);
             detailsDialog.setVisible(true);
         });
         buttonPanel.add(detailsButton);
@@ -109,22 +109,25 @@ public class MerchantProductFrm extends JPanel {
         JLabel priceLabel = new JLabel("商品价格: " + product.getP_price() + "元");
         infoPanel.add(priceLabel);
 
-        // 添加商品状态
-        JLabel statusLabel = new JLabel("商品状态: " + product.getP_status());
+        // 创建商品状态的标签
+        // 使用HTML标签来设置文字颜色
+        String statusColor = "";
+        if ("上架".equals(product.getP_status())) {
+            statusColor = "<font color='green'>上架</font>";
+        } else if ("下架".equals(product.getP_status())) {
+            statusColor = "<font color='red'>下架</font>";
+        }
+        JLabel statusLabel = new JLabel("<html>商品状态: " + statusColor + "</html>");
 
-        //添加商品数量
+        // 添加商品数量
         JLabel quantityLabel = new JLabel("商品数量: " + product.getP_quantity());
         infoPanel.add(quantityLabel);
-        // 根据商品状态设置文本颜色
-        if ("上架".equals(product.getP_status())) {
-            statusLabel.setForeground(Color.GREEN);
-        } else if ("下架".equals(product.getP_status())) {
-            statusLabel.setForeground(Color.RED);
-        }
 
         infoPanel.add(statusLabel);
+
         return infoPanel;
     }
+
 
     // 创建包含商品图片的JLabel
     public JLabel createImageLabel(Product product, int width, int height) {
@@ -170,7 +173,7 @@ public class MerchantProductFrm extends JPanel {
             for (Product product : products) {
                 JPanel productPanel = createProductPanel(product);
                 productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                this.add(productPanel,CENTER_ALIGNMENT);
+                this.add(productPanel, CENTER_ALIGNMENT);
             }
         } catch (SQLException e) {
             e.printStackTrace();

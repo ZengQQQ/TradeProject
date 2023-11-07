@@ -5,9 +5,9 @@ import java.sql.SQLException;
 
 //添加商品界面
 public class ProductAddDialog extends ProductofDialog {
-    private int m_id;
-    private  MerchantInterFrm mer;
-    private  MerchantProductFrm merproduct;
+    private final int m_id;
+    private final MerchantInterFrm mer;
+    private final MerchantProductFrm merproduct;
 
     public ProductAddDialog(DataControl dataControladd,Product product , MerchantInterFrm mer,MerchantProductFrm merproduct) {
         super(dataControladd, product);
@@ -94,7 +94,7 @@ public class ProductAddDialog extends ProductofDialog {
                 }
                 if (success) {
                     JOptionPane.showMessageDialog(this, "创建成功，请等待一会", "提示", JOptionPane.INFORMATION_MESSAGE);
-                    mer.refreshCard1All();
+                    mer.refreshCard1();
                     dispose(); // 关闭对话框
                 } else {
                     JOptionPane.showMessageDialog(this, "创建失败", "错误", JOptionPane.ERROR_MESSAGE);
