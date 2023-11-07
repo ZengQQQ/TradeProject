@@ -68,10 +68,7 @@ public class MerchantInterFrm extends JFrame {
 
         mainPanel.add(card2, "card2");
         //第三个界面------------------------------------------------
-        JPanel card3 = new JPanel();
-        card3.add(new JLabel("这是第三个界面"));
-        card3.setBackground(Color.BLUE);
-
+        JPanel card3 = new ForumPage(dataControl.selectMerchant(m_id),"商家");
         mainPanel.add(card3, "card3");
         //第四个界面------------------------------------------------
         JPanel card4JPanel = getCard4(m_id);

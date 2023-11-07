@@ -580,8 +580,8 @@ public class DataControl {
 
     public static void main(String[] args) throws SQLException {
         DataControl dataControl = new DataControl();
-        dataControl.insert_cart(1, 1, 1);
         dataControl.selectReplyTable("1");
+
     }
 
     //查找某一商家的信息，m-id
@@ -622,21 +622,23 @@ public class DataControl {
             String f_con = rs.getString("f_con");
             String flag = rs.getString("flag");
             Comment comment = new Comment(author_name, f_time, f_con, flag);
+            replyList.add(comment);
         }
         return replyList;
     }
 
     //查找评论表，有回复id的不用返回，返回论坛发表的评论
-    public List<CommentBar> selectForumList() throws SQLException {
+    public List<CommentBar> selectForumList(User user,Merchant merchant) throws SQLException {
         String sql = "SELECT f.f_id, " +
                 "       COALESCE(u.u_name, m.m_name) as author_name, " +
                 "       f.f_time, " +
                 "       f.f_con,  " +
-                "       f.flag  " +
-                " FROM forum f" +
+                "       f.flag,  " +
+                " u.u_id , m.m_id "+
+                " FROM forum f " +
                 " LEFT JOIN user u ON f.u_id = u.u_id  " +
                 " LEFT JOIN merchant m ON f.m_id = m.m_id  " +
-                " WHERE f.reply_to IS NULL  ";
+                " WHERE f.reply_to IS NULL  order by f.f_time desc";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
@@ -647,7 +649,8 @@ public class DataControl {
             String f_time = rs.getString("f_time");
             String f_con = rs.getString("f_con");
             String flag = rs.getString("flag");
-            CommentBar commentBar = new CommentBar(id, author_name, f_time, f_con, flag);
+            CommentBar commentBar = new CommentBar(id,author_name, f_time, f_con, flag, user, merchant);
+            commentBarList.add(commentBar);
         }
 
         return commentBarList;
@@ -710,6 +713,63 @@ public class DataControl {
         return productList;
     }
 
+
+    public int insertCommentToforum(User user,String content,String flag) throws SQLException {
+        Connection con = DataBase.OpenDB();
+        String sql = "insert into forum values (null,?,null,?,?,null,?)";
+        PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, Integer.parseInt(user.getID()));
+            stmt.setString(2, LocalDateTime.now().toString());
+            stmt.setString(3, content);
+            stmt.setString(4, flag);
+            int result = stmt.executeUpdate();
+            con.close();
+            return  result;
+    }
+
+    public int insertCommentToforum(Merchant merchant,String content,String flag) throws SQLException {
+        Connection con = DataBase.OpenDB();
+        String sql = "insert into forum values (null,null,?,?,?,null,?)";
+        PreparedStatement stmt = con.prepareStatement(sql);
+
+        System.out.println(flag);
+        stmt = con.prepareStatement(sql);
+        stmt.setInt(1, Integer.parseInt(merchant.getID()));
+        stmt.setString(2, LocalDateTime.now().toString());
+        stmt.setString(3, content);
+        stmt.setString(4, flag);
+        int result = stmt.executeUpdate();
+        con.close();
+        return result;
+    }
+
+    public void insertReplyToforum(String reply_to,String content,User user,Merchant merhant) throws SQLException {
+        Connection con = DataBase.OpenDB();
+        String sql;
+        int x =1;
+        if(user!=null){
+            sql = "insert into forum values (null,?,null,?,?,?,?)";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, Integer.parseInt(user.getID()));
+            stmt.setString(2, LocalDateTime.now().toString());
+            stmt.setString(3, content);
+            stmt.setString(4, reply_to);
+            stmt.setString(5, "用户");
+            int result = stmt.executeUpdate();
+
+        }else{
+            sql = "insert into forum values (null,null,?,?,?,?,?)";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, Integer.parseInt(merhant.getID()));
+            stmt.setString(2, LocalDateTime.now().toString());
+            stmt.setString(3, content);
+            stmt.setString(4, reply_to);
+            stmt.setString(5, "商家");
+            int result = stmt.executeUpdate();
+        }
+        con.close();
+
+    }
 
 }
 

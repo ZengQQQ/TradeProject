@@ -12,6 +12,7 @@ public class ForumPage extends JPanel {
     private User user;
     private Merchant merchant;
     private String flag;
+    private JPanel commentPanel = new JPanel();
     private List<CommentBar> commentBars;
 
     private DataControl dataControl = new DataControl();
@@ -33,14 +34,12 @@ public class ForumPage extends JPanel {
     }
 
 
-    private void initComponents() {
+    private void initComponents() throws SQLException {
+        this.setLayout(new BorderLayout());
 
-        JPanel commentPanel = new JPanel();
-        commentPanel.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        commentPanel.setLayout(new BoxLayout(commentPanel, BoxLayout.Y_AXIS));
 
-        for (CommentBar comment : commentBars) {
-            commentPanel.add(comment);
-        }
+        refreshComments();
 
         JScrollPane scrollPane = new JScrollPane(commentPanel);
         this.add(scrollPane,BorderLayout.CENTER);
@@ -49,49 +48,73 @@ public class ForumPage extends JPanel {
         JButton newCommentButton = new JButton("New Comment");
         newCommentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                openNewCommentDialog();
+                try {
+                    openNewCommentDialog();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         add(newCommentButton, BorderLayout.SOUTH);
+
     }
 
-    private void openNewCommentDialog() {
-        NewCommentDialog newCommentDialog = new NewCommentDialog();
+
+
+    private void openNewCommentDialog() throws SQLException {
+        NewCommentDialog newCommentDialog;
+        if(this.flag.equals("用户")){
+            newCommentDialog = new NewCommentDialog(this.user,this.flag);
+        }
+        else {
+             newCommentDialog = new NewCommentDialog(this.merchant,this.flag);
+        }
         newCommentDialog.setVisible(true);
     }
 
 
     public List<CommentBar> getCommentBars() throws SQLException {
-        List<CommentBar> commentBars = dataControl.selectForumList();
-
+        List<CommentBar> commentBars = dataControl.selectForumList(this.user,this.merchant);
         return commentBars;
     }
 
     public class NewCommentDialog extends JDialog {
 
-        private JTextField commentTextField = new JTextField(20);
+        private User user;
+        private Merchant merchant;
+        private String flag;
+        private JTextArea commentTextField = new JTextArea(15 ,50);
         private JButton postButton = new JButton("提交");
 
         private JButton cancelButton = new JButton("取消");
 
-        public NewCommentDialog() {
+        public NewCommentDialog(User user,String flag) throws SQLException {
+            this.user = user;
+            this.flag = flag;
+            this.merchant = null;
+            initComponents();
+        }
+        public NewCommentDialog(Merchant merchant,String flag) throws SQLException {
+            this.merchant = merchant;
+            this.flag = flag;
+            this.user = null;
             initComponents();
         }
 
         private void initComponents() {
             setTitle("New Comment");
             setModal(true);
+            JPanel basicPanel = new JPanel();
 
-            JPanel panel = new JPanel();
-            panel.add(new JLabel("评论内容: "));
-            panel.add(commentTextField, BorderLayout.CENTER);
+            JPanel conmentPanel = new JPanel();
+            conmentPanel.add(new JLabel("评论内容: "));
+            conmentPanel.add(commentTextField, BorderLayout.CENTER);
 
-            JPanel buttonPanel = new JPanel(new BoxLayout(postButton, BoxLayout.X_AXIS));
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
             buttonPanel.add(postButton);
             buttonPanel.add(Box.createHorizontalStrut(10));
             buttonPanel.add(cancelButton);
-
-            panel.add(buttonPanel, BorderLayout.SOUTH);
             cancelButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     dispose(); // 关闭对话框
@@ -101,21 +124,75 @@ public class ForumPage extends JPanel {
             postButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     String commentText = commentTextField.getText();
-                    // 在这里可以对评论进行处理
-                    // TODO: 保存评论到数据库
+                    if(commentText.equals("")){
+                        JOptionPane.showMessageDialog(null, "评论不能为空！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        return;
+                    }
+                    int result;
+                    try {
+                        if(flag.equals("用户")){
+                            result = dataControl.insertCommentToforum(user,commentText,flag);
+                        }
+                        else{
+                            result = dataControl.insertCommentToforum(merchant,commentText,flag);
+                        }
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    if(result == 1){
+                        JOptionPane.showMessageDialog(null, "评论成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            ForumPage.this.refreshComments();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "评论失败！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    }
                     dispose(); // 关闭对话框
                 }
             });
 
-            add(panel);
+            basicPanel.setLayout(new BoxLayout(basicPanel, BoxLayout.Y_AXIS)); // 垂直布局
+            basicPanel.setVisible(true);
+            basicPanel.add(conmentPanel);
+            basicPanel.add(buttonPanel); // 将按钮面板添加到主面板中
+            add(basicPanel);
             pack();
+            setLocationRelativeTo(null); // 居中显示对话框
         }
 
-        public CommentBar getComment() {
-
-            return null;
-
-        }
     }
 
+
+
+    public void refreshComments() throws SQLException {
+        // 重新从数据库中获取评论
+        this.commentBars = getCommentBars();
+
+        // 清空评论面板
+        commentPanel.removeAll();
+
+        // 将新的评论添加到面板中
+        for (CommentBar comment : commentBars) {
+            commentPanel.add(comment);
+        }
+
+        // 刷新面板
+        commentPanel.revalidate();
+        commentPanel.repaint();
+    }
+
+
+    public static void main(String[] args) throws SQLException {
+        JFrame frame = new JFrame("ForumPage");
+        frame.setSize(600, 400);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        User user = new User("2","1","1","Chiba Kasumi","男","120");
+        ForumPage forumPage = new ForumPage(user,"用户");
+        frame.add(forumPage);
+        frame.setVisible(true);
+    }
 }
