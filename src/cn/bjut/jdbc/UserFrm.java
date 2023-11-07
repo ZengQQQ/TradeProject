@@ -16,7 +16,6 @@ import java.util.HashMap;
  */
 
 public class UserFrm extends JFrame {
-    private JButton searchButton;
     private JButton homeButton;
     private JButton dynamicButton;
     private JButton shoppingButton;
@@ -36,22 +35,48 @@ public class UserFrm extends JFrame {
         // 设置主面板为卡片布局
         mainPanel.setLayout(cardLayout);
 
-        // 创建第一个界面
+// 创建第一个界面
+        JPanel card1 = new JPanel(); // 创建一个空的面板
+        card1.setLayout(new BorderLayout()); // 设置面板的布局为边界布局
+
+// 创建一个流式布局的面板，放在第一个界面的上半部分
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10)); // 创建一个流式布局的面板，设置水平和垂直间距为10
+        JTextField searchField = new JTextField(20); // 创建一个文本框，设置列数为20
+        JButton searchButton = new JButton("搜索"); // 创建一个按钮，设置文本为"搜索"
+        JButton refreshButton0=new JButton("刷新");
+        topPanel.add(searchField); // 将文本框添加到流式布局的面板中
+        topPanel.add(searchButton); // 将按钮添加到流式布局的面板中
+        topPanel.add(refreshButton0);
 
 
-        // 创建一个网格布局管理器，指定4行6列
-        GridLayout gridLayout = new GridLayout (4, 6);
-        // 设置网格之间的水平和垂直间距
-        gridLayout.setHgap (10);
-        gridLayout.setVgap (10);
-        // 创建第一个界面，使用网格布局管理器
-        JPanel card1 = new JPanel (gridLayout);
+// 创建一个网格布局的面板，放在第一个界面的下半部分
+        JPanel bottomPanel = new JPanel(); // 创建一个空的面板
+// 创建一个网格布局管理器，指定4行6列
+        GridLayout gridLayout = new GridLayout(4, 6);
+// 设置网格之间的水平和垂直间距
+        gridLayout.setHgap(10);
+        gridLayout.setVgap(10);
+        bottomPanel.setLayout(gridLayout); // 设置面板的布局为网格布局
 
-        // 连接数据库
-        DataBase dataBase=new DataBase();
+// 连接数据库
+        DataBase dataBase = new DataBase();
         dataBase.OpenDB();
-
-        // 查询数据库中的商品信息
+        // 为搜索按钮添加动作监听器
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String keyword = searchField.getText(); // 获取搜索框的文本
+                searchProduct(keyword,bottomPanel,u_id); // 调用搜索方法
+            }
+        });
+        // 为刷新0按钮添加动作监听器
+        refreshButton0.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                refreshProduct(bottomPanel,u_id); // 调用搜索方法
+            }
+        });
+// 查询数据库中的商品信息
         Statement stmt = null;
         try {
             stmt = dataBase.getCon().createStatement();
@@ -66,7 +91,7 @@ public class UserFrm extends JFrame {
             e.printStackTrace();
         }
 
-        // 遍历结果集，为每个商品创建一个按钮，并添加到第一个界面中
+// 遍历结果集，为每个商品创建一个按钮，并添加到网格布局的面板中
         while (true) {
             try {
                 if (!rs.next()) break;
@@ -74,7 +99,7 @@ public class UserFrm extends JFrame {
                 e.printStackTrace();
             }
             // 获取商品的id，名称，图片路径和价格
-            int id=0;
+            int id = 0;
             try {
                 id = rs.getInt("p_id");
             } catch (SQLException e) {
@@ -109,7 +134,7 @@ public class UserFrm extends JFrame {
 
             // 创建一个按钮，设置图标和文本
             JButton button = new JButton();
-            button.setIcon(new ImageIcon(imagePath+"")); // 设置按钮的图标
+            button.setIcon(new ImageIcon(imagePath + "")); // 设置按钮的图标
             button.setText("<html>" + name + "<br>¥" + price + "</html>"); // 设置按钮的文本，使用html标签换行
             button.setVerticalTextPosition(SwingConstants.BOTTOM); // 设置文本在图标下方
             button.setHorizontalTextPosition(SwingConstants.CENTER); // 设置文本在图标中间
@@ -119,7 +144,7 @@ public class UserFrm extends JFrame {
             String finalName = name;
             String finalImagePath = imagePath;
             double finalPrice = price;
-            String finaldesc= desc;
+            String finaldesc = desc;
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -127,7 +152,7 @@ public class UserFrm extends JFrame {
                     JPanel productPanel = productMap.get(finalId);
                     if (productPanel == null) {
                         // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
-                        productPanel = createProductPanel(finalId,u_id, finalName, finalImagePath, finalPrice,finaldesc);
+                        productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc);
                         mainPanel.add(productPanel, "product" + finalId);
                         productMap.put(finalId, productPanel);
                     }
@@ -136,11 +161,11 @@ public class UserFrm extends JFrame {
                 }
             });
 
-            // 将按钮添加到第一个界面中
-            card1.add(button);
+            // 将按钮添加到网格布局的面板中
+            bottomPanel.add(button);
         }
 
-        // 关闭数据库连接
+// 关闭数据库连接
         try {
             rs.close();
         } catch (SQLException e) {
@@ -157,10 +182,15 @@ public class UserFrm extends JFrame {
             e.printStackTrace();
         }
 
-        // 创建一个滚动面板，包含第一个界面
+// 将网格布局的面板添加到第一个界面的下半部分
+        card1.add(bottomPanel, BorderLayout.CENTER);
+
+// 创建一个滚动面板，包含第一个界面
         JScrollPane scrollPane = new JScrollPane(card1);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // 设置垂直滚动条总是可见
-        // 将滚动面板添加到主面板中，使用"card1"作为约束字符串
+        scrollPane.setColumnHeaderView(topPanel); // 将流式布局的面板设置为滚动面板的列头视图
+// 增加这一行，将流式布局的面板设置为滚动面板的列头视图，这样就可以固定在界面的上方
+// 将滚动面板添加到主面板中，使用"card1"作为约束字符串
         mainPanel.add(scrollPane, "card1");
 
 
@@ -615,25 +645,15 @@ public class UserFrm extends JFrame {
 
 
 
-        JPanel card5 = new JPanel();
-        JTextField textField = new JTextField(10);
-        textField.setText("请输入搜索内容");
-        card5.add(textField);
 
         // 将其他卡片添加到主面板中，使用不同的约束字符串
         mainPanel.add(card2, "card2");
         mainPanel.add(card3, "card3");
-        mainPanel.add(card4, "card4");
-        mainPanel.add(card5, "card5");
 
 
-        searchButton = new JButton("搜索");
-        searchButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                cardLayout.show(mainPanel, "card5");
-            }
-        });
+
+
+
 
         homeButton = new JButton("首页");
         homeButton.addMouseListener(new MouseAdapter() {
@@ -674,7 +694,6 @@ public class UserFrm extends JFrame {
         buttonPanel.add(shoppingButton);
         buttonPanel.add(myButton);
 
-        contentPane.add(searchButton, BorderLayout.NORTH);
         contentPane.add(mainPanel, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -767,17 +786,221 @@ public class UserFrm extends JFrame {
             }
         });
 
+        // 创建一个按钮，实现关注商品的功能 // 添加一个新的按钮
+        JButton followButton = new JButton("关注");
+        followButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
         // 将各个组件添加到卡片中，使用不同的方位
         productPanel.add(nameLabel, BorderLayout.NORTH);
         productPanel.add(imageLabel, BorderLayout.CENTER);
         productPanel.add(priceLabel, BorderLayout.SOUTH);
         productPanel.add(descriptionPane, BorderLayout.EAST);
         productPanel.add(addToCartButton, BorderLayout.WEST);
+        productPanel.add(followButton, BorderLayout.SOUTH);
 
         // 返回卡片对象
         return productPanel;
     }
 
+    // 创建搜索方法
+    private void searchProduct(String keyword,JPanel bottomPanel,int u_id) {
+        // 清空网格布局的面板
+        bottomPanel.removeAll();
 
+        // 连接数据库
+        DataBase dataBase = new DataBase();
+        dataBase.OpenDB();
+
+        // 构建新的SQL查询语句
+        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc FROM product WHERE p_name LIKE '%" + keyword + "%' OR p_desc LIKE '%" + keyword + "%'";
+        Statement stmt = null;
+        ResultSet rs;
+
+        try {
+            try {
+                stmt = dataBase.getCon().createStatement();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            rs = stmt.executeQuery(query);
+
+            // 遍历结果集，为每个匹配的商品创建一个按钮，并添加到网格布局的面板中
+            while (rs.next()) {
+                int id = rs.getInt("p_id");
+                String name = rs.getString("p_name");
+                String imagePath = rs.getString("p_img");
+                String desc = rs.getString("p_desc");
+                double price = rs.getDouble("p_price");
+
+                JButton button = new JButton();
+                button.setIcon(new ImageIcon(imagePath));
+                button.setText("<html>" + name + "<br>¥" + price + "</html>");
+                button.setVerticalTextPosition(SwingConstants.BOTTOM);
+                button.setHorizontalTextPosition(SwingConstants.CENTER);
+
+                // 添加点击事件监听器
+                int finalId = id;
+                String finalName = name;
+                String finalImagePath = imagePath;
+                double finalPrice = price;
+                String finalDesc = desc;
+                button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 根据商品id查找对应的卡片对象
+                        JPanel productPanel = productMap.get(finalId);
+                        if (productPanel == null) {
+                            // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
+                            productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finalDesc);
+                            mainPanel.add(productPanel, "product" + finalId);
+                            productMap.put(finalId, productPanel);
+                        }
+                        // 切换到商品详情卡片
+                        cardLayout.show(mainPanel, "product" + finalId);
+                    }
+                });
+
+                bottomPanel.add(button); // 将按钮添加到网格布局的面板中
+            }
+
+            // 关闭数据库连接
+            rs.close();
+            stmt.close();
+            try {
+                dataBase.getCon().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // 刷新界面，显示更新后的商品列表
+        bottomPanel.revalidate();
+        bottomPanel.repaint();
+    }
+    // 创建刷新方法
+    private void refreshProduct(JPanel bottomPanel,int u_id) {
+        // 清空网格布局的面板
+        bottomPanel.removeAll();
+
+        // 连接数据库
+        DataBase dataBase = new DataBase();
+        dataBase.OpenDB();
+
+        // 查询数据库中的商品信息
+        Statement stmt = null;
+        try {
+            stmt = dataBase.getCon().createStatement();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc FROM product";
+        ResultSet rs = null;
+        try {
+            rs = stmt.executeQuery(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+// 遍历结果集，为每个商品创建一个按钮，并添加到网格布局的面板中
+        while (true) {
+            try {
+                if (!rs.next()) break;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            // 获取商品的id，名称，图片路径和价格
+            int id = 0;
+            try {
+                id = rs.getInt("p_id");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            String name = null;
+            try {
+                name = rs.getString("p_name");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            String imagePath = null;
+            try {
+                imagePath = rs.getString("p_img");
+                System.out.println(imagePath);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            String desc = null;
+            try {
+                desc = rs.getString("p_desc");
+                System.out.println(imagePath);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            double price = 0;
+            try {
+                price = rs.getDouble("p_price");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            // 创建一个按钮，设置图标和文本
+            JButton button = new JButton();
+            button.setIcon(new ImageIcon(imagePath + "")); // 设置按钮的图标
+            button.setText("<html>" + name + "<br>¥" + price + "</html>"); // 设置按钮的文本，使用html标签换行
+            button.setVerticalTextPosition(SwingConstants.BOTTOM); // 设置文本在图标下方
+            button.setHorizontalTextPosition(SwingConstants.CENTER); // 设置文本在图标中间
+
+            // 为按钮添加点击事件监听器，跳转到商品详情卡片
+            int finalId = id;//p_id
+            String finalName = name;
+            String finalImagePath = imagePath;
+            double finalPrice = price;
+            String finaldesc = desc;
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // 根据商品id查找对应的卡片对象
+                    JPanel productPanel = productMap.get(finalId);
+                    if (productPanel == null) {
+                        // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
+                        productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc);
+                        mainPanel.add(productPanel, "product" + finalId);
+                        productMap.put(finalId, productPanel);
+                    }
+                    // 切换到商品详情卡片
+                    cardLayout.show(mainPanel, "product" + finalId);
+                }
+            });
+
+            // 将按钮添加到网格布局的面板中
+            bottomPanel.add(button);
+        }
+
+// 关闭数据库连接
+        try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            dataBase.getCon().close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 刷新界面，显示更新后的商品列表
+        bottomPanel.revalidate();
+        bottomPanel.repaint();
+    }
 
 }
