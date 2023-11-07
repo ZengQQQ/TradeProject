@@ -705,6 +705,24 @@ public class DataControl {
 
     }
 
+    //使用m_id来修改merchanttable，全部更新,
+    public String updateMerchant(int m_id, String new_m_acc, String new_m_name, String new_m_sex, String new_m_tele) throws SQLException {
+        String sql = "UPDATE merchant SET m_acc = ?, m_name = ?, m_sex = ?, m_tele = ? WHERE m_id = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, new_m_acc);
+        stmt.setString(2, new_m_name);
+        stmt.setString(3, new_m_sex);
+        stmt.setString(4, new_m_tele);
+        stmt.setInt(5, m_id);
+        int result = stmt.executeUpdate();
+        con.close();
+        if (result > 0) {
+            return "修改成功";
+        } else {
+            return "修改失败";
+        }
+    }
     //查找某一商家的信息，m-id
     public Merchant selectMerchant(int m_id) throws SQLException {
         String sql = "select * from merchant where m_id = ?";
@@ -1101,7 +1119,8 @@ public class DataControl {
             System.out.println("cuole");
         }
 
-        if (orderList.isEmpty() && (userf != null && !userf.isEmpty() || quantityf != null && !quantityf.isEmpty() || datef != null && !datef.isEmpty())) {
+        if (orderList.isEmpty() && ((userf != null && !userf.isEmpty()) || (quantityf != null && !quantityf.isEmpty()) ||
+                (datef != null && !datef.isEmpty()) || !(productType.equals("价格") && !productf.isEmpty()))) {
             JOptionPane.showMessageDialog(null, "订单结果没有找到", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
             return null;
         } else if (orderList.isEmpty() && (totalpricef != null && !totalpricef.isEmpty())) {

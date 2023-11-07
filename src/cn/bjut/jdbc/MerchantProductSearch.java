@@ -6,11 +6,13 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 
+// 商家商品搜索面板
 public class MerchantProductSearch extends JPanel {
     private static final String[] SEARCH_TYPES = {"商品名称", "类别", "价格", "状态", "数量"};
     private static final String DEFAULT_IMAGE_PATH = "src/img/R.jpg";
     private static final int IMAGE_WIDTH = 350;
     private static final int IMAGE_HEIGHT = 280;
+    private Font fontall = new Font("微软雅黑", Font.BOLD, 18);
     private DataControl dataControl;
     private MerchantInterFrm merchantInterFrm;
     private JComboBox<String> searchTypeComboBox;
@@ -41,10 +43,12 @@ public class MerchantProductSearch extends JPanel {
     private JPanel createSearchPanel() {
         JPanel searchPanel = new JPanel();
         searchTypeComboBox = new JComboBox<>(SEARCH_TYPES);
+        searchTypeComboBox.setFont(fontall);
         searchField = new JTextField(20);
         searchButton = new JButton("查找");
+        searchButton.setFont(fontall);
         JButton allButton = new JButton("显示全部");
-
+        allButton.setFont(fontall);
         searchButton.addActionListener(e -> performSearch());
         allButton.addActionListener(e -> showAllProducts());
 
@@ -112,20 +116,20 @@ public class MerchantProductSearch extends JPanel {
 
     private JPanel createInfoPanel(Product product) {
         JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // Use vertical BoxLayout for layout
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS)); // 使用垂直 BoxLayout 布局
 
-        Font font = new Font("SansSerif", Font.PLAIN, 16); // Set a consistent font
+        Font font = new Font("微软雅黑", Font.PLAIN, 16); // 设置一致的字体
 
-        // Create and add JLabels for each piece of information with spacing
-        infoPanel.add(createLabel("商品名称: " + product.getP_name(), font, 20));
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add vertical spacing
-        infoPanel.add(createLabel("商品描述: " + product.getP_desc(), font, 15));
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add vertical spacing
+        // 创建并添加每个信息片段的 JLabel，包括间距
+        infoPanel.add(createLabel("商品名称: " + product.getP_name(), font, 17));
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        infoPanel.add(createLabel("商品描述: " + product.getP_desc(), font, 14));
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         infoPanel.add(createLabel("商品类别: " + product.getP_class(), font, 15));
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add vertical spacing
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         infoPanel.add(createLabel("商品价格: " + product.getP_price() + "元", font, 15));
 
-        // Create and add JLabel for the status with color based on the status
+        // 创建并添加带有基于状态的颜色的状态 JLabel
         String statusColor = "";
         if ("上架".equals(product.getP_status())) {
             statusColor = "<font color='green'>上架</font>";
@@ -134,16 +138,16 @@ public class MerchantProductSearch extends JPanel {
         }
         JLabel statusLabel = new JLabel("<html>商品状态: " + statusColor + "</html>");
         statusLabel.setFont(font);
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add vertical spacing
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 20))); // 添加垂直间距
         infoPanel.add(createLabel("商品数量: " + product.getP_quantity(), font, 10));
-        infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add vertical spacing
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 20))); // 添加垂直间距
         infoPanel.add(statusLabel);
 
         return infoPanel;
     }
 
     private JLabel createLabel(String text, Font font, int maxCharsPerLine) {
-        JLabel label = new JLabel(wrapText(text, maxCharsPerLine)); // Use the wrapText method to split the text and add HTML tags
+        JLabel label = new JLabel(wrapText(text, maxCharsPerLine)); // 使用 wrapText 方法拆分文本并添加 HTML 标签
         label.setFont(font);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         label.setAlignmentY(Component.TOP_ALIGNMENT);
@@ -152,23 +156,23 @@ public class MerchantProductSearch extends JPanel {
     }
 
     private String wrapText(String text, int maxCharsPerLine) {
-        // This method will split the text according to the given max chars per line and add HTML tags to wrap the text
+        // 此方法将根据给定的每行最大字符数拆分文本并添加 HTML 标签以包装文本
         StringBuilder sb = new StringBuilder();
-        sb.append("<html>"); // Start the HTML tag
-        String[] lines = text.split("\\r?\\n"); // Split the text by line breaks
+        sb.append("<html>"); // 开始 HTML 标签
+        String[] lines = text.split("\\r?\\n"); // 通过换行符拆分文本
         for (String line : lines) {
-            if (line.length() > maxCharsPerLine) { // If the line is longer than the max chars per line
-                for (int i = 0; i < line.length(); i += maxCharsPerLine) { // Split the line by the max chars per line
-                    sb.append(line, i, Math.min(i + maxCharsPerLine, line.length())); // Append the substring
-                    sb.append("<br>"); // Append the HTML tag for line break
+            if (line.length() > maxCharsPerLine) { // 如果行长超过了每行最大字符数
+                for (int i = 0; i < line.length(); i += maxCharsPerLine) { // 通过每行的最大字符数拆分行
+                    sb.append(line, i, Math.min(i + maxCharsPerLine, line.length())); // 追加子字符串
+                    sb.append("<br>"); // 追加 HTML 换行标签
                 }
-            } else { // If the line is shorter than or equal to the max chars per line
-                sb.append(line); // Append the line
-                sb.append("<br>"); // Append the HTML tag for line break
+            } else { // 如果行长小于或等于每行最大字符数
+                sb.append(line); // 追加行
+                sb.append("<br>"); // 追加 HTML 换行标签
             }
         }
-        sb.append("</html>"); // End the HTML tag
-        return sb.toString(); // Return the wrapped text
+        sb.append("</html>"); // 结束 HTML 标签
+        return sb.toString(); // 返回包装的文本
     }
 
     private JLabel createImageLabel(Product product) {
@@ -192,7 +196,7 @@ public class MerchantProductSearch extends JPanel {
         }
     }
 
-    //返回错误消息
+    // 返回错误消息
     private String validateInput(String productType, String productf) {
         // 商品信息搜索验证
         if (!validateProductInput(productType, productf)) {
@@ -219,6 +223,12 @@ public class MerchantProductSearch extends JPanel {
             case "价格":
                 // 价格必须是合法的数字
                 if (!isNumeric(productf)) {
+                    return false;
+                }
+                break;
+            case "状态":
+                // 状态必须是上架或下架
+                if (!productf.equals("上架") && !productf.equals("下架")) {
                     return false;
                 }
                 break;

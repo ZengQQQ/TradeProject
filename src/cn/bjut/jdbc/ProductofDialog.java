@@ -28,30 +28,61 @@ public class ProductofDialog extends JDialog{
     }
 
     private void initComponents() {
-        setSize(900, 600);
+        // 创建微软雅黑16号字体
+        Font customFont = new Font("微软雅黑", Font.PLAIN, 16);
+
+        setSize(900, 700);
         setLocationRelativeTo(null); // 居中显示
 
         gbc.insets = new Insets(5, 0, 5, 0);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
-        panel.add(new JLabel("商品名称:"), gbc);
-        gbc.gridy++;
-        panel.add(new JLabel("商品描述:"), gbc);
-        gbc.gridy++;
-        panel.add(new JLabel("商品类别:"), gbc);
-        gbc.gridy++;
-        panel.add(new JLabel("商品价格（元）:"), gbc);
-        gbc.gridy++;
-        panel.add(new JLabel("商品数量:"), gbc);
-        gbc.gridy++;
-        panel.add(new JLabel("商品状态:"), gbc);
-        gbc.gridy++;
-        panel.add(new JLabel("商品图片:"), gbc);
-        gbc.gridx = 1;
+        JLabel name = new JLabel("商品名称:    ");
+        name.setFont(customFont);
+        panel.add(name, gbc);
 
+        gbc.gridy++;
+
+        // 添加商品描述标签，应用字体
+        JLabel descLabel = new JLabel("商品描述:    ");
+        descLabel.setFont(customFont);
+        panel.add(descLabel, gbc);
+        gbc.gridy++;
+
+        // 添加商品类别标签，应用字体
+        JLabel classLabel = new JLabel("商品类别:   ");
+        classLabel.setFont(customFont);
+        panel.add(classLabel, gbc);
+        gbc.gridy++;
+
+        // 添加商品价格标签，应用字体
+        JLabel priceLabel = new JLabel("商品价格:   ");
+        priceLabel.setFont(customFont);
+        panel.add(priceLabel, gbc);
+        gbc.gridy++;
+
+        // 添加商品数量标签，应用字体
+        JLabel quantityLabel = new JLabel("商品数量:    ");
+        quantityLabel.setFont(customFont);
+        panel.add(quantityLabel, gbc);
+        gbc.gridy++;
+
+        // 添加商品状态标签，应用字体
+        JLabel statusLabel = new JLabel("商品状态:    ");
+        statusLabel.setFont(customFont);
+        panel.add(statusLabel, gbc);
+        gbc.gridy++;
+
+        // 添加商品图片标签
+        JLabel imageLabel = new JLabel("商品图片:    ");
+        imageLabel.setFont(customFont);
+        panel.add(imageLabel, gbc);
+
+        gbc.gridx = 1;
         getContentPane().add(panel, BorderLayout.CENTER);
     }
+
 
     //刷新修改界面的图片
     public void refreshphoto() {

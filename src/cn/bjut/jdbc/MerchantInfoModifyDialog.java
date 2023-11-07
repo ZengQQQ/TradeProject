@@ -1,12 +1,17 @@
 package cn.bjut.jdbc;
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
 
 public class MerchantInfoModifyDialog extends JDialog {
     private Merchant oldmerchant;
+    private DataControl data;
+    private int m_id;
 
-    public MerchantInfoModifyDialog(Merchant merchant) {
+    public MerchantInfoModifyDialog(Merchant merchant,DataControl data,int m_id) {
         this.oldmerchant = merchant;
+        this.m_id=m_id;
+        this.data=data;
         initialize();
     }
 
@@ -32,10 +37,11 @@ public class MerchantInfoModifyDialog extends JDialog {
 
             // 此时，你可以保存修改后的信息并显示成功消息
             // 可以将信息保存到你的数据源
-            oldmerchant.setAcc(newAccount);
-            oldmerchant.setM_name(newName);
-            oldmerchant.setM_sex(newGender);
-            oldmerchant.setM_tele(newPhone);
+            try {
+                data.updateMerchant(m_id,newAccount, newName, newGender, newPhone);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
 
             JOptionPane.showMessageDialog(this, "信息修改成功", "成功", JOptionPane.INFORMATION_MESSAGE);
             dispose();

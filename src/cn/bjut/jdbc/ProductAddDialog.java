@@ -19,7 +19,7 @@ public class ProductAddDialog extends ProductofDialog {
 
     private void initComponents() {
         setTitle("添加商品信息");
-        int textFieldColumns = 50;
+        int textFieldColumns = 30;
         gbc.gridx = 1;
         gbc.gridy = 0;
         JTextField nameField = new JTextField(textFieldColumns);
@@ -51,13 +51,14 @@ public class ProductAddDialog extends ProductofDialog {
         panel.add(statusPanel, gbc);
         gbc.gridy++;
 
-        imageLabel = merproduct.createImageLabel(product, 400, 300);
+        imageLabel = merproduct.createImageLabel(product, 350, 300);
         panel.add(imageLabel, gbc);
         gbc.gridx = 2;
         //商品图片展示
 
         // 创建“Change Image”按钮
         JButton upImgButton = new JButton("上传图片");
+        upImgButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
         panel.add(upImgButton, gbc);
         upImgButton.addActionListener(e -> {
             // 调用父类的方法
@@ -73,6 +74,7 @@ public class ProductAddDialog extends ProductofDialog {
         });
         // 创建“创建”按钮
         JButton createProductButton = new JButton("创建");
+        createProductButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
         createProductButton.addActionListener(e -> {
             // 从文本字段和单选按钮获取值
             String newName = nameField.getText();

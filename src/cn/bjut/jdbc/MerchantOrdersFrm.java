@@ -3,6 +3,7 @@ package cn.bjut.jdbc;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.io.File;
 import java.sql.SQLException;
@@ -63,6 +64,8 @@ public class MerchantOrdersFrm extends JPanel {
             }
         }
         JTable table = new JTable(tableModel);
+        JTableHeader header = table.getTableHeader();
+        header.setFont(new Font("微软雅黑", Font.BOLD, 18));
         table.setRowHeight(ORDER_PANEL_HEIGHT);
 
         // 禁用表格编辑
@@ -85,7 +88,7 @@ public class MerchantOrdersFrm extends JPanel {
     }
 
     public void refreshData() {
-        // Get the updated order information
+
         List<Order> updatedOrderInfoList;
         try {
             updatedOrderInfoList = data.getOrderInfoByM_id(m_id);
@@ -94,11 +97,11 @@ public class MerchantOrdersFrm extends JPanel {
             return;
         }
 
-        // Clear existing data from the table
+
         DefaultTableModel tableModel = (DefaultTableModel) ((JTable) ((JScrollPane) getComponent(0)).getViewport().getView()).getModel();
         tableModel.setRowCount(0);
 
-        // Populate the table with the updated data
+
         for (Order order : updatedOrderInfoList) {
             JLabel img = createImageLabel(order.getProduct(), DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT);
             String productInfo = getProductInfo(order.getProduct());
@@ -111,7 +114,7 @@ public class MerchantOrdersFrm extends JPanel {
             tableModel.addRow(rowData);
         }
 
-        // Repaint the table to reflect the changes
+
         tableModel.fireTableDataChanged();
     }
 
@@ -121,20 +124,21 @@ public class MerchantOrdersFrm extends JPanel {
         private final Font largerFont;
 
         public CustomCellRenderer(int fontSize) {
-            largerFont = new Font(Font.SERIF, Font.PLAIN, fontSize);
+            largerFont = new Font("微软雅黑", Font.PLAIN, fontSize); // 设置字体为微软雅黑，大小为指定的fontSize
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JTextArea textArea = new JTextArea();
             textArea.setWrapStyleWord(true);
             textArea.setLineWrap(true);
-            textArea.setFont(largerFont);
+            textArea.setFont(largerFont); // 使用自定义的字体
             textArea.setText((String) value);
             textArea.setOpaque(true);
             textArea.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
             return textArea;
         }
     }
+
 
     // 自定义单元格渲染器用于在表格中显示图片
     private static class ImageCellRenderer extends DefaultTableCellRenderer {

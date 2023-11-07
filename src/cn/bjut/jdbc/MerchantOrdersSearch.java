@@ -11,6 +11,7 @@ import java.util.List;
 public class MerchantOrdersSearch extends JPanel {
     private final DataControl data;
     private final MerchantOrdersFrm merorderFrm;
+    private final Font font = new Font("微软雅黑", Font.PLAIN, 16);
     private JComboBox<String> productsearchBox= new JComboBox<>(new String[]{"商品名称", "类别", "价格", "数量"});
     private JComboBox<String> usersearchBox = new JComboBox<>(new String[]{"用户名", "性别", "电话"});
     private JComboBox<String> datesearchBox= new JComboBox<>(new String[]{"日期", "年", "月", "日"});
@@ -29,6 +30,14 @@ public class MerchantOrdersSearch extends JPanel {
     }
 
     private void initComponents() throws SQLException {
+        Font font = new Font("微软雅黑", Font.PLAIN, 14);
+
+         // 设置字体
+        searchproductField.setFont(font);
+        usersearchField.setFont(font);
+        quantityField.setFont(font);
+        totalPriceField.setFont(font);
+        dateField.setFont(font);
         setLayout(new BorderLayout());
         JPanel searchPanel = createSearchPanel();
         ordersPanel = new JPanel();
@@ -48,7 +57,9 @@ public class MerchantOrdersSearch extends JPanel {
         JPanel bottomSearchPanel = new JPanel();
 
         JButton searchButton = new JButton("查找");
+        searchButton.setFont(font);
         JButton allButton = new JButton("显示全部");
+        allButton.setFont(font);
 
         searchButton.addActionListener(e -> {
             try {
@@ -71,14 +82,27 @@ public class MerchantOrdersSearch extends JPanel {
         c.insets = new Insets(0, 0, 0, 0);
         c.gridx = 0;
         c.gridy = 0;
-        topSearchPanel.add(new JLabel("商品信息搜索："), c);
+
+        // 创建并设置字体
+        JLabel productInfoLabel = new JLabel("商品信息搜索：");
+        productInfoLabel.setFont(font);
+        topSearchPanel.add(productInfoLabel, c);
+
         c.gridx = 1;
+        productsearchBox.setFont(font);
         topSearchPanel.add(productsearchBox, c);
         c.gridx = 2;
         topSearchPanel.add(searchproductField, c);
+
         c.gridx = 3;
-        topSearchPanel.add(new JLabel("用户信息搜索："), c);
+
+        // 创建并设置字体
+        JLabel userInfoLabel = new JLabel("用户信息搜索：");
+        userInfoLabel.setFont(font);
+        topSearchPanel.add(userInfoLabel, c);
+
         c.gridx = 4;
+        usersearchBox.setFont(font);
         topSearchPanel.add(usersearchBox, c);
         c.gridx = 5;
         topSearchPanel.add(usersearchField, c);
@@ -93,20 +117,36 @@ public class MerchantOrdersSearch extends JPanel {
         c.insets = new Insets(0, 0, 0, 0);
         c.gridx = 0;
         c.gridy = 0;
-        bottomSearchPanel.add(new JLabel("购买商品数量："), c);
+
+        // 创建并设置字体
+        JLabel quantityLabel = new JLabel("购买商品数量：");
+        quantityLabel.setFont(font);
+        bottomSearchPanel.add(quantityLabel, c);
+
         c.gridx = 1;
         bottomSearchPanel.add(quantityField, c);
 
         c.gridx = 2;
-        bottomSearchPanel.add(new JLabel("订单总价格："), c);
+
+        // 创建并设置字体
+        JLabel totalPriceLabel = new JLabel("订单总价格：");
+        totalPriceLabel.setFont(font);
+        bottomSearchPanel.add(totalPriceLabel, c);
+
         c.gridx = 3;
         bottomSearchPanel.add(totalPriceField, c);
 
         c.gridx = 4;
-        bottomSearchPanel.add(new JLabel("购买时间："), c);
+
+        // 创建并设置字体
+        JLabel dateLabel = new JLabel("购买时间：");
+        dateLabel.setFont(font);
+        bottomSearchPanel.add(dateLabel, c);
+
         c.gridx = 5;
+        datesearchBox.setFont(font);
         bottomSearchPanel.add(datesearchBox, c);
-        c.gridx=6;
+        c.gridx = 6;
         bottomSearchPanel.add(dateField, c);
 
         searchPanel.setLayout(new GridLayout(2, 1));
@@ -115,6 +155,7 @@ public class MerchantOrdersSearch extends JPanel {
 
         return searchPanel;
     }
+
 
     private void showAllOrders() throws SQLException {
         ordersPanel.removeAll();
@@ -125,7 +166,7 @@ public class MerchantOrdersSearch extends JPanel {
         ordersPanel.repaint();
     }
     private void performSearch() throws SQLException {
-        // Retrieve search criteria from the search type and text fields
+
         String productType = (String) productsearchBox.getSelectedItem();
         String userType = (String) usersearchBox.getSelectedItem();
         String productf = searchproductField.getText();
@@ -143,10 +184,9 @@ public class MerchantOrdersSearch extends JPanel {
         List<Order> orders = data.searchOrders( merorderFrm.m_id,productType, userType,dateType, productf, userf, quantityf, totalpricef, datef);
 
         if (orders != null) {
-            // Clear the existing order display panel
+
             ordersPanel.removeAll();
 
-            // Create a new order display panel with the search results
             orderDisplayPanel = new MerchantOrdersFrm(data, merorderFrm.m_id, orders);
             ordersPanel.add(orderDisplayPanel);
 

@@ -2,6 +2,8 @@ package cn.bjut.jdbc;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
@@ -10,6 +12,7 @@ public class MerchantProductFrm extends JPanel {
 
     private MerchantInterFrm merchantInterFrm;
     private DataControl data;
+    private ProductDetailsDialog currentDetailsDialog; // 用于存储当前显示的商品详情对话框
 
     public MerchantProductFrm(MerchantInterFrm mer, DataControl data) {
         this.data = data;
@@ -20,7 +23,6 @@ public class MerchantProductFrm extends JPanel {
     public void initComponent() {
         setLayout(new GridLayout(0, 2));
         createproductcard();
-
     }
 
     public JPanel createProductPanel(Product product) {
@@ -34,64 +36,11 @@ public class MerchantProductFrm extends JPanel {
         // 创建商品信息面板
         JPanel infoPanel = getjPanel(product);
         // 添加商品按钮面板
-        JPanel buttonPanel = getPanel(product);
+
         // 将商品信息面板和按钮面板添加到productPanel的中部
         productPanel.add(infoPanel, BorderLayout.CENTER);
-        productPanel.add(buttonPanel, BorderLayout.EAST);
+
         return productPanel;
-    }
-
-    private JPanel getPanel(Product product) {
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-        // 为按钮信息面板添加线框
-        buttonPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-
-        // 创建“修改”按钮并添加到按钮面板
-        JButton alertButton = new JButton("修改");
-        alertButton.addActionListener(e -> {
-            ProductUpdateDialog updateDialog = new ProductUpdateDialog(data, product, this);
-            updateDialog.setVisible(true);
-        });
-        buttonPanel.add(alertButton);
-
-        // 创建“详情”按钮并添加到按钮面板
-        JButton detailsButton = new JButton("详情");
-        detailsButton.addActionListener(e -> {
-            ProductDetailsDialog detailsDialog = new ProductDetailsDialog(data, product, this);
-            detailsDialog.setVisible(true);
-        });
-        buttonPanel.add(detailsButton);
-
-        // 创建“删除”按钮并添加到按钮面板
-        JButton deleteButton = new JButton("删除");
-        deleteButton.addActionListener(e -> {
-            int option = JOptionPane.showConfirmDialog(null, "确定要删除该商品吗？", "确认删除", JOptionPane.YES_NO_OPTION);
-            if (option == JOptionPane.YES_OPTION) {
-                // 获取要删除的商品的唯一标识，通常是商品ID
-                int productId = product.getP_id();
-                // 执行删除商品的操作，你需要实现该方法
-                boolean success;
-                try {
-                    success = data.deleteProduct(productId);
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                if (success) {
-                    // 删除成功
-                    JOptionPane.showMessageDialog(null, "商品删除成功", "成功", JOptionPane.INFORMATION_MESSAGE);
-                    // 刷新界面，删除商品对应的面板
-                    this.remove(buttonPanel.getParent());
-                    this.revalidate();
-                    this.repaint();
-                } else {
-                    // 删除失败
-                    JOptionPane.showMessageDialog(null, "商品删除失败", "错误", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        buttonPanel.add(deleteButton);
-        return buttonPanel;
     }
 
     private static JPanel getjPanel(Product product) {
@@ -100,15 +49,16 @@ public class MerchantProductFrm extends JPanel {
 
         // 为商品信息面板添加线框
         infoPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-
         // 添加商品名称
         JLabel nameLabel = new JLabel("商品名称: " + product.getP_name());
+        // 设置字体大小为大号
+        nameLabel.setFont(new Font("微软雅黑", Font.BOLD, 16)); // 16是字体大小
         infoPanel.add(nameLabel);
-
         // 添加商品价格
         JLabel priceLabel = new JLabel("商品价格: " + product.getP_price() + "元");
+        // 设置字体大小为大号
+        priceLabel.setFont(new Font("微软雅黑", Font.BOLD, 16)); // 16是字体大小
         infoPanel.add(priceLabel);
-
         // 创建商品状态的标签
         // 使用HTML标签来设置文字颜色
         String statusColor = "";
@@ -118,16 +68,17 @@ public class MerchantProductFrm extends JPanel {
             statusColor = "<font color='red'>下架</font>";
         }
         JLabel statusLabel = new JLabel("<html>商品状态: " + statusColor + "</html>");
-
+        // 设置字体大小为大号
+        statusLabel.setFont(new Font("微软雅黑", Font.BOLD, 16)); // 16是字体大小
+        infoPanel.add(statusLabel);
         // 添加商品数量
         JLabel quantityLabel = new JLabel("商品数量: " + product.getP_quantity());
+        // 设置字体大小为大号
+        quantityLabel.setFont(new Font("微软雅黑", Font.BOLD, 16)); // 16是字体大小
         infoPanel.add(quantityLabel);
-
-        infoPanel.add(statusLabel);
 
         return infoPanel;
     }
-
 
     // 创建包含商品图片的JLabel
     public JLabel createImageLabel(Product product, int width, int height) {
@@ -146,10 +97,30 @@ public class MerchantProductFrm extends JPanel {
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
         // 创建一个 JLabel 并将缩放后的 ImageIcon 设置为其图标
-        return new JLabel(scaledIcon);
+        JLabel imageLabel = new JLabel(scaledIcon);
+
+        imageLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                showProductDetails(product);
+            }
+        });
+
+        return imageLabel;
     }
 
-    private static ImageIcon getImageIcon(Product product, String projectPath) {
+    private void showProductDetails(Product product) {
+        // 关闭当前显示的商品详情对话框，如果有的话
+        if (currentDetailsDialog != null) {
+            currentDetailsDialog.dispose();
+        }
+
+        // 创建新的商品详情对话框
+        currentDetailsDialog = new ProductDetailsDialog(data, product, this);
+        currentDetailsDialog.setVisible(true);
+    }
+
+    private ImageIcon getImageIcon(Product product, String projectPath) {
         String relativeImagePath = product.getP_img();
         String absoluteImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + relativeImagePath;
         // 创建 ImageIcon
@@ -165,7 +136,6 @@ public class MerchantProductFrm extends JPanel {
         return originalIcon;
     }
 
-
     public void createproductcard() {
         try {
             DataControl dataControl = new DataControl();
@@ -178,10 +148,9 @@ public class MerchantProductFrm extends JPanel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
-    //刷新修改后的商品信息
+    // 刷新修改后的商品信息
     public void refreshCard1Product(Product updatedProduct) {
         // 查找要更新的商品的位置
         int index = -1;

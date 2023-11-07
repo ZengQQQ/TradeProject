@@ -42,7 +42,7 @@ public class login extends JFrame {
                     JOptionPane.showMessageDialog(this, "商家登录成功");
                     MerchantInterFrm merchantFrame = new MerchantInterFrm(merchantPswid.get(1));
                     merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    merchantFrame.setSize(1000, 900);
+                    merchantFrame.setSize(1200, 1000);
                     merchantFrame.setVisible(true);
                     dispose();
                     } else {
@@ -133,6 +133,7 @@ public class login extends JFrame {
             @Override
             public void run() {
                 login login = new login();
+                login.setLocationRelativeTo(null); // 居中显示
                 login.setSize(500, 400);
                 login.setVisible(true);
             }
