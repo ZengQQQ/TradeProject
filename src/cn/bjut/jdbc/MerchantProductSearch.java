@@ -59,6 +59,12 @@ public class MerchantProductSearch extends JPanel {
     private void performSearch() {
         String searchType = (String) searchTypeComboBox.getSelectedItem();
         String searchValue = searchField.getText();
+        // 输入验证规则
+        String validationError = validateInput(searchType, searchValue);
+        if (validationError != null) {
+            JOptionPane.showMessageDialog(null, validationError, "输入验证错误", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         try {
             List<Product> searchResults = dataControl.searchProducts(merchantInterFrm.getM_id(), searchType, searchValue);
@@ -165,7 +171,6 @@ public class MerchantProductSearch extends JPanel {
         return sb.toString(); // Return the wrapped text
     }
 
-
     private JLabel createImageLabel(Product product) {
         String projectPath = System.getProperty("user.dir");
         ImageIcon originalIcon = getImageIcon(product, projectPath);
@@ -185,5 +190,64 @@ public class MerchantProductSearch extends JPanel {
         } else {
             return new ImageIcon(projectPath + File.separator + DEFAULT_IMAGE_PATH);
         }
+    }
+
+    //返回错误消息
+    private String validateInput(String productType, String productf) {
+        // 商品信息搜索验证
+        if (!validateProductInput(productType, productf)) {
+            return "商品信息搜索验证失败，请检查输入！";
+        }
+        return null; // 没有错误
+    }
+
+    // 商品信息搜索验证规则
+    private boolean validateProductInput(String productType, String productf) {
+        switch (productType) {
+            case "商品名称":
+                // 商品名称可以包含字母、数字、汉字和常见标点符号
+                if (!productf.matches("^[a-zA-Z0-9\\u4e00-\\u9fa5.,!?-]*$")) {
+                    return false;
+                }
+                break;
+            case "类别":
+                // 类别必须是字符串，不包含数字
+                if (productf.matches(".*[0-9].*")) {
+                    return false;
+                }
+                break;
+            case "价格":
+                // 价格必须是合法的数字
+                if (!isNumeric(productf)) {
+                    return false;
+                }
+                break;
+            case "数量":
+                // 数量必须是整数
+                if (!isInteger(productf)) {
+                    return false;
+                }
+                break;
+            default:
+                // 未知的商品信息搜索类型
+                return false;
+        }
+        return true;
+    }
+
+    // 检查字符串是否为数字
+    private boolean isNumeric(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        return str.matches("\\d+(\\.\\d+)?");
+    }
+
+    // 检查字符串是否为整数
+    private boolean isInteger(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        return str.matches("\\d+");
     }
 }
