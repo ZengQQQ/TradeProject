@@ -139,6 +139,114 @@ public class DataControl {
         }
     }
 
+    //查找某一用户的信息，u-id
+    public User selectuser(int u_id) throws SQLException {
+        String sql = "select * from user where u_id = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, u_id);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            String id = Integer.toString(rs.getInt("u_id"));
+            String acc = rs.getString("u_acc");
+            String psw = rs.getString("u_psw");
+            String name = rs.getString("u_name");
+            String sex = rs.getString("u_sex");
+            String tele = rs.getString("u_tele");
+            return new User(id, acc, psw, name, sex, tele);
+        }
+        return null;
+    }
+
+    // 定义一个insertOrUpdateConcern方法，将用户id和商家id添加到concern表中
+    public void insertOrUpdateConcern(int u_id, int m_id) {
+        // 连接数据库
+        DataBase dataBase = new DataBase();
+        dataBase.OpenDB();
+        // 构建一个SQL查询语句，检查是否已经存在相同的记录 // 添加一个新的查询语句
+        String checkQuery = "SELECT COUNT(*) FROM concern WHERE u_id = ? AND m_id = ?";
+        PreparedStatement checkPstmt = null;
+        ResultSet rs = null;
+        try {
+            // 创建一个预编译语句对象
+            try {
+                checkPstmt = dataBase.getCon().prepareStatement(checkQuery);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // 设置占位符的值
+            checkPstmt.setInt(1, u_id);
+            checkPstmt.setInt(2, m_id);
+            // 执行查询语句，得到一个结果集对象
+            rs = checkPstmt.executeQuery();
+            // 如果结果集不为空，获取第一行第一列的值，即记录的数量
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                // 如果记录的数量大于0，说明已经存在相同的记录，不需要插入或更新 // 添加一个新的判断条件
+                if (count > 0) {
+                    // 输出提示信息
+                    System.out.println("已经关注过了");
+                    // 结束方法，不再执行后面的代码
+                    return;
+                }
+            }
+        } catch (SQLException e) {
+            // 处理异常
+            e.printStackTrace();
+        } finally {
+            // 关闭结果集和查询语句对象
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                checkPstmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        // 构建一个SQL插入或更新语句，使用ON DUPLICATE KEY UPDATE子句来处理重复的记录
+        String query = "INSERT INTO concern (u_id, m_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE u_id = u_id, m_id = m_id";
+        PreparedStatement pstmt = null;
+        try {
+            // 创建一个预编译语句对象
+            try {
+                pstmt = dataBase.getCon().prepareStatement(query);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // 设置占位符的值
+            pstmt.setInt(1, u_id);
+            pstmt.setInt(2, m_id);
+            // 执行插入或更新语句，返回受影响的行数
+            int rows = pstmt.executeUpdate();
+            // 判断是否成功
+            if (rows > 0) {
+                // 输出成功信息
+                System.out.println("关注成功");
+            } else {
+                // 输出失败信息
+                System.out.println("关注失败");
+            }
+        } catch (SQLException e) {
+            // 处理异常
+            e.printStackTrace();
+        } finally {
+            // 关闭插入或更新语句对象
+            try {
+                pstmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            // 关闭数据库连接
+            try {
+                dataBase.getCon().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void insertOrderFromCart(int u_id, int p_id) {
         DataBase dataBase = new DataBase();
