@@ -8,6 +8,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.JTable;
 import javax.swing.table.TableModel;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,9 +45,11 @@ public class UserFrm extends JFrame {
         JTextField searchField = new JTextField(20); // 创建一个文本框，设置列数为20
         JButton searchButton = new JButton("搜索"); // 创建一个按钮，设置文本为"搜索"
         JButton refreshButton0=new JButton("刷新");
+        JButton concerButton=new JButton("我的关注");
         topPanel.add(searchField); // 将文本框添加到流式布局的面板中
         topPanel.add(searchButton); // 将按钮添加到流式布局的面板中
         topPanel.add(refreshButton0);
+        topPanel.add(concerButton);
 
 
 // 创建一个网格布局的面板，放在第一个界面的下半部分
@@ -76,6 +79,14 @@ public class UserFrm extends JFrame {
                 refreshProduct(bottomPanel,u_id); // 调用搜索方法
             }
         });
+        // 为关注按钮添加动作监听器
+        concerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                concerProdict(u_id);
+
+            }
+        });
 // 查询数据库中的商品信息
         Statement stmt = null;
         try {
@@ -83,7 +94,7 @@ public class UserFrm extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc FROM product";
+        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id FROM product";
         ResultSet rs = null;
         try {
             rs = stmt.executeQuery(query);
@@ -102,6 +113,12 @@ public class UserFrm extends JFrame {
             int id = 0;
             try {
                 id = rs.getInt("p_id");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            int m_id = 0;
+            try {
+                m_id = rs.getInt("m_id");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -132,6 +149,7 @@ public class UserFrm extends JFrame {
                 e.printStackTrace();
             }
 
+
             // 创建一个按钮，设置图标和文本
             JButton button = new JButton();
             button.setIcon(new ImageIcon(imagePath + "")); // 设置按钮的图标
@@ -141,6 +159,7 @@ public class UserFrm extends JFrame {
 
             // 为按钮添加点击事件监听器，跳转到商品详情卡片
             int finalId = id;//p_id
+            int finalm_Id=m_id;
             String finalName = name;
             String finalImagePath = imagePath;
             double finalPrice = price;
@@ -152,7 +171,7 @@ public class UserFrm extends JFrame {
                     JPanel productPanel = productMap.get(finalId);
                     if (productPanel == null) {
                         // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
-                        productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc);
+                        productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc,finalm_Id);
                         mainPanel.add(productPanel, "product" + finalId);
                         productMap.put(finalId, productPanel);
                     }
@@ -201,8 +220,20 @@ public class UserFrm extends JFrame {
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
         JPanel card2 = new JPanel();
+        DataControl dataControl2= null;
+        try {
+            dataControl2 = new DataControl();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         card2.add(new JLabel("这是第二个界面"));
-
+        JPanel cardF = null;
+        try {
+            cardF = new ForumPage(dataControl2.selectuser(u_id),"用户");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        card2.add(cardF, "card3");
 
 
 
@@ -663,7 +694,7 @@ public class UserFrm extends JFrame {
             }
         });
 
-        dynamicButton = new JButton("动态");
+        dynamicButton = new JButton("论坛");
         dynamicButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -741,7 +772,7 @@ public class UserFrm extends JFrame {
     }
 
 
-    private JPanel createProductPanel(int id,int u_id, String name, String imagePath, double price,String desc) {
+    private JPanel createProductPanel(int id,int u_id, String name, String imagePath, double price,String desc,int m_id) {
         // 创建一个新的卡片对象
         JPanel productPanel = new JPanel();
         productPanel.setLayout(new BorderLayout());
@@ -786,12 +817,13 @@ public class UserFrm extends JFrame {
             }
         });
 
-        // 创建一个按钮，实现关注商品的功能 // 添加一个新的按钮
+        // 创建一个按钮，实现关注商家的功能
         JButton followButton = new JButton("关注");
         followButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                // 调用dataControl的方法，将用户id和商家id添加到concern表中 // 添加一个新的方法调用
+                finalDataControl.insertOrUpdateConcern(u_id,m_id);
             }
         });
 
@@ -807,6 +839,65 @@ public class UserFrm extends JFrame {
         return productPanel;
     }
 
+    private void concerProdict(int u_id) {
+
+        // 创建一个新的窗口对象
+        JFrame followFrame = new JFrame("关注的商家");
+        // 设置窗口的大小和位置
+        followFrame.setSize(800, 600);
+        followFrame.setLocationRelativeTo(null);
+        // 设置窗口的关闭操作
+        followFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        // 连接数据库
+        DataBase dataBase = new DataBase();
+        dataBase.OpenDB();
+        String[] columnnames={"name","price","img"};
+        Object data[][]=null;
+        Statement stmt = null;
+        DefaultTableModel tableModel=new DefaultTableModel(data,columnnames);
+        try {
+            stmt = dataBase.getCon().createStatement();
+            String query = "SELECT m_id FROM concern WHERE u_id=" + u_id;
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                int m_id = rs.getInt("m_id");
+                Statement stmt1 = dataBase.getCon().createStatement();
+                String query1 = "SELECT p_name, p_price,p_img FROM product WHERE m_id=" + m_id;
+                ResultSet rs1 = stmt1.executeQuery(query1);
+                while (rs1.next()) {
+                    String p_name = rs1.getString("p_name");
+                    String p_price = rs1.getString("p_price");
+                    ImageIcon image = new ImageIcon(rs1.getString("p_img"));
+                    tableModel.addRow(new Object[]{image, p_name, p_price,});
+
+                }
+                rs1.close();
+                stmt1.close();
+            }
+
+            rs.close();
+            stmt.close();
+            dataBase.getCon().close();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        // 创建一个表格对象，用于显示表格模型中的数据
+        JTable table = new JTable(tableModel);
+        // 创建一个滚动面板，并将表格放入其中
+        JScrollPane scrollPane = new JScrollPane(table);
+        // 创建一个面板对象，用于容纳滚动面板
+        JPanel followPanel = new JPanel();
+        followPanel.setLayout(new BorderLayout());
+        // 将滚动面板添加到面板对象中
+        followPanel.add(scrollPane, BorderLayout.CENTER);
+        // 将面板对象添加到窗口对象中
+        followFrame.add(followPanel);
+        // 设置窗口可见
+        followFrame.setVisible(true);
+    }
+
     // 创建搜索方法
     private void searchProduct(String keyword,JPanel bottomPanel,int u_id) {
         // 清空网格布局的面板
@@ -817,7 +908,7 @@ public class UserFrm extends JFrame {
         dataBase.OpenDB();
 
         // 构建新的SQL查询语句
-        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc FROM product WHERE p_name LIKE '%" + keyword + "%' OR p_desc LIKE '%" + keyword + "%'";
+        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id FROM product WHERE p_name LIKE '%" + keyword + "%' OR p_desc LIKE '%" + keyword + "%'";
         Statement stmt = null;
         ResultSet rs;
 
@@ -832,6 +923,7 @@ public class UserFrm extends JFrame {
             // 遍历结果集，为每个匹配的商品创建一个按钮，并添加到网格布局的面板中
             while (rs.next()) {
                 int id = rs.getInt("p_id");
+                int m_id = rs.getInt("m_id");
                 String name = rs.getString("p_name");
                 String imagePath = rs.getString("p_img");
                 String desc = rs.getString("p_desc");
@@ -845,6 +937,7 @@ public class UserFrm extends JFrame {
 
                 // 添加点击事件监听器
                 int finalId = id;
+                int finalm_Id = m_id;
                 String finalName = name;
                 String finalImagePath = imagePath;
                 double finalPrice = price;
@@ -856,7 +949,7 @@ public class UserFrm extends JFrame {
                         JPanel productPanel = productMap.get(finalId);
                         if (productPanel == null) {
                             // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
-                            productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finalDesc);
+                            productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finalDesc,finalm_Id);
                             mainPanel.add(productPanel, "product" + finalId);
                             productMap.put(finalId, productPanel);
                         }
@@ -900,7 +993,7 @@ public class UserFrm extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc FROM product";
+        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id FROM product";
         ResultSet rs = null;
         try {
             rs = stmt.executeQuery(query);
@@ -919,6 +1012,12 @@ public class UserFrm extends JFrame {
             int id = 0;
             try {
                 id = rs.getInt("p_id");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            int m_id = 0;
+            try {
+                m_id = rs.getInt("m_id");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -958,6 +1057,7 @@ public class UserFrm extends JFrame {
 
             // 为按钮添加点击事件监听器，跳转到商品详情卡片
             int finalId = id;//p_id
+            int finalm_Id = m_id;
             String finalName = name;
             String finalImagePath = imagePath;
             double finalPrice = price;
@@ -969,7 +1069,7 @@ public class UserFrm extends JFrame {
                     JPanel productPanel = productMap.get(finalId);
                     if (productPanel == null) {
                         // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
-                        productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc);
+                        productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc,finalm_Id);
                         mainPanel.add(productPanel, "product" + finalId);
                         productMap.put(finalId, productPanel);
                     }
