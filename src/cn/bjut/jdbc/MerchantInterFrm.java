@@ -17,7 +17,7 @@ public class MerchantInterFrm extends JFrame {
     private  MerchantProductFrm merproduct;
     private MerchantOrdersFrm merorder;
     private final Timer initialInfoTimer;
-    private Font fontall = new Font("微软雅黑", Font.BOLD, 18);
+    private final Font fontall = new Font("微软雅黑", Font.BOLD, 18);
     public MerchantInterFrm(int mid) throws SQLException {
         this.m_id = mid;
         initComponents();
@@ -232,7 +232,12 @@ public class MerchantInterFrm extends JFrame {
         refreshButton4.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                closeAndOpenLogin(); // 点击退出按钮时关闭当前窗口并打开登录窗口
+                try {
+                    closeAndOpenLogin(); // 点击退出按钮时关闭当前窗口并打开登录窗口
+                } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException |
+                         IllegalAccessException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -246,7 +251,7 @@ public class MerchantInterFrm extends JFrame {
         return menuBar;
     }
 
-    private void closeAndOpenLogin() {
+    private void closeAndOpenLogin() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         this.dispose(); // 关闭当前窗口
         login loginFrm = new login(); // 创建一个新的登录窗口
         loginFrm.setLocationRelativeTo(null); // 将登录窗口设置为居中显示
