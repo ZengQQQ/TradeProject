@@ -14,11 +14,11 @@ public class login extends JFrame {
     private JTextField textField1;
     private JPasswordField passwordField;
     private JComboBox<String> roleComboBox;
-    private JPanel backgroundPanel;
     private Font fort = new Font("微软雅黑", Font.BOLD, 16);
 
-    public login() {
+    public login() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         initComponents();
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
     }
 
     private void button1MouseClicked(MouseEvent e) {
@@ -97,7 +97,8 @@ public class login extends JFrame {
         setTitle("登录");
 
         // Create a JPanel for the background image
-        backgroundPanel = new JPanel() {
+        // Load the background image (adjust the file path as needed)
+        JPanel backgroundPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -179,7 +180,13 @@ public class login extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            login login = new login();
+            login login;
+            try {
+                login = new login();
+            } catch (UnsupportedLookAndFeelException | InstantiationException | ClassNotFoundException |
+                     IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
             login.setLocationRelativeTo(null); // 居中显示
             login.setSize(900, 600);
             login.setVisible(true);
