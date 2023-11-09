@@ -332,21 +332,36 @@ public class DataControl {
 
     }
 
-    public List<Integer> getMerchantPsw(String account) throws SQLException {
-        List<Integer> psw_id = new ArrayList<>();
-        String sql = "select m_psw,m_id from  merchant " + " where  m_acc" + " = ?";
+    public String getMerchantPsw(String account) throws SQLException {
+        String psw = null;
+        String sql = "select m_psw from  merchant " + " where  m_acc" + " = ?";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
         stmt.setString(1, account);
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
-            psw_id.add(Integer.valueOf(rs.getString("m_psw")));
-            psw_id.add(rs.getInt("m_id"));
+            psw=(rs.getString("m_psw"));
         }
         if (con != null) {
             con.close();
         }
-        return psw_id;
+        return psw;
+    }
+
+    public int getMerchantm_id(String account) throws SQLException {
+        int m_id=0;
+        String sql = "select m_id from  merchant " + " where  m_acc" + " = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, account);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            m_id=rs.getInt("m_id");
+        }
+        if (con != null) {
+            con.close();
+        }
+        return m_id;
     }
 
     public String getAdminPsw(String account) throws SQLException {
