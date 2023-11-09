@@ -86,10 +86,6 @@ public class MerchantInterFrm extends JFrame {
         //第三个界面------------------------------------------------
         JPanel card3 = new ForumPage(dataControl.selectMerchant(m_id),"商家");
         mainPanel.add(card3, "card3");
-        //第四个界面------------------------------------------------
-        MerchantInfo merchantInfoPanel = new MerchantInfo(dataControl, m_id);
-        // 将“我的信息”面板添加到 mainPanel
-        mainPanel.add(merchantInfoPanel, "card4");
 
         //搜索商品界面------------------------------------------------
         MerchantProductSearch searchproduct = new MerchantProductSearch(dataControl,this);
@@ -101,20 +97,18 @@ public class MerchantInterFrm extends JFrame {
 
         // 按钮------------------------------------------------
         // 创建按钮
-
         JButton upproject = new JButton("商品管理");
         upproject.setFont(fontall);
         JButton downproject = new JButton("订单");
         downproject.setFont(fontall);
-        JButton evaluate = new JButton("论坛");
-        evaluate.setFont(fontall);
-
+        JButton forum = new JButton("论坛");
+        forum.setFont(fontall);
 
         // 设置按钮的高度（例如，将高度设置为 50 像素）
         int buttonHeight = 45;
         upproject.setPreferredSize(new Dimension(upproject.getPreferredSize().width, buttonHeight));
         downproject.setPreferredSize(new Dimension(downproject.getPreferredSize().width, buttonHeight));
-        evaluate.setPreferredSize(new Dimension(evaluate.getPreferredSize().width, buttonHeight));
+        forum.setPreferredSize(new Dimension(forum.getPreferredSize().width, buttonHeight));
 
         //设置动作
         searchproductButton.addMouseListener(new MouseAdapter() {
@@ -145,7 +139,7 @@ public class MerchantInterFrm extends JFrame {
             }
         });
 
-        evaluate.addMouseListener(new MouseAdapter() {
+        forum.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card3");
@@ -153,13 +147,11 @@ public class MerchantInterFrm extends JFrame {
         });
 
 
-
         JPanel buttonPanel2 = new JPanel();
         buttonPanel2.setLayout(new GridLayout(1, 4));
         buttonPanel2.add(upproject);
         buttonPanel2.add(downproject);
-        buttonPanel2.add(evaluate);
-
+        buttonPanel2.add(forum);
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
@@ -195,28 +187,29 @@ public class MerchantInterFrm extends JFrame {
 
     private JMenuBar createMenuBar() {
         // 设置字体和高度
-        Font menuFont = new Font("SansSerif", Font.BOLD, 18);
-        Font buttonFont = new Font("SansSerif", Font.BOLD, 15);
+        Font font = new Font("微软雅黑", Font.BOLD, 18);
+
         int buttonHeight = 40;
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("菜单");
-        menu.setFont(menuFont);
+        menu.setFont(font);
 
         JButton refreshButton1 = new JButton("刷新商品");
-        refreshButton1.setFont(buttonFont);
+        refreshButton1.setFont(font);
         refreshButton1.setPreferredSize(new Dimension(refreshButton1.getPreferredSize().width, buttonHeight));
 
         JButton refreshButton2 = new JButton("刷新订单");
-        refreshButton2.setFont(buttonFont);
+        refreshButton2.setFont(font);
         refreshButton2.setPreferredSize(new Dimension(refreshButton2.getPreferredSize().width, buttonHeight));
 
         JButton refreshButton3 = new JButton("刷新用户信息");
-        refreshButton3.setFont(buttonFont);
+        refreshButton3.setFont(font);
         refreshButton3.setPreferredSize(new Dimension(refreshButton3.getPreferredSize().width, buttonHeight));
 
         JButton refreshButton4 = new JButton("退出");
-        refreshButton4.setFont(buttonFont);
+        refreshButton4.setFont(font);
+        refreshButton4.setBackground(Color.red);
         refreshButton4.setPreferredSize(new Dimension(refreshButton4.getPreferredSize().width, buttonHeight));
         refreshButton1.addMouseListener(new MouseAdapter() {
             @Override
@@ -233,7 +226,7 @@ public class MerchantInterFrm extends JFrame {
         refreshButton3.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                refreshCard4();
+                showMerchantInfoDialog();
             }
         });
         refreshButton4.addMouseListener(new MouseAdapter() {
@@ -263,26 +256,26 @@ public class MerchantInterFrm extends JFrame {
     }
 
     private JMenuBar createmyinfoMenuBar() {
-        Font menuFont = new Font("SansSerif", Font.BOLD, 18);
-        Font buttonFont = new Font("SansSerif", Font.BOLD, 15);
+        Font font = new Font("微软雅黑", Font.BOLD, 18);
+
         int buttonHeight = 40;
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("我的");
-        menu.setFont(menuFont);
+        menu.setFont(font);
 
         JButton refreshButton1 = new JButton("我的信息");
-        refreshButton1.setFont(buttonFont);
+        refreshButton1.setFont(font);
         refreshButton1.setPreferredSize(new Dimension(refreshButton1.getPreferredSize().width, buttonHeight));
 
         JButton refreshButton2 = new JButton("修改信息");
-        refreshButton2.setFont(buttonFont);
+        refreshButton2.setFont(font);
         refreshButton2.setPreferredSize(new Dimension(refreshButton2.getPreferredSize().width, buttonHeight));
 
         refreshButton1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                cardLayout.show(mainPanel, "card4"); // 显示我的信息界面
+                showMerchantInfoDialog(); // 显示我的信息界面
             }
         });
 
@@ -300,6 +293,14 @@ public class MerchantInterFrm extends JFrame {
         menuBar.add(menu);
         return menuBar;
     }
+    private void showMerchantInfoDialog() {
+        try {
+            MerchantInfo merchantInfo = new MerchantInfo(dataControl, m_id);
+            merchantInfo.setVisible(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     private void showMerchantInfoModifyDialog() {
         try {
             Merchant merchant = dataControl.MerchantQuery(m_id);
@@ -310,18 +311,6 @@ public class MerchantInterFrm extends JFrame {
         }
     }
 
-    public void refreshCard4() {
-        mainPanel.remove(3); // 删除 Card4 面板
-        try {
-            MerchantInfo merchantInfoPanel = new MerchantInfo(dataControl, m_id);
-            mainPanel.add(merchantInfoPanel, "card4"); // 创建新的 Card4 面板并添加
-            cardLayout.show(mainPanel, "card4"); // 切换到 Card4
-            mainPanel.revalidate(); // 重新布局
-            mainPanel.repaint(); // 重绘
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
     private void showInitialInfoPopup() {
         JOptionPane.showMessageDialog(this, "点击图片查看更多", "提示", JOptionPane.INFORMATION_MESSAGE);
     }
