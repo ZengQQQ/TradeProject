@@ -46,7 +46,7 @@ public class MerchantInterFrm extends JFrame {
         //第一个界面------------------------------------------------
         JPanel card1 = new JPanel(new BorderLayout());
         merproduct = new MerchantProductFrm(this,dataControl);
-        // 创建一个顶部的面板，用于放置按钮
+       // 创建一个顶部的面板，用于放置按钮
         JPanel topPanel = new JPanel(new GridLayout(1, 2));
         JButton addProductButton = new JButton("增加商品");
         addProductButton.setFont(fontall);
@@ -56,13 +56,12 @@ public class MerchantInterFrm extends JFrame {
             detailsDialog.setVisible(true);
         });
 
-        JButton searchproductButton = new JButton("搜索商品");
-        searchproductButton.setFont(fontall);
+        JButton searchProductButton = new JButton("搜索商品");
+        searchProductButton.setFont(fontall);
 
-        topPanel.add(searchproductButton);
+        topPanel.add(searchProductButton);
         topPanel.add(addProductButton);
-        // 将搜索按钮和商品展示部分添加到MerchantProductFrm
-        card1.add(topPanel, BorderLayout.NORTH);
+        card1.add(topPanel,BorderLayout.NORTH);
         card1.add(merproduct, BorderLayout.CENTER);
         JScrollPane scrollPane = new JScrollPane(card1);// 创建一个 JScrollPane 来包装 card1 面板
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();// 获取垂直滚动条
@@ -99,19 +98,19 @@ public class MerchantInterFrm extends JFrame {
         // 创建按钮
         JButton upproject = new JButton("商品管理");
         upproject.setFont(fontall);
-        JButton downproject = new JButton("订单");
-        downproject.setFont(fontall);
+        JButton order = new JButton("订单");
+        order.setFont(fontall);
         JButton forum = new JButton("论坛");
         forum.setFont(fontall);
 
         // 设置按钮的高度（例如，将高度设置为 50 像素）
         int buttonHeight = 45;
         upproject.setPreferredSize(new Dimension(upproject.getPreferredSize().width, buttonHeight));
-        downproject.setPreferredSize(new Dimension(downproject.getPreferredSize().width, buttonHeight));
+        order.setPreferredSize(new Dimension(order.getPreferredSize().width, buttonHeight));
         forum.setPreferredSize(new Dimension(forum.getPreferredSize().width, buttonHeight));
 
         //设置动作
-        searchproductButton.addMouseListener(new MouseAdapter() {
+        searchProductButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card5");
@@ -132,7 +131,7 @@ public class MerchantInterFrm extends JFrame {
             }
         });
 
-        downproject.addMouseListener(new MouseAdapter() {
+        order.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card2");
@@ -150,7 +149,7 @@ public class MerchantInterFrm extends JFrame {
         JPanel buttonPanel2 = new JPanel();
         buttonPanel2.setLayout(new GridLayout(1, 4));
         buttonPanel2.add(upproject);
-        buttonPanel2.add(downproject);
+        buttonPanel2.add(order);
         buttonPanel2.add(forum);
 
         Container contentPane = getContentPane();
