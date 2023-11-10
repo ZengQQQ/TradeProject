@@ -15,10 +15,30 @@ public class MerchantInfo extends JDialog {
         this.m_id = m_id;
         initComponents();
     }
+    private  class BackgroundPanel extends JPanel {
+        private ImageIcon background;
+
+        public BackgroundPanel(String gifPath) {
+            this.background = new ImageIcon(getClass().getResource(gifPath));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Display the animated GIF
+            background.paintIcon(this, g, 0, 0);
+        }
+    }
 
     private void initComponents() throws SQLException {
         setTitle("您的信息");
         JPanel panel = new JPanel(new GridLayout(6, 2));
+
+        // 设置背景图片
+        setContentPane(new MerchantInfo.BackgroundPanel("/Img/myinfo.jpg"));
+        // 使面板背景透明
+        panel.setOpaque(false);
+        getContentPane().add(panel, BorderLayout.CENTER);
 
         // 获取商家信息
         Merchant merchant = dataControl.MerchantQuery(m_id);
@@ -48,4 +68,5 @@ public class MerchantInfo extends JDialog {
         setSize(500, 400);
 
     }
+
 }
