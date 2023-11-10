@@ -14,6 +14,14 @@ public class ProductDetailsDialog extends ProductofDialog {
     }
 
     private void initComponents() {
+
+        // 设置背景图片
+        // 设置背景动图
+        setContentPane(new AnimatedBackgroundPanel("/Img/detailsproduct.jpg"));
+        // 使面板背景透明
+        panel.setOpaque(false);
+        getContentPane().add(panel, BorderLayout.CENTER);
+
         // 创建微软雅黑黑的16号字体
         Font customFont = new Font("微软雅黑", Font.PLAIN, 16);
 
@@ -83,7 +91,6 @@ public class ProductDetailsDialog extends ProductofDialog {
         deleteButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
         gbc.gridx++;
         panel.add(deleteButton, gbc);
-
         // 在点击“修改”按钮后
         modifyButton.addActionListener(e -> {
             ProductUpdateDialog updateDialog = new ProductUpdateDialog(dataControl, product, merproduct);
@@ -122,5 +129,19 @@ public class ProductDetailsDialog extends ProductofDialog {
             }
         });
     }
+    // Custom JPanel for displaying an animated background GIF
+    private static class AnimatedBackgroundPanel extends JPanel {
+        private ImageIcon background;
 
+        public AnimatedBackgroundPanel(String gifPath) {
+            this.background = new ImageIcon(getClass().getResource(gifPath));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Display the animated GIF
+            background.paintIcon(this, g, 0, 0);
+        }
+    }
 }
