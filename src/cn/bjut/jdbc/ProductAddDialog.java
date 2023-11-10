@@ -18,6 +18,20 @@ public class ProductAddDialog extends ProductofDialog {
     }
 
     private void initComponents() {
+        // 设置背景图片
+        setContentPane(new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // 加载背景图片
+                ImageIcon background = new ImageIcon(getClass().getResource("/Img/addproduct.jpg"));
+                g.drawImage(background.getImage(), 0, 0, getWidth(), getHeight(), this);
+            }
+        });
+        // 使面板背景透明
+        panel.setOpaque(false);
+        getContentPane().add(panel, BorderLayout.CENTER);
+
         setTitle("添加商品信息");
         int textFieldColumns = 30;
         gbc.gridx = 1;
@@ -53,9 +67,10 @@ public class ProductAddDialog extends ProductofDialog {
 
         imageLabel = merproduct.createImageLabel(product, 350, 300);
         panel.add(imageLabel, gbc);
-        gbc.gridx = 2;
-        //商品图片展示
 
+        //商品图片展示
+        gbc.gridy++;
+        gbc.gridx = 1;
         // 创建“Change Image”按钮
         JButton upImgButton = new JButton("上传图片");
         upImgButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
@@ -63,8 +78,6 @@ public class ProductAddDialog extends ProductofDialog {
         upImgButton.addActionListener(e -> {
             // 调用父类的方法
             boolean b = handleChangeImageButton();
-            gbc.gridx = 1;
-            panel.add(imageLabel, gbc);
             refreshphoto();
             if (b) {
                 JOptionPane.showMessageDialog(this, "图片上传成功", "提示", JOptionPane.INFORMATION_MESSAGE);
@@ -72,9 +85,13 @@ public class ProductAddDialog extends ProductofDialog {
                 JOptionPane.showMessageDialog(this, "图片上传失败失败", "错误", JOptionPane.ERROR_MESSAGE);
             }
         });
+
+        gbc.gridx=2;
+
         // 创建“创建”按钮
         JButton createProductButton = new JButton("创建");
         createProductButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        panel.add(createProductButton, gbc);
         createProductButton.addActionListener(e -> {
             // 从文本字段和单选按钮获取值
             String newName = nameField.getText();
@@ -132,11 +149,5 @@ public class ProductAddDialog extends ProductofDialog {
                 }
             }
         });
-
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.add(createProductButton);
-        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-
     }
 }
