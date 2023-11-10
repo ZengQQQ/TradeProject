@@ -2,6 +2,7 @@ package cn.bjut.jdbc;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.sql.*;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -102,6 +103,8 @@ public class UserFrm extends JFrame {
             e.printStackTrace();
         }
 
+        String projectPath = System.getProperty("user.dir");
+
 // 遍历结果集，为每个商品创建一个按钮，并添加到网格布局的面板中
         while (true) {
             try {
@@ -129,16 +132,19 @@ public class UserFrm extends JFrame {
                 e.printStackTrace();
             }
             String imagePath = null;
+            boolean flag=false;
             try {
-                imagePath = rs.getString("p_img");
-                System.out.println(imagePath);
+                imagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator +rs.getString("p_img");
+//                System.out.println(imagePath);
+//                System.out.println(projectPath);
+                if (rs.getString("p_img")==null){flag=true;}
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             String desc = null;
             try {
                 desc = rs.getString("p_desc");
-                System.out.println(imagePath);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -150,9 +156,27 @@ public class UserFrm extends JFrame {
             }
 
 
+
             // 创建一个按钮，设置图标和文本
             JButton button = new JButton();
-            button.setIcon(new ImageIcon(imagePath + "")); // 设置按钮的图标
+            System.out.println(flag);
+            if (flag!=true){
+
+                // 获取原始图片
+                Image image = new ImageIcon(imagePath + "").getImage();
+                // 创建缩放后的图片
+                Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                // 设置按钮的图标
+                button.setIcon(new ImageIcon(newImage));
+            }
+            else {
+                // 获取原始图片
+                Image image = new ImageIcon(projectPath + File.separator + "src" + File.separator + "img" + File.separator +"R.jpg").getImage();
+                // 创建缩放后的图片
+                Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                // 设置按钮的图标
+                button.setIcon(new ImageIcon(newImage));
+            }
             button.setText("<html>" + name + "<br>¥" + price + "</html>"); // 设置按钮的文本，使用html标签换行
             button.setVerticalTextPosition(SwingConstants.BOTTOM); // 设置文本在图标下方
             button.setHorizontalTextPosition(SwingConstants.CENTER); // 设置文本在图标中间
@@ -226,7 +250,7 @@ public class UserFrm extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        card2.add(new JLabel("这是第二个界面"));
+        card2.add(new JLabel());
         JPanel cardF = null;
         try {
             cardF = new ForumPage(dataControl2.selectuser(u_id),"用户");
