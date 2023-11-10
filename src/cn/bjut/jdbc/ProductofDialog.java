@@ -7,13 +7,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+
 //商品界面父类
-public class ProductofDialog extends JDialog{
+public class ProductofDialog extends JDialog {
     public DataControl dataControl;
     public Product product;
-    public String newImgName; // 添加字段用于存储文件名
-
-    // 在initComponents方法中添加一个新的字段来保存商品图片的标签
+    public String newImgName;
     public JLabel imageLabel;
     public JRadioButton onSaleRadioButton;
     public JRadioButton offSaleRadioButton;
@@ -80,9 +79,8 @@ public class ProductofDialog extends JDialog{
         panel.add(imageLabel, gbc);
 
         gbc.gridx = 1;
-        getContentPane().add(panel, BorderLayout.CENTER);
+        add(panel);
     }
-
 
     //刷新修改界面的图片
     public void refreshphoto() {
@@ -93,7 +91,7 @@ public class ProductofDialog extends JDialog{
         // 获取图片对象
         Image updatedImage = updatedIcon.getImage();
         // 缩放图片（如果需要）
-        Image scaledImage = updatedImage.getScaledInstance(400, 300, Image.SCALE_SMOOTH);
+        Image scaledImage = updatedImage.getScaledInstance(350, 300, Image.SCALE_SMOOTH);
         // 创建一个新的 ImageIcon
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
         // 更新图片标签
