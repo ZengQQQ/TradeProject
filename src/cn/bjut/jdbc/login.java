@@ -99,50 +99,56 @@ public class login extends JFrame {
 
         setContentPane(backgroundPanel);
         JPanel loginPanel = new JPanel(new GridBagLayout());
-        loginPanel.setBackground(Color.white);
+        loginPanel.setBackground(new Color(0, 0, 0, 0)); // Transparent background
         loginPanel.setPreferredSize(new Dimension(200, 100));
+
+        // Create a separate panel for the background image of loginPanel
+        JPanel loginPanelBackground = new BackgroundPanel("/img/login.jpg");
+        loginPanelBackground.setLayout(new BorderLayout());
+        backgroundPanel.setLayout(new BorderLayout());
+        backgroundPanel.add(loginPanelBackground, BorderLayout.EAST);
+        loginPanelBackground.setOpaque(false); // Make it transparent
+
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(5, 5, 5, 5);
-        backgroundPanel.setLayout(new BorderLayout());
-        backgroundPanel.add(loginPanel, BorderLayout.EAST);
-        loginPanel.setOpaque(true);
+        loginPanelBackground.setLayout(new GridBagLayout());
 
         JLabel label1 = new JLabel("账户名:");
         label1.setFont(fort);
         constraints.gridx = 0;
         constraints.gridy = 0;
-        loginPanel.add(label1, constraints);
+        loginPanelBackground.add(label1, constraints);
 
         textField1 = new JTextField();
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        loginPanel.add(textField1, constraints);
+        loginPanelBackground.add(textField1, constraints);
 
         JLabel label2 = new JLabel("密码:");
         label2.setFont(fort);
         constraints.gridx = 0;
         constraints.gridy = 1;
-        loginPanel.add(label2, constraints);
+        loginPanelBackground.add(label2, constraints);
 
         passwordField = new JPasswordField();
         constraints.gridx = 1;
         constraints.gridy = 1;
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        loginPanel.add(passwordField, constraints);
+        loginPanelBackground.add(passwordField, constraints);
 
         JLabel label3 = new JLabel("身份:");
         label3.setFont(fort);
         constraints.gridx = 0;
         constraints.gridy = 2;
-        loginPanel.add(label3, constraints);
+        loginPanelBackground.add(label3, constraints);
 
         roleComboBox = new JComboBox<>(new String[]{"用户", "商家", "管理员"});
         roleComboBox.setFont(fort);
         constraints.gridx = 1;
         constraints.gridy = 2;
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        loginPanel.add(roleComboBox, constraints);
+        loginPanelBackground.add(roleComboBox, constraints);
 
         JButton button1 = new JButton("登录");
         button1.setFont(fort);
@@ -156,10 +162,24 @@ public class login extends JFrame {
         constraints.gridy = 3;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.CENTER;
-        loginPanel.add(button1, constraints);
+        loginPanelBackground.add(button1, constraints);
 
 
         pack();
+    }
+    private static class BackgroundPanel extends JPanel {
+        private ImageIcon background;
+
+        public BackgroundPanel(String imagePath) {
+            this.background = new ImageIcon(getClass().getResource(imagePath));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Display the background image
+            background.paintIcon(this, g, 0, 0);
+        }
     }
 
     private static class AnimatedBackgroundPanel extends JPanel {
