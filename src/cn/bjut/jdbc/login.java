@@ -95,27 +95,12 @@ public class login extends JFrame {
     private void initComponents() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("登录");
-
-        // Create a JPanel for the background image
-        // Load the background image (adjust the file path as needed)
-        JPanel backgroundPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                try {
-                    // Load the background image (adjust the file path as needed)
-                    BufferedImage backgroundImage = ImageIO.read(getClass().getResource("/img/login.jpg"));
-                    g.drawImage(backgroundImage, 0, 0, this.getWidth(), this.getHeight(), this);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
+        JPanel backgroundPanel = new AnimatedBackgroundPanel("/img/login.gif");
 
         setContentPane(backgroundPanel);
         JPanel loginPanel = new JPanel(new GridBagLayout());
         loginPanel.setBackground(Color.white);
-        loginPanel.setPreferredSize(new Dimension(200,100));
+        loginPanel.setPreferredSize(new Dimension(200, 100));
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(5, 5, 5, 5);
         backgroundPanel.setLayout(new BorderLayout());
@@ -177,6 +162,20 @@ public class login extends JFrame {
         pack();
     }
 
+    private static class AnimatedBackgroundPanel extends JPanel {
+        private ImageIcon background;
+
+        public AnimatedBackgroundPanel(String gifPath) {
+            this.background = new ImageIcon(getClass().getResource(gifPath));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Display the animated GIF
+            background.paintIcon(this, g, 0, 0);
+        }
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
