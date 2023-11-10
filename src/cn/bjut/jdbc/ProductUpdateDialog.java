@@ -2,7 +2,6 @@ package cn.bjut.jdbc;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.SQLException;
 
 //商品更新界面
 public class ProductUpdateDialog extends ProductofDialog {
@@ -16,6 +15,20 @@ public class ProductUpdateDialog extends ProductofDialog {
     }
 
     private void initComponents() {
+        // 设置背景图片
+        setContentPane(new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // 加载背景图片
+                ImageIcon background = new ImageIcon(getClass().getResource("/Img/updateproduct.jpg"));
+                g.drawImage(background.getImage(), 0, 0, getWidth(), getHeight(), this);
+            }
+        });
+        // 使面板背景透明
+        panel.setOpaque(false);
+        getContentPane().add(panel, BorderLayout.CENTER);
+
         // 创建微软雅黑16号字体
         Font customFont = new Font("微软雅黑", Font.PLAIN, 12);
 
@@ -78,7 +91,8 @@ public class ProductUpdateDialog extends ProductofDialog {
         panel.add(imageLabel, gbc);
 
         // 创建修改图片按钮
-        gbc.gridx = 2;
+        gbc.gridy++;
+        gbc.gridx = 1;
 
         // 创建“Change Image”按钮
         JButton changeImgButton = new JButton("修改图片");
@@ -91,13 +105,15 @@ public class ProductUpdateDialog extends ProductofDialog {
                 refreshphoto();
                 JOptionPane.showMessageDialog(this, "图片上传成功", "提示", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "图片上传失败失败", "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "图片上传失败", "错误", JOptionPane.ERROR_MESSAGE);
             }
         });
+        gbc.gridx=2;
 
         // 创建“Update”按钮
         JButton updateButton = new JButton("修改");
         updateButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        panel.add(updateButton, gbc);
         updateButton.addActionListener(e -> {
             // 从文本字段和单选按钮获取值
             String newName = nameField.getText();
@@ -151,9 +167,6 @@ public class ProductUpdateDialog extends ProductofDialog {
                 }
             }
         });
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.add(updateButton);
-        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
     }
 
 }
