@@ -21,8 +21,10 @@ public class MerchantProductFrm extends JPanel {
     }
 
     public void initComponent() {
-        setLayout(new GridLayout(0, 2));
-        createproductcard();
+        // 创建一个JPanel，用于放置所有的商品面板
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(0, 2)); // 任意行，两列
+        createproductcard(); // 将商品面板添加到panel
     }
 
     public JPanel createProductPanel(Product product) {
@@ -140,10 +142,12 @@ public class MerchantProductFrm extends JPanel {
         try {
             DataControl dataControl = new DataControl();
             List<Product> products = dataControl.MerchantProductQuery(merchantInterFrm.getM_id());
+            // 创建一个JPanel，用于放置所有的商品面板
+            this.setLayout(new GridLayout(0, 2)); // 任意行，两列
             for (Product product : products) {
                 JPanel productPanel = createProductPanel(product);
                 productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                this.add(productPanel, CENTER_ALIGNMENT);
+                this.add(productPanel, CENTER_ALIGNMENT); // 将商品面板添加到panel中
             }
         } catch (SQLException e) {
             e.printStackTrace();
