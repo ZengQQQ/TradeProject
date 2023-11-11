@@ -16,7 +16,7 @@ public class ProductDetailsDialog extends ProductofDialog {
     private void initComponents() {
 
         // 设置背景图片
-        setContentPane(new AnimatedBackgroundPanel("/Img/detailsproduct.jpg"));
+        setContentPane(new AnimatedBackgroundPanel("/Img/35011.jpg", getWidth(), getHeight()));
         // 使面板背景透明
         panel.setOpaque(false);
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -132,8 +132,9 @@ public class ProductDetailsDialog extends ProductofDialog {
     private static class AnimatedBackgroundPanel extends JPanel {
         private ImageIcon background;
 
-        public AnimatedBackgroundPanel(String gifPath) {
+        public AnimatedBackgroundPanel(String gifPath, int width, int height) {
             this.background = new ImageIcon(getClass().getResource(gifPath));
+            this.background = new ImageIcon(background.getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
         }
 
         @Override
