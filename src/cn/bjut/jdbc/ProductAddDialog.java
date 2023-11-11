@@ -24,7 +24,7 @@ public class ProductAddDialog extends ProductofDialog {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 // 加载背景图片
-                ImageIcon background = new ImageIcon(getClass().getResource("/Img/addproduct.jpg"));
+                ImageIcon background = new ImageIcon(getClass().getResource("/Img/addproduct.png"));
                 g.drawImage(background.getImage(), 0, 0, getWidth(), getHeight(), this);
             }
         });
