@@ -255,7 +255,7 @@ public class MerchantInterFrm extends JFrame {
         login loginFrm = new login(); // 创建一个新的登录窗口
         loginFrm.setLocationRelativeTo(null); // 将登录窗口设置为居中显示
         loginFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        loginFrm.setSize(500, 400);
+        loginFrm.setSize(900, 600);
         loginFrm.setVisible(true);
     }
 
