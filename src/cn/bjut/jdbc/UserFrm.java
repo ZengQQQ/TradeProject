@@ -480,11 +480,28 @@ public class UserFrm extends JFrame {
                         while (rs1.next()) {
                             String p_name = rs1.getString("p_name");
                             String p_price = rs1.getString("p_price");
+                            String p_img = rs1.getString("p_img");
                             String join_time = rs.getString("join_time");
                             int quantity = rs.getInt("quantity");
-                            ImageIcon image = new ImageIcon(rs1.getString("p_img"));
-                            // 将这些信息添加到表格模型中的一行
-                            tableModel.addRow(new Object[]{image, p_name, p_price, join_time, quantity, false,p_id});
+                            if (p_img!=null){
+                                Image image0 = new ImageIcon(projectPath + File.separator + "src" + File.separator
+                                        + "img" + File.separator +rs1.getString("p_img")).getImage();
+                                // 创建缩放后的图片
+                                Image newImage = image0.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                                ImageIcon image=new ImageIcon(newImage);
+                                // 将这些信息添加到表格模型中的一行
+                                tableModel.addRow(new Object[]{image, p_name, p_price, join_time, quantity, false,p_id});
+                            }
+                            else {
+                                Image image0 = new ImageIcon(projectPath + File.separator + "src" + File.separator
+                                        + "img" + File.separator +"R.jpg").getImage();
+                                // 创建缩放后的图片
+                                Image newImage = image0.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                                ImageIcon image=new ImageIcon(newImage);
+                                // 将这些信息添加到表格模型中的一行
+                                tableModel.addRow(new Object[]{image, p_name, p_price, join_time, quantity, false,p_id});
+                            }
+
 
                             // 计算总价
                             double price = Double.parseDouble(p_price);
@@ -943,18 +960,38 @@ public class UserFrm extends JFrame {
                 e.printStackTrace();
             }
             rs = stmt.executeQuery(query);
-
+            String projectPath = System.getProperty("user.dir");
             // 遍历结果集，为每个匹配的商品创建一个按钮，并添加到网格布局的面板中
             while (rs.next()) {
                 int id = rs.getInt("p_id");
                 int m_id = rs.getInt("m_id");
                 String name = rs.getString("p_name");
-                String imagePath = rs.getString("p_img");
+                boolean flag = false;
+                String  imagePath = projectPath + File.separator + "src"
+                        + File.separator + "img" + File.separator + rs.getString("p_img");
+                if (rs.getString("p_img") == null) {
+                    flag = true;
+                }
                 String desc = rs.getString("p_desc");
                 double price = rs.getDouble("p_price");
 
                 JButton button = new JButton();
-                button.setIcon(new ImageIcon(imagePath));
+                if (flag != true) {
+
+                    // 获取原始图片
+                    Image image = new ImageIcon(imagePath + "").getImage();
+                    // 创建缩放后的图片
+                    Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                    // 设置按钮的图标
+                    button.setIcon(new ImageIcon(newImage));
+                } else {
+                    // 获取原始图片
+                    Image image = new ImageIcon(projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg").getImage();
+                    // 创建缩放后的图片
+                    Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                    // 设置按钮的图标
+                    button.setIcon(new ImageIcon(newImage));
+                }
                 button.setText("<html>" + name + "<br>¥" + price + "</html>");
                 button.setVerticalTextPosition(SwingConstants.BOTTOM);
                 button.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -1025,6 +1062,8 @@ public class UserFrm extends JFrame {
             e.printStackTrace();
         }
 
+        String projectPath = System.getProperty("user.dir");
+
 // 遍历结果集，为每个商品创建一个按钮，并添加到网格布局的面板中
         while (true) {
             try {
@@ -1052,16 +1091,21 @@ public class UserFrm extends JFrame {
                 e.printStackTrace();
             }
             String imagePath = null;
+            boolean flag = false;
             try {
-                imagePath = rs.getString("p_img");
-                System.out.println(imagePath);
+                imagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + rs.getString("p_img");
+//                System.out.println(imagePath);
+//                System.out.println(projectPath);
+                if (rs.getString("p_img") == null) {
+                    flag = true;
+                }
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             String desc = null;
             try {
                 desc = rs.getString("p_desc");
-                System.out.println(imagePath);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -1072,9 +1116,26 @@ public class UserFrm extends JFrame {
                 e.printStackTrace();
             }
 
+
             // 创建一个按钮，设置图标和文本
             JButton button = new JButton();
-            button.setIcon(new ImageIcon(imagePath + "")); // 设置按钮的图标
+            System.out.println(flag);
+            if (flag != true) {
+
+                // 获取原始图片
+                Image image = new ImageIcon(imagePath + "").getImage();
+                // 创建缩放后的图片
+                Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                // 设置按钮的图标
+                button.setIcon(new ImageIcon(newImage));
+            } else {
+                // 获取原始图片
+                Image image = new ImageIcon(projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg").getImage();
+                // 创建缩放后的图片
+                Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                // 设置按钮的图标
+                button.setIcon(new ImageIcon(newImage));
+            }
             button.setText("<html>" + name + "<br>¥" + price + "</html>"); // 设置按钮的文本，使用html标签换行
             button.setVerticalTextPosition(SwingConstants.BOTTOM); // 设置文本在图标下方
             button.setHorizontalTextPosition(SwingConstants.CENTER); // 设置文本在图标中间
@@ -1093,7 +1154,7 @@ public class UserFrm extends JFrame {
                     JPanel productPanel = productMap.get(finalId);
                     if (productPanel == null) {
                         // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
-                        productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc,finalm_Id);
+                        productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc, finalm_Id);
                         mainPanel.add(productPanel, "product" + finalId);
                         productMap.put(finalId, productPanel);
                     }
