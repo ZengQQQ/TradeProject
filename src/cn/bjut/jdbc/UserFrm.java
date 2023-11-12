@@ -378,8 +378,18 @@ public class UserFrm extends JFrame {
                     Statement stmt = null;
                     try {
                         stmt = dataBase.getCon().createStatement();
-                        String updateQuery = "UPDATE cart SET quantity=" + quantity + " WHERE u_id=" + u_id + " AND join_time='" + join_time + "'";
-                        stmt.executeUpdate(updateQuery);
+                        // 判断数量是否为0
+                        if (quantity == 0) {
+                            // 如果是0，就执行一个删除语句
+                            String deleteQuery = "DELETE FROM cart WHERE u_id=" + u_id + " AND join_time='" + join_time + "'";
+                            stmt.executeUpdate(deleteQuery);
+                            // 从表格模型中移除对应的行
+                            ((DefaultTableModel)cartTable.getModel()).removeRow(row);
+                        } else {
+                            // 如果不是0，就执行一个更新语句
+                            String updateQuery = "UPDATE cart SET quantity=" + quantity + " WHERE u_id=" + u_id + " AND join_time='" + join_time + "'";
+                            stmt.executeUpdate(updateQuery);
+                        }
                         stmt.close();
                         dataBase.getCon().close();
                     } catch (Exception ex) {
