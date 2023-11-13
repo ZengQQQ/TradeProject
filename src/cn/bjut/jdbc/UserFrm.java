@@ -283,7 +283,7 @@ public class UserFrm extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        card2.add(cardF, "card3");
+
 
 
 
@@ -1057,7 +1057,7 @@ public class UserFrm extends JFrame {
 // 将卡片添加到主面板中，使用"card4"作为约束字符串
         mainPanel.add(card4, "card4");
         // 将其他卡片添加到主面板中，使用不同的约束字符串
-        mainPanel.add(card2, "card2");
+        mainPanel.add(cardF, "card2");
         mainPanel.add(card3, "card3");
 
 
@@ -1209,7 +1209,7 @@ public class UserFrm extends JFrame {
         });
 
         // 创建一个按钮，实现关注商家的功能
-        JButton followButton = new JButton("关注");
+        JButton followButton = new JButton("关注商家");
         followButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1225,15 +1225,23 @@ public class UserFrm extends JFrame {
         northPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         northPanel.add(nameLabel);
         northPanel.add(priceLabel);
-        northPanel.add(mnameLabel);
-        productPanel.add(northPanel, BorderLayout.NORTH);
+
+
+
+        JPanel southPanel = new JPanel();
+        southPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        southPanel.setBackground(Color.WHITE);
+        southPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        southPanel.add(mnameLabel);
+        southPanel.add(followButton);
 
 
         // 将各个组件添加到卡片中，使用不同的方位
+        productPanel.add(northPanel, BorderLayout.NORTH);
         productPanel.add(imageLabel, BorderLayout.CENTER);
         productPanel.add(descriptionPane, BorderLayout.EAST);
         productPanel.add(addToCartButton, BorderLayout.WEST);
-        productPanel.add(followButton, BorderLayout.SOUTH);
+        productPanel.add(southPanel, BorderLayout.SOUTH);
 
         // 返回卡片对象
         return productPanel;
