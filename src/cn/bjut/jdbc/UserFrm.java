@@ -65,7 +65,7 @@ public class UserFrm extends JFrame {
         // 将菜单栏添加到对话框中
         setJMenuBar(menuBar);
 
-// 创建第一个界面
+// 创建第一个界面-------------------------------------------------------------------------------------------------------
         JPanel card1 = new JPanel(); // 创建一个空的面板
         card1.setLayout(new BorderLayout()); // 设置面板的布局为边界布局
 
@@ -117,16 +117,16 @@ public class UserFrm extends JFrame {
             }
         });
 // 查询数据库中的商品信息
-        Statement stmt = null;
+        final Statement[] stmt = {null};
         try {
-            stmt = dataBase.getCon().createStatement();
+            stmt[0] = dataBase.getCon().createStatement();
         } catch (Exception e) {
             e.printStackTrace();
         }
         String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id FROM product";
-        ResultSet rs = null;
+        final ResultSet[] rs = {null};
         try {
-            rs = stmt.executeQuery(query);
+            rs[0] = stmt[0].executeQuery(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -136,48 +136,48 @@ public class UserFrm extends JFrame {
 // 遍历结果集，为每个商品创建一个按钮，并添加到网格布局的面板中
         while (true) {
             try {
-                if (!rs.next()) break;
+                if (!rs[0].next()) break;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             // 获取商品的id，名称，图片路径和价格
             int id = 0;
             try {
-                id = rs.getInt("p_id");
+                id = rs[0].getInt("p_id");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             int m_id = 0;
             try {
-                m_id = rs.getInt("m_id");
+                m_id = rs[0].getInt("m_id");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             String name = null;
             try {
-                name = rs.getString("p_name");
+                name = rs[0].getString("p_name");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             String imagePath = null;
             boolean flag=false;
             try {
-                imagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator +rs.getString("p_img");
+                imagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + rs[0].getString("p_img");
 
-                if (rs.getString("p_img")==null){flag=true;}
+                if (rs[0].getString("p_img")==null){flag=true;}
 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             String desc = null;
             try {
-                desc = rs.getString("p_desc");
+                desc = rs[0].getString("p_desc");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
             double price = 0;
             try {
-                price = rs.getDouble("p_price");
+                price = rs[0].getDouble("p_price");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -236,12 +236,12 @@ public class UserFrm extends JFrame {
 
 // 关闭数据库连接
         try {
-            rs.close();
+            rs[0].close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         try {
-            stmt.close();
+            stmt[0].close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -264,7 +264,7 @@ public class UserFrm extends JFrame {
 
 
 
-//创建第二个界面
+//创建第二个界面-------------------------------------------------------------------------------------------------------
 
 
         Container contentPane = getContentPane();
@@ -287,7 +287,7 @@ public class UserFrm extends JFrame {
 
 
 
-// 创建第三个界面
+// 创建第三个界面---------------------------------------------------------------------------------------------------------
         JPanel card3 = new JPanel();
         card3.setLayout(new BorderLayout());
 
@@ -630,7 +630,7 @@ public class UserFrm extends JFrame {
 
 
 
-//创建第四个界面
+//创建第四个界面---------------------------------------------------------------------------------------------------------
         // 创建第四个界面，显示用户信息和功能按钮
         JPanel card4 = new JPanel();
         card4.setLayout(new BorderLayout());
@@ -640,7 +640,6 @@ public class UserFrm extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
 
 
 // 创建一个按钮，实现修改密码的功能
@@ -699,6 +698,57 @@ public class UserFrm extends JFrame {
                 dialog.setVisible(true); // 显示对话框
             }
         });
+
+        // 创建一个按钮，实现修改个人信息的功能
+        JButton modifyInfoButton = new JButton("修改个人信息");
+        modifyInfoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 弹出一个对话框，让用户输入要修改的信息
+                JDialog dialog = new JDialog(UserFrm.this, "修改个人信息", true);
+                dialog.setLayout(new GridLayout(5, 2));
+                dialog.add(new JLabel("姓名："));
+                JTextField nameField = new JTextField();
+                dialog.add(nameField);
+                dialog.add(new JLabel("性别："));
+                JComboBox<String> sexBox = new JComboBox<>(new String[]{"男", "女"});
+                dialog.add(sexBox);
+                dialog.add(new JLabel("电话："));
+                JTextField teleField = new JTextField();
+                dialog.add(teleField);
+                JButton confirmButton = new JButton("确定");
+                confirmButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 获取用户输入的要修改的信息
+                        String name = nameField.getText();
+                        String sex = (String) sexBox.getSelectedItem();
+                        String tele = teleField.getText();
+                        // 调用一个方法，将用户信息更新到数据库中
+                        int result = updateInfo(u_id, name, sex, tele);
+                        if (result == 1) {
+                            JOptionPane.showMessageDialog(dialog, "修改成功！");
+                            dialog.dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(dialog, "修改失败！");
+                        }
+                    }
+                });
+                dialog.add(confirmButton);
+                JButton cancelButton = new JButton("取消");
+                cancelButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dialog.dispose(); // 关闭对话框
+                    }
+                });
+                dialog.add(cancelButton);
+                dialog.pack();
+                dialog.setLocationRelativeTo(UserFrm.this);
+                dialog.setVisible(true); // 显示对话框
+            }
+        });
+
 
 // 创建一个按钮，实现查看订单的功能
         JButton viewOrderButton = new JButton("查看订单");
@@ -877,7 +927,24 @@ public class UserFrm extends JFrame {
                 // 显示订单界面
             }
         });
+        JLabel nameLabel = new JLabel("名称：" );
+        nameLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        // 创建一个标签，显示用户账号
+        JLabel accLabel = new JLabel("账号：" );
+        accLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+        accLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // 创建一个标签，显示用户性别
+        JLabel sexLabel = new JLabel("性别：" );
+        sexLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+        sexLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // 创建一个标签，显示用户电话
+        JLabel teleLabel = new JLabel("电话：" );
+        teleLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+        teleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         // 创建一个标签，显示用户信息
         // 连接数据库
         dataBase.OpenDB();
@@ -886,35 +953,24 @@ public class UserFrm extends JFrame {
 
         try {
             try {
-                stmt = dataBase.getCon().createStatement();
+                stmt[0] = dataBase.getCon().createStatement();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            rs = stmt.executeQuery(query4);
-            if (rs.next()) {
-                String u_acc = rs.getString("u_acc");
-                String u_psw = rs.getString("u_psw");
-                String u_name = rs.getString("u_name");
-                String u_sex = rs.getString("u_sex");
-                String u_tele = rs.getString("u_tele");
-                JLabel nameLabel = new JLabel("名称：" + u_name);
-                nameLabel.setFont(new Font("宋体", Font.PLAIN, 18));
-                nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            rs[0] = stmt[0].executeQuery(query4);
+            if (rs[0].next()) {
+                String u_acc = rs[0].getString("u_acc");
+                String u_psw = rs[0].getString("u_psw");
+                String u_name = rs[0].getString("u_name");
+                String u_sex = rs[0].getString("u_sex");
+                String u_tele = rs[0].getString("u_tele");
 
-                // 创建一个标签，显示用户账号
-                JLabel accLabel = new JLabel("账号：" + u_acc);
-                accLabel.setFont(new Font("宋体", Font.PLAIN, 18));
-                accLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                // 更新标签的文本
+                nameLabel.setText("名称：" + u_name);
+                accLabel.setText("账号：" + u_acc);
+                sexLabel.setText("性别：" + u_sex);
+                teleLabel.setText("电话：" + u_tele);
 
-                // 创建一个标签，显示用户性别
-                JLabel sexLabel = new JLabel("性别：" + u_sex);
-                sexLabel.setFont(new Font("宋体", Font.PLAIN, 18));
-                sexLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-                // 创建一个标签，显示用户电话
-                JLabel teleLabel = new JLabel("电话：" + u_tele);
-                teleLabel.setFont(new Font("宋体", Font.PLAIN, 18));
-                teleLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 // 创建一个面板，用于放置用户信息的标签
                 JPanel infoPanel = new JPanel();
                 infoPanel.setLayout(new GridLayout(4, 1,0,0));
@@ -926,8 +982,8 @@ public class UserFrm extends JFrame {
             }
 
             // 关闭数据库连接
-            rs.close();
-            stmt.close();
+            rs[0].close();
+            stmt[0].close();
             try {
                 dataBase.getCon().close();
             } catch (Exception e) {
@@ -938,11 +994,65 @@ public class UserFrm extends JFrame {
         }
 
 
+        // 创建一个按钮，设置文本为“刷新”
+        JButton myrefreshButton = new JButton("刷新");
+// 为按钮添加监听事件
+        myrefreshButton.addActionListener(new ActionListener() {
+            // 事件处理方法
+            public void actionPerformed(ActionEvent e) {
+                // 重新连接数据库
+                dataBase.OpenDB();
+                // 重新执行SQL查询语句
+                String query4 = "SELECT u_acc, u_psw, u_name,u_sex,u_tele FROM user WHERE u_id=" + u_id;
+                try {
+                    try {
+                        stmt[0] = dataBase.getCon().createStatement();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                    rs[0] = stmt[0].executeQuery(query4);
+                    if (rs[0].next()) {
+                        // 获取数据库中的用户信息
+                        String u_acc = rs[0].getString("u_acc");
+                        String u_psw = rs[0].getString("u_psw");
+                        String u_name = rs[0].getString("u_name");
+                        String u_sex = rs[0].getString("u_sex");
+                        String u_tele = rs[0].getString("u_tele");
+                        // 更新标签的文本
+                        nameLabel.setText("名称：" + u_name);
+                        accLabel.setText("账号：" + u_acc);
+                        sexLabel.setText("性别：" + u_sex);
+                        teleLabel.setText("电话：" + u_tele);
+                    }
+                    // 关闭数据库连接
+                    rs[0].close();
+                    stmt[0].close();
+                    try {
+                        dataBase.getCon().close();
+                    } catch (Exception e2) {
+                        e2.printStackTrace();
+                    }
+                } catch (SQLException e3) {
+                    e3.printStackTrace();
+                }
+                // 重绘窗口
+                repaint();
+            }
+        });
+
 
 // 将各个组件添加到卡片中，使用不同的方位
+        JPanel buttonpanel=new JPanel();
+        buttonpanel.add(changePasswordButton);
+        buttonpanel.add(viewOrderButton);
+        buttonpanel.add(modifyInfoButton);
+        buttonpanel.add(myrefreshButton);
+        card4.add(buttonpanel,BorderLayout.SOUTH);
+//        card4.add(changePasswordButton, BorderLayout.EAST);
+//        card4.add(viewOrderButton, BorderLayout.EAST);
 
-        card4.add(changePasswordButton, BorderLayout.WEST);
-        card4.add(viewOrderButton, BorderLayout.EAST);
+
+        //-----------------------------------------------------------------------------------------------------------
 
 // 将卡片添加到主面板中，使用"card4"作为约束字符串
         mainPanel.add(card4, "card4");
@@ -1267,9 +1377,67 @@ public class UserFrm extends JFrame {
         bottomPanel.repaint();
     }
 
+    // 定义一个方法，用于将用户信息更新到数据库中
+    public int updateInfo(int u_id, String name, String sex, String tele) {
+        // 创建一个布尔变量，用于存储修改结果
+        int flag = 0;
+
+        // 创建一个Connection对象，用于连接数据库
+        Connection conn = null;
+
+        // 创建一个PreparedStatement对象，用于执行SQL语句
+        PreparedStatement ps = null;
+
+        // 定义一个SQL语句，根据u_id修改users表中的信息
+        String sql = "UPDATE user SET u_name = ?, u_sex = ?, u_tele = ? WHERE u_id = ?";
+
+        try {
+            DataBase dataBase=new DataBase();
+            dataBase.OpenDB();
+            conn=dataBase.getCon();
+            // 预编译SQL语句
+            ps = conn.prepareStatement(sql);
+
+            // 设置SQL语句的参数
+            ps.setString(1, name);
+            ps.setString(2, sex);
+            ps.setString(3, tele);
+            ps.setInt(4, u_id);
+
+            // 执行SQL语句，得到影响的行数
+            int rows = ps.executeUpdate();
+
+            // 判断是否修改成功
+            if (rows > 0) {
+                // 修改成功，将flag设为true
+                flag = 1;
+            }
+        } catch (Exception e) {
+            // 处理异常
+            e.printStackTrace();
+        } finally {
+            // 关闭资源
+            try {
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // 返回flag
+        return flag;
+    }
+
+
     private void closeAndOpenLogin() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         this.dispose(); // 关闭当前窗口
-        login loginFrm = new login(); // 创建一个新的登录窗口
+        login loginFrm = null; // 创建一个新的登录窗口
+        try {
+            loginFrm = new login();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         loginFrm.setLocationRelativeTo(null); // 将登录窗口设置为居中显示
         loginFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrm.setSize(900, 600);
