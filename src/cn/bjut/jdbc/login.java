@@ -2,21 +2,20 @@ package cn.bjut.jdbc;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.List;
-import javax.imageio.ImageIO;
+import java.util.regex.Pattern;
 import javax.swing.*;
 
 public class login extends JFrame {
     private JTextField textField1;
     private JPasswordField passwordField;
     private JComboBox<String> roleComboBox;
-    private Font fort = new Font("微软雅黑", Font.BOLD, 16);
+    private Font fort = new Font("微软雅黑", Font.BOLD, 18);
+    private DataControlMercahnt dataControlmer = new DataControlMercahnt();
+    private DataControl dataControl = new DataControl();
 
-    public login() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public login() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         initComponents();
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
     }
@@ -41,7 +40,6 @@ public class login extends JFrame {
             SwingWorker<Void, Void> loginWorker = new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {
-                    DataControl dataControl = new DataControl();
                     if (role.equals("用户")) {
                         if (password.equals(dataControl.getUserPsw(logname))) {
                             JOptionPane.showMessageDialog(null, "登录成功", "登录", JOptionPane.INFORMATION_MESSAGE);
@@ -55,9 +53,9 @@ public class login extends JFrame {
                             JOptionPane.showMessageDialog(null, "登录失败，请检查账户和密码", "输入验证错误", JOptionPane.ERROR_MESSAGE);
                         }
                     } else if (role.equals("商家")) {
-                        if (password.equals(dataControl.getMerchantPsw(logname)) && !password.isEmpty()) {
+                        if (password.equals(dataControlmer.getMerchantPsw(logname)) && !password.isEmpty()) {
                             JOptionPane.showMessageDialog(null, "登录成功", "登录", JOptionPane.INFORMATION_MESSAGE);
-                            MerchantInterFrm merchantFrame = new MerchantInterFrm(dataControl.getMerchantm_id(logname));
+                            MerchantInterFrm merchantFrame = new MerchantInterFrm(dataControlmer.getMerchantm_id(logname));
                             merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                             merchantFrame.setSize(1200, 1000);
                             merchantFrame.setVisible(true);
@@ -164,9 +162,30 @@ public class login extends JFrame {
         constraints.anchor = GridBagConstraints.CENTER;
         loginPanelBackground.add(button1, constraints);
 
+        JButton registerButton = new JButton("注册");
+        registerButton.setFont(fort);
+        registerButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                registerButtonMouseClicked();
+            }
+        });
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.CENTER;
+        loginPanelBackground.add(registerButton, constraints);
 
         pack();
     }
+
+    private void registerButtonMouseClicked() {
+        RegisterDialog registerDialog = new RegisterDialog(this);
+        registerDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        registerDialog.setVisible(true);
+    }
+
+
     private static class BackgroundPanel extends JPanel {
         private ImageIcon background;
 
@@ -203,7 +222,7 @@ public class login extends JFrame {
             try {
                 login = new login();
             } catch (UnsupportedLookAndFeelException | InstantiationException | ClassNotFoundException |
-                     IllegalAccessException e) {
+                     IllegalAccessException | SQLException e) {
                 throw new RuntimeException(e);
             }
             login.setLocationRelativeTo(null); // 居中显示
