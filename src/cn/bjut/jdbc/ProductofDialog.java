@@ -11,9 +11,7 @@ import java.sql.SQLException;
 
 //商品界面父类
 public class ProductofDialog extends JDialog {
-    public DataControl dataControl;
-
-    public DataControlProduct dataControlProduct= new DataControlProduct();
+    public DataControlProduct dataControlProduct = new DataControlProduct();
     public Product product;
     public String newImgName;
     public JLabel imageLabel;
@@ -22,8 +20,7 @@ public class ProductofDialog extends JDialog {
     public GridBagConstraints gbc = new GridBagConstraints();
     public JPanel panel = new JPanel(new GridBagLayout());
 
-    public ProductofDialog(DataControl dataControl, Product product) throws SQLException {
-        this.dataControl = dataControl;
+    public ProductofDialog(Product product) throws SQLException {
         this.product = product;
         this.newImgName = product.getP_img();
         initComponents();
