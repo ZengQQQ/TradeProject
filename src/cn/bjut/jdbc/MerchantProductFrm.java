@@ -54,12 +54,12 @@ public class MerchantProductFrm extends JPanel {
         // 添加商品名称
         JLabel nameLabel = new JLabel("商品名称: " + product.getP_name());
         // 设置字体大小为大号
-        nameLabel.setFont(new Font("微软雅黑", Font.BOLD, 16)); // 16是字体大小
+        nameLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
         infoPanel.add(nameLabel);
         // 添加商品价格
         JLabel priceLabel = new JLabel("商品价格: " + product.getP_price() + "元");
         // 设置字体大小为大号
-        priceLabel.setFont(new Font("微软雅黑", Font.BOLD, 16)); // 16是字体大小
+        priceLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
         infoPanel.add(priceLabel);
         // 创建商品状态的标签
         // 使用HTML标签来设置文字颜色
@@ -71,12 +71,12 @@ public class MerchantProductFrm extends JPanel {
         }
         JLabel statusLabel = new JLabel("<html>商品状态: " + statusColor + "</html>");
         // 设置字体大小为大号
-        statusLabel.setFont(new Font("微软雅黑", Font.BOLD, 16)); // 16是字体大小
+        statusLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
         infoPanel.add(statusLabel);
         // 添加商品数量
         JLabel quantityLabel = new JLabel("商品数量: " + product.getP_quantity());
         // 设置字体大小为大号
-        quantityLabel.setFont(new Font("微软雅黑", Font.BOLD, 16)); // 16是字体大小
+        quantityLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
         infoPanel.add(quantityLabel);
 
         return infoPanel;
