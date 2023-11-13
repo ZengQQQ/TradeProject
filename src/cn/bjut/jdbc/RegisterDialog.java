@@ -82,14 +82,13 @@ public class RegisterDialog extends JDialog {
                     String sex = registersexField.getText();
                     String tele = registerteleField.getText();
 
-                    // Validate fields
+
                     if (useraccount.isEmpty() || sex.isEmpty() || tele.isEmpty() || password.isEmpty()) {
                         JOptionPane.showMessageDialog(null, "所有字段都必须填写", "错误", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
-                    if (!Pattern.matches("[\\u4e00-\\u9fa5a-zA-Z]{1,20}", useraccount) ||
-                            !Pattern.matches("[\\u4e00-\\u9fa5a-zA-Z]{1,20}", username)) {
+                    if (!Pattern.matches("[\\u4e00-\\u9fa5a-zA-Z]{1,20}", useraccount) || !Pattern.matches("[\\u4e00-\\u9fa5a-zA-Z]{1,20}", username)) {
                         JOptionPane.showMessageDialog(null, "账户和昵称只能为字母、中文和字符，且长度不超过20", "错误", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -126,44 +125,18 @@ public class RegisterDialog extends JDialog {
         layout.setAutoCreateContainerGaps(true);
 
         GroupLayout.SequentialGroup hGroup = layout.createSequentialGroup();
-        hGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                .addComponent(label1)
-                .addComponent(label6)
-                .addComponent(label2)
-                .addComponent(label3)
-                .addComponent(label4)
-                .addComponent(label5));
-        hGroup.addGroup(layout.createParallelGroup()
-                .addComponent(registerUserAccountField)
-                .addComponent(registerUsernameField)
-                .addComponent(registerPasswordField)
-                .addComponent(registerRoleComboBox)
-                .addComponent(registersexField)
-                .addComponent(registerteleField)
-                .addComponent(registerButton));
+        hGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(label1).addComponent(label6).addComponent(label2).addComponent(label3).addComponent(label4).addComponent(label5));
+        hGroup.addGroup(layout.createParallelGroup().addComponent(registerUserAccountField).addComponent(registerUsernameField).addComponent(registerPasswordField).addComponent(registerRoleComboBox).addComponent(registersexField).addComponent(registerteleField).addComponent(registerButton));
         layout.setHorizontalGroup(hGroup);
 
         GroupLayout.SequentialGroup vGroup = layout.createSequentialGroup();
-        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label1)
-                .addComponent(registerUserAccountField));
-        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label6)
-                .addComponent(registerUsernameField));
-        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label2)
-                .addComponent(registerPasswordField));
-        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label3)
-                .addComponent(registerRoleComboBox));
-        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label4)
-                .addComponent(registersexField));
-        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label5)
-                .addComponent(registerteleField));
-        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(registerButton));
+        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(label1).addComponent(registerUserAccountField));
+        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(label6).addComponent(registerUsernameField));
+        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(label2).addComponent(registerPasswordField));
+        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(label3).addComponent(registerRoleComboBox));
+        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(label4).addComponent(registersexField));
+        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(label5).addComponent(registerteleField));
+        vGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(registerButton));
         layout.setVerticalGroup(vGroup);
 
         backgroundLabel.add(welcomePanel, BorderLayout.NORTH);
