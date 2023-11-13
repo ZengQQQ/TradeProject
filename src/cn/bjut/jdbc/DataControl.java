@@ -1,11 +1,7 @@
 package cn.bjut.jdbc;
 
-import javax.swing.*;
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.time.LocalDateTime;
 
@@ -618,6 +614,15 @@ public class DataControl {
         } else {
             return "删除失败";
         }
+    }
+    public void deleteProductBym_id(int m_id) throws SQLException {
+        String sql = "DELETE FROM product WHERE m_id = ?";
+        Connection con = DataBase.OpenDB();
+
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, m_id);
+        int result = stmt.executeUpdate();
+        con.close();
     }
 
     //插入一条新的商家信息，输入商家的所有信息，成功返回相应的字符串
