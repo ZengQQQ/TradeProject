@@ -8,14 +8,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataControlProduct extends DataControl{
+public class DataControlProduct extends DataControl {
     public DataControlProduct() throws SQLException {
     }
 
     //在商家页面里修改商品信息
     public boolean updateProduct(int p_id, String newName, String newdesc, String newclass, double newPrice, String newsta, int newquantity, String newimg) {
         // 创建连接
-        Connection con = null;
+        Connection con;
         PreparedStatement preparedStatement;
         DataBase dataBase = new DataBase();
         try {
@@ -46,25 +46,21 @@ public class DataControlProduct extends DataControl{
 
     //删除商品
     public boolean deleteProduct(int productId) throws SQLException {
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
+        Connection con;
+        PreparedStatement preparedStatement;
         boolean deleted = false;
-        try {
-            // 创建连接
-            DataBase dataBase = new DataBase();
-            con = dataBase.OpenDB();
-            // 创建SQL删除语句
-            String deleteQuery = "DELETE FROM product WHERE p_id = ?";
-            // 准备并执行SQL语句
-            preparedStatement = con.prepareStatement(deleteQuery);
-            preparedStatement.setInt(1, productId);
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                // 如果成功删除了行，则返回true
-                deleted = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        // 创建连接
+        DataBase dataBase = new DataBase();
+        con = dataBase.OpenDB();
+        // 创建SQL删除语句
+        String deleteQuery = "DELETE FROM product WHERE p_id = ?";
+        // 准备并执行SQL语句
+        preparedStatement = con.prepareStatement(deleteQuery);
+        preparedStatement.setInt(1, productId);
+        int rowsAffected = preparedStatement.executeUpdate();
+        if (rowsAffected > 0) {
+            // 如果成功删除了行，则返回true
+            deleted = true;
         }
         return deleted;
     }
@@ -74,30 +70,27 @@ public class DataControlProduct extends DataControl{
         Connection con = null;
         PreparedStatement preparedStatement = null;
         boolean added = false;
-        try {
-            // 创建连接
-            DataBase dataBase = new DataBase();
-            con = dataBase.OpenDB();
-            // 创建SQL插入语句
-            String insertQuery = "INSERT INTO product (m_id, p_name, p_desc, p_class, p_price, p_status, p_quantity, p_img) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            // 准备并执行SQL语句
-            preparedStatement = con.prepareStatement(insertQuery);
-            preparedStatement.setInt(1, m_id);
-            preparedStatement.setString(2, productName);
-            preparedStatement.setString(3, productDesc);
-            preparedStatement.setString(4, productClass);
-            preparedStatement.setDouble(5, productPrice);
-            preparedStatement.setString(6, productState);
-            preparedStatement.setInt(7, productQuantity);
-            preparedStatement.setString(8, productImg);
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                // 如果成功插入了行，则返回true
-                added = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        // 创建连接
+        DataBase dataBase = new DataBase();
+        con = dataBase.OpenDB();
+        // 创建SQL插入语句
+        String insertQuery = "INSERT INTO product (m_id, p_name, p_desc, p_class, p_price, p_status, p_quantity, p_img) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        // 准备并执行SQL语句
+        preparedStatement = con.prepareStatement(insertQuery);
+        preparedStatement.setInt(1, m_id);
+        preparedStatement.setString(2, productName);
+        preparedStatement.setString(3, productDesc);
+        preparedStatement.setString(4, productClass);
+        preparedStatement.setDouble(5, productPrice);
+        preparedStatement.setString(6, productState);
+        preparedStatement.setInt(7, productQuantity);
+        preparedStatement.setString(8, productImg);
+        int rowsAffected = preparedStatement.executeUpdate();
+        if (rowsAffected > 0) {
+            // 如果成功插入了行，则返回true
+            added = true;
         }
         return added;
     }
@@ -182,44 +175,36 @@ public class DataControlProduct extends DataControl{
             return productList;
         }
     }
+
     //找到商品根据最接近的价格
-    private List<Product> findClosestProducts(String searchValue, int m_id) {
+    private List<Product> findClosestProducts(String searchValue, int m_id) throws SQLException {
         List<Product> closestProducts = new ArrayList<>();
         Connection con = DataBase.OpenDB();
 
-        try {
-            String sql = "SELECT * FROM product WHERE m_id = ? ORDER BY ABS(p_price - ?) LIMIT 5";
+        String sql = "SELECT * FROM product WHERE m_id = ? ORDER BY ABS(p_price - ?) LIMIT 5";
 
-            PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setInt(1, m_id);
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, m_id);
 
-            double priceValue = Double.parseDouble(searchValue);
-            stmt.setDouble(2, priceValue);
+        double priceValue = Double.parseDouble(searchValue);
+        stmt.setDouble(2, priceValue);
 
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Product product = new Product();
-                product.setP_id(rs.getInt("p_id"));
-                product.setP_name(rs.getString("p_name"));
-                product.setP_desc(rs.getString("p_desc"));
-                product.setP_class(rs.getString("p_class"));
-                product.setP_price(String.valueOf(rs.getDouble("p_price")));
-                product.setP_status(rs.getString("p_status"));
-                product.setP_img(rs.getString("p_img"));
-                product.setP_quantity(rs.getInt("p_quantity"));
-                closestProducts.add(product);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Product product = new Product();
+            product.setP_id(rs.getInt("p_id"));
+            product.setP_name(rs.getString("p_name"));
+            product.setP_desc(rs.getString("p_desc"));
+            product.setP_class(rs.getString("p_class"));
+            product.setP_price(String.valueOf(rs.getDouble("p_price")));
+            product.setP_status(rs.getString("p_status"));
+            product.setP_img(rs.getString("p_img"));
+            product.setP_quantity(rs.getInt("p_quantity"));
+            closestProducts.add(product);
         }
+        rs.close();
+        stmt.close();
+        con.close();
 
         return closestProducts;
     }
