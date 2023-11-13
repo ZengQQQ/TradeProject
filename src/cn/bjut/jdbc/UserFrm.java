@@ -295,7 +295,7 @@ public class UserFrm extends JFrame {
         JTable cartTable = new JTable();
 
 // 定义表格的列名数组
-        String[] columnNames = {"商品图片", "商品名称", "商品单价", "加入时间", "数量", "选择"};
+        String[] columnNames = {"商品图片", "商品名称", "商品单价", "加入时间", "数量", "选择","p_id"};
 
 // 定义表格的数据数组，初始为空
         Object[][] data = {};
@@ -486,6 +486,67 @@ public class UserFrm extends JFrame {
             }
         });
 
+        // 创建一个JPopupMenu对象，用于弹出右键菜单
+        JPopupMenu menu = new JPopupMenu();
+// 创建一个JMenuItem对象，用于删除菜单项
+        JMenuItem deleteItem = new JMenuItem("删除");
+// 为删除菜单项添加动作监听器
+        deleteItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 获取当前选中的行
+                int row = cartTable.getSelectedRow();
+                // 如果没有选中任何行，直接返回
+                if (row == -1) return;
+                // 获取当前行的商品ID
+                Object value = cartTable.getValueAt(row, 6); // 假设商品ID是第0列
+                // 创建一个Statement对象
+                Statement stmt = null;
+                try {
+                    stmt = dataBase.getCon().createStatement();
+                    // 执行一个删除语句，根据你的数据库表结构和主键来修改
+                    String deleteQuery = "DELETE FROM cart WHERE u_id=" + u_id + " AND p_id=" + value;
+
+                    stmt.executeUpdate(deleteQuery);
+                    // 从表格模型中移除对应的行
+                    ((DefaultTableModel)cartTable.getModel()).removeRow(row);
+                    // 关闭Statement对象和数据库连接
+                    stmt.close();
+                    dataBase.getCon().close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+// 将删除菜单项添加到右键菜单中
+        menu.add(deleteItem);
+
+// 为表格添加鼠标监听器，用于弹出右键菜单
+        cartTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // 判断是否为鼠标右键
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    // 获取鼠标点击的位置
+                    Point p = e.getPoint();
+                    // 获取鼠标点击的行和列
+                    int row = cartTable.rowAtPoint(p);
+                    int column = cartTable.columnAtPoint(p);
+                    // 如果点击的位置不在表格中，直接返回
+                    if (row == -1 || column == -1) {
+                        return;
+                    }
+                    // 将表格的选中行和列设为鼠标点击的位置
+                    cartTable.setRowSelectionInterval(row, row);
+                    cartTable.setColumnSelectionInterval(column, column);
+                    // 弹出右键菜单
+                    menu.show(cartTable, p.x, p.y);
+                }
+            }
+        });
+
+
 // 设置刷新按钮
         JButton refreshButton = new JButton();
         refreshButton.setText("刷新");
@@ -580,20 +641,7 @@ public class UserFrm extends JFrame {
             e.printStackTrace();
         }
 
-// 创建一个标签，显示用户头像
-        JLabel avatarLabel = new JLabel();
-        avatarLabel.setIcon(new ImageIcon("D:\\test\\TradeProject\\src\\cn\\bjut\\jdbc\\pic\\2.png")); // 设置标签的图标为用户头像
-        avatarLabel.setHorizontalAlignment(SwingConstants.CENTER); // 设置标签在水平方向居中
 
-// 创建一个标签，显示用户名称
-        JLabel nameLabel = null;
-        try {
-            nameLabel = new JLabel(dataControl.getUserName(u_id));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        nameLabel.setFont(new Font("宋体", Font.BOLD, 24));
-        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 // 创建一个按钮，实现修改密码的功能
         JButton changePasswordButton = new JButton("修改密码");
@@ -661,7 +709,7 @@ public class UserFrm extends JFrame {
                 JFrame orderFrm = new JFrame();
                 orderFrm.setLayout(new BorderLayout());
                 JTable cartTable = new JTable();
-                String[] columnNames = {"商品图片", "商品名称", "商品单价", "加入时间", "数量"};
+                String[] columnNames = {"商品图片", "商品名称", "商品单价", "加入时间", "数量","p_id"};
                 Object[][] data = {};
                 // 创建表格模型对象
                 DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
@@ -674,7 +722,7 @@ public class UserFrm extends JFrame {
                             case 4: // 第五列是整数类型
                                 return Integer.class;
                             case 5: // 最后一列是布尔类型
-                                return Boolean.class;
+                                return Integer.class;
                             default: // 其他列是字符串类型
                                 return String.class;
                         }
@@ -756,18 +804,143 @@ public class UserFrm extends JFrame {
                         }
                     }
                 });
+
+                // 创建一个JPopupMenu对象，用于弹出右键菜单
+                JPopupMenu menu = new JPopupMenu();
+// 创建一个JMenuItem对象，用于删除菜单项
+                JMenuItem deleteItem = new JMenuItem("删除");
+// 为删除菜单项添加动作监听器
+                deleteItem.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 获取当前选中的行
+                        int row = cartTable.getSelectedRow();
+                        // 如果没有选中任何行，直接返回
+                        if (row == -1) return;
+                        // 获取当前行的商品ID
+                        Object value = cartTable.getValueAt(row, 5);
+                        Object buy_time=cartTable.getValueAt(row,3);
+                        // 创建一个Statement对象
+                        Statement stmt = null;
+                        try {
+                            stmt = dataBase.getCon().createStatement();
+                            // 执行一个删除语句，根据你的数据库表结构和主键来修改
+                            String deleteQuery = "DELETE FROM orders WHERE u_id=" + u_id + " AND p_id=" + value
+                                    +" AND buy_time='" +buy_time + "'";
+
+                            stmt.executeUpdate(deleteQuery);
+                            // 从表格模型中移除对应的行
+                            ((DefaultTableModel)cartTable.getModel()).removeRow(row);
+                            // 关闭Statement对象和数据库连接
+                            stmt.close();
+                            dataBase.getCon().close();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+
+// 将删除菜单项添加到右键菜单中
+                menu.add(deleteItem);
+
+// 为表格添加鼠标监听器，用于弹出右键菜单
+                cartTable.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        // 判断是否为鼠标右键
+                        if (e.getButton() == MouseEvent.BUTTON3) {
+                            // 获取鼠标点击的位置
+                            Point p = e.getPoint();
+                            // 获取鼠标点击的行和列
+                            int row = cartTable.rowAtPoint(p);
+                            int column = cartTable.columnAtPoint(p);
+                            // 如果点击的位置不在表格中，直接返回
+                            if (row == -1 || column == -1) {
+                                return;
+                            }
+                            // 将表格的选中行和列设为鼠标点击的位置
+                            cartTable.setRowSelectionInterval(row, row);
+                            cartTable.setColumnSelectionInterval(column, column);
+                            // 弹出右键菜单
+                            menu.show(cartTable, p.x, p.y);
+                        }
+                    }
+                });
+
+
                 orderFrm.add(refreshButton, BorderLayout.NORTH);
                 orderFrm.add(new JScrollPane(cartTable), BorderLayout.CENTER);
                 orderFrm.pack();
                 orderFrm.setLocationRelativeTo(null);
                 orderFrm.setVisible(true);
+                refreshButton.doClick();
                 // 显示订单界面
             }
         });
 
+        // 创建一个标签，显示用户信息
+        // 连接数据库
+        dataBase.OpenDB();
+        // 构建新的SQL查询语句
+        String query4 = "SELECT u_acc, u_psw, u_name,u_sex,u_tele FROM user WHERE u_id=" + u_id;
+
+        try {
+            try {
+                stmt = dataBase.getCon().createStatement();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            rs = stmt.executeQuery(query4);
+            if (rs.next()) {
+                String u_acc = rs.getString("u_acc");
+                String u_psw = rs.getString("u_psw");
+                String u_name = rs.getString("u_name");
+                String u_sex = rs.getString("u_sex");
+                String u_tele = rs.getString("u_tele");
+                JLabel nameLabel = new JLabel("名称：" + u_name);
+                nameLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+                nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+                // 创建一个标签，显示用户账号
+                JLabel accLabel = new JLabel("账号：" + u_acc);
+                accLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+                accLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+                // 创建一个标签，显示用户性别
+                JLabel sexLabel = new JLabel("性别：" + u_sex);
+                sexLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+                sexLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+                // 创建一个标签，显示用户电话
+                JLabel teleLabel = new JLabel("电话：" + u_tele);
+                teleLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+                teleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                // 创建一个面板，用于放置用户信息的标签
+                JPanel infoPanel = new JPanel();
+                infoPanel.setLayout(new GridLayout(4, 1,0,0));
+                infoPanel.add(nameLabel);
+                infoPanel.add(accLabel);
+                infoPanel.add(sexLabel);
+                infoPanel.add(teleLabel);
+                card4.add(infoPanel, BorderLayout.CENTER);
+            }
+
+            // 关闭数据库连接
+            rs.close();
+            stmt.close();
+            try {
+                dataBase.getCon().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+
 // 将各个组件添加到卡片中，使用不同的方位
-        card4.add(avatarLabel, BorderLayout.NORTH);
-        card4.add(nameLabel, BorderLayout.CENTER);
+
         card4.add(changePasswordButton, BorderLayout.WEST);
         card4.add(viewOrderButton, BorderLayout.EAST);
 
@@ -801,6 +974,7 @@ public class UserFrm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card3");
+                refreshButton.doClick();
             }
         });
 
@@ -864,6 +1038,7 @@ public class UserFrm extends JFrame {
         }
         return result;
     }
+
 
 
     private JPanel createProductPanel(int id,int u_id, String name, String imagePath, double price,String desc,int m_id) {
