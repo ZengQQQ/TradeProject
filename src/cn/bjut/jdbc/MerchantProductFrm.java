@@ -11,12 +11,10 @@ import java.util.List;
 public class MerchantProductFrm extends JPanel {
 
     private MerchantInterFrm merchantInterFrm;
-    private DataControl data;
-    private  DataControlMercahnt dataControlmer = new DataControlMercahnt();
+    private DataControlMercahnt dataControlmer = new DataControlMercahnt();
     private ProductDetailsDialog currentDetailsDialog; // 用于存储当前显示的商品详情对话框
 
-    public MerchantProductFrm(MerchantInterFrm mer, DataControl data) throws SQLException {
-        this.data = data;
+    public MerchantProductFrm(MerchantInterFrm mer) throws SQLException {
         this.merchantInterFrm = mer;
         initComponent();
     }
@@ -26,6 +24,7 @@ public class MerchantProductFrm extends JPanel {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(0, 2)); // 任意行，两列
         createproductcard(); // 将商品面板添加到panel
+
     }
 
     public JPanel createProductPanel(Product product) {
@@ -123,7 +122,7 @@ public class MerchantProductFrm extends JPanel {
         }
 
         // 创建新的商品详情对话框
-        currentDetailsDialog = new ProductDetailsDialog(data, product, this);
+        currentDetailsDialog = new ProductDetailsDialog(product, this);
         currentDetailsDialog.setVisible(true);
     }
 
