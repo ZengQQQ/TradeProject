@@ -17,7 +17,7 @@ public class ProductDetailsDialog extends ProductofDialog {
     private void initComponents() {
 
         // 设置背景图片
-        setContentPane(new AnimatedBackgroundPanel("/Img/35011.jpg", getWidth(), getHeight()));
+        setContentPane(new AnimatedBackgroundPanel("/Img/detailproduct.jpg", getWidth(), getHeight()));
         // 使面板背景透明
         panel.setOpaque(false);
         getContentPane().add(panel, BorderLayout.CENTER);
