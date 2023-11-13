@@ -1,18 +1,20 @@
 package cn.bjut.jdbc;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class MerchantProductFrm extends JPanel {
 
     private MerchantInterFrm merchantInterFrm;
     private DataControlMercahnt dataControlmer = new DataControlMercahnt();
-    private ProductDetailsDialog currentDetailsDialog; // 用于存储当前显示的商品详情对话框
+    private ProductDetailsDialog currentDetailsDialog;
 
     public MerchantProductFrm(MerchantInterFrm mer) throws SQLException {
         this.merchantInterFrm = mer;
@@ -20,86 +22,84 @@ public class MerchantProductFrm extends JPanel {
     }
 
     public void initComponent() {
-        // 创建一个JPanel，用于放置所有的商品面板
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(0, 2)); // 任意行，两列
-        createproductcard(); // 将商品面板添加到panel
-
+        setLayout(new GridLayout(0, 2));
+        createProductCard();
     }
 
     public JPanel createProductPanel(Product product) {
-        JPanel productPanel = new JPanel();
-        productPanel.setLayout(new BorderLayout());
-        // 设置商品对象为面板的客户属性
+        JPanel productPanel = new JPanel(new BorderLayout());
         productPanel.putClientProperty("product", product);
-        // 创建商品图片标签并添加到productPanel的西边
+
         JLabel imageLabel = createImageLabel(product, 350, 300);
         productPanel.add(imageLabel, BorderLayout.WEST);
-        // 创建商品信息面板
-        JPanel infoPanel = getjPanel(product);
-        // 添加商品按钮面板
 
-        // 将商品信息面板和按钮面板添加到productPanel的中部
+        JPanel infoPanel = createInfoPanel(product);
         productPanel.add(infoPanel, BorderLayout.CENTER);
 
         return productPanel;
     }
 
-    private static JPanel getjPanel(Product product) {
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new GridLayout(0, 1)); // 一个商品信息一行
-
-        // 为商品信息面板添加线框
+    private JPanel createInfoPanel(Product product) {
+        JPanel infoPanel = new JPanel(new GridLayout(0, 1));
         infoPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        // 添加商品名称
-        JLabel nameLabel = new JLabel("商品名称: " + product.getP_name());
-        // 设置字体大小为大号
-        nameLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
+
+        JLabel nameLabel = createLabel("商品名称: " + product.getP_name());
+        JLabel priceLabel = createLabel("商品价格: " + product.getP_price() + "元");
+
+        String statusColor = getStatusColor(product.getP_status());
+        JLabel statusLabel = createLabel("<html>商品状态: " + statusColor + "</html>");
+
+        JLabel quantityLabel = createLabel("商品数量: " + product.getP_quantity());
+
         infoPanel.add(nameLabel);
-        // 添加商品价格
-        JLabel priceLabel = new JLabel("商品价格: " + product.getP_price() + "元");
-        // 设置字体大小为大号
-        priceLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
         infoPanel.add(priceLabel);
-        // 创建商品状态的标签
-        // 使用HTML标签来设置文字颜色
-        String statusColor = "";
-        if ("上架".equals(product.getP_status())) {
-            statusColor = "<font color='green'>上架</font>";
-        } else if ("下架".equals(product.getP_status())) {
-            statusColor = "<font color='red'>下架</font>";
-        }
-        JLabel statusLabel = new JLabel("<html>商品状态: " + statusColor + "</html>");
-        // 设置字体大小为大号
-        statusLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
         infoPanel.add(statusLabel);
-        // 添加商品数量
-        JLabel quantityLabel = new JLabel("商品数量: " + product.getP_quantity());
-        // 设置字体大小为大号
-        quantityLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
         infoPanel.add(quantityLabel);
 
         return infoPanel;
     }
 
-    // 创建包含商品图片的JLabel
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        return label;
+    }
+
+    private String getStatusColor(String status) {
+        if ("上架".equals(status)) {
+            return "<font color='green'>上架</font>";
+        } else if ("下架".equals(status)) {
+            return "<font color='red'>下架</font>";
+        }
+        return "";
+    }
+
+    // 在类的成员变量中添加一个缓存Map
+    private Map<String, ImageIcon> imageCache = new HashMap<>();
+
+    // 优化后的 createImageLabel 方法
     public JLabel createImageLabel(Product product, int width, int height) {
-        // 获取当前项目的绝对路径
-        String projectPath = System.getProperty("user.dir");
+        ImageIcon placeHolderIcon = new ImageIcon(getClass().getResource("/Img/loadphoto.jpg"));
+        JLabel imageLabel = new JLabel(placeHolderIcon);
 
-        // 构建图片路径
-        ImageIcon originalIcon = getImageIcon(product, projectPath);
-        // 获取图片对象
-        Image originalImage = originalIcon.getImage();
+        SwingWorker<ImageIcon, Void> worker = new SwingWorker() {
+            @Override
+            protected ImageIcon doInBackground() {
+                return getScaledImageIcon(product, width, height);
+            }
 
-        // 缩放图片（如果需要）可以改图片的大小
-        Image scaledImage = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            @Override
+            protected void done() {
+                try {
+                    ImageIcon scaledIcon = (ImageIcon) get();
+                    imageLabel.setIcon(scaledIcon);
+                } catch (InterruptedException | ExecutionException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
 
-        // 创建一个新的 ImageIcon
-        ImageIcon scaledIcon = new ImageIcon(scaledImage);
-
-        // 创建一个 JLabel 并将缩放后的 ImageIcon 设置为其图标
-        JLabel imageLabel = new JLabel(scaledIcon);
+        worker.execute();
 
         imageLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -115,71 +115,88 @@ public class MerchantProductFrm extends JPanel {
         return imageLabel;
     }
 
+    // 优化后的 getScaledImageIcon 方法，添加了图片缓存
+    private ImageIcon getScaledImageIcon(Product product, int width, int height) {
+        String imagePath = product.getP_img();
+        ImageIcon cachedIcon = imageCache.get(imagePath);
+
+        if (cachedIcon != null) {
+            return cachedIcon;
+        }
+
+        ImageIcon originalIcon = getImageIcon(product);
+        Image originalImage = originalIcon.getImage();
+        Image scaledImage = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+        // 将加载过的图片放入缓存
+        imageCache.put(imagePath, scaledIcon);
+
+        return scaledIcon;
+    }
+
+
+    private ImageIcon getImageIcon(Product product) {
+        String projectPath = System.getProperty("user.dir");
+        String relativeImagePath = product.getP_img();
+        String absoluteImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + relativeImagePath;
+
+        File imageFile = new File(absoluteImagePath);
+        if (imageFile.exists()) {
+            return new ImageIcon(absoluteImagePath);
+        } else {
+            String defaultImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg";
+            return new ImageIcon(defaultImagePath);
+        }
+    }
+
     private void showProductDetails(Product product) throws SQLException {
-        // 关闭当前显示的商品详情对话框，如果有的话
         if (currentDetailsDialog != null) {
             currentDetailsDialog.dispose();
         }
 
-        // 创建新的商品详情对话框
         currentDetailsDialog = new ProductDetailsDialog(product, this);
         currentDetailsDialog.setVisible(true);
     }
 
-    private ImageIcon getImageIcon(Product product, String projectPath) {
-        String relativeImagePath = product.getP_img();
-        String absoluteImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + relativeImagePath;
-        // 创建 ImageIcon
-        ImageIcon originalIcon;
-        File imageFile = new File(absoluteImagePath);
-        if (imageFile.exists()) {
-            originalIcon = new ImageIcon(absoluteImagePath);
-        } else {
-            // 图片路径不存在，使用默认图片
-            String defaultImagePath = projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg";
-            originalIcon = new ImageIcon(defaultImagePath);
-        }
-        return originalIcon;
-    }
-
-    public void createproductcard() {
+    public void createProductCard() {
         try {
             List<Product> products = dataControlmer.MerchantProductQuery(merchantInterFrm.getM_id());
-            // 创建一个JPanel，用于放置所有的商品面板
-            this.setLayout(new GridLayout(0, 2)); // 任意行，两列
             for (Product product : products) {
                 JPanel productPanel = createProductPanel(product);
                 productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                this.add(productPanel, CENTER_ALIGNMENT); // 将商品面板添加到panel中
+                add(productPanel);
             }
+            revalidate();
+            repaint();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // 刷新修改后的商品信息
     public void refreshCard1Product(Product updatedProduct) {
-        // 查找要更新的商品的位置
-        int index = -1;
-        Component[] components = this.getComponents();
+        int index = findProductIndex(updatedProduct);
+        if (index >= 0) {
+            remove(index);
+            JPanel productPanel = createProductPanel(updatedProduct);
+            productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            add(productPanel, index);
+            revalidate();
+            repaint();
+        }
+    }
+
+    private int findProductIndex(Product updatedProduct) {
+        Component[] components = getComponents();
         for (int i = 0; i < components.length; i++) {
             if (components[i] instanceof JPanel) {
                 JPanel productPanel = (JPanel) components[i];
                 Product product = (Product) productPanel.getClientProperty("product");
                 if (product != null && product.getP_id() == updatedProduct.getP_id()) {
-                    index = i;
-                    break;
+                    return i;
                 }
             }
         }
-        // 如果找到了要更新的商品，将其删除，然后重新插入原来的位置
-        if (index >= 0) {
-            this.remove(index);
-            JPanel productPanel = this.createProductPanel(updatedProduct);
-            productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            this.add(productPanel, index);
-            this.revalidate();
-            this.repaint();
-        }
+        return -1;
     }
 }
