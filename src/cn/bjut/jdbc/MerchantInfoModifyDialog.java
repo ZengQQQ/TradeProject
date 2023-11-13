@@ -7,14 +7,13 @@ import java.util.regex.Pattern;
 
 public class MerchantInfoModifyDialog extends JDialog {
     private Merchant oldmerchant;
-    private DataControl data;
+    private DataControlMercahnt dataControlmer  = new DataControlMercahnt();
     private int m_id;
     private Font font = new Font("微软雅黑", Font.BOLD, 16);
 
-    public MerchantInfoModifyDialog(Merchant merchant, DataControl data, int m_id) {
+    public MerchantInfoModifyDialog(Merchant merchant, int m_id) throws SQLException {
         this.oldmerchant = merchant;
         this.m_id = m_id;
-        this.data = data;
         initialize();
     }
 
@@ -80,7 +79,7 @@ public class MerchantInfoModifyDialog extends JDialog {
 
             // 保存修改后的信息并显示成功消息
             try {
-                data.updateMerchant(m_id, newAccount, newName, newGender, newPhone,newPsw);
+                dataControlmer.updateMerchant(m_id, newAccount, newName, newGender, newPhone,newPsw);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
