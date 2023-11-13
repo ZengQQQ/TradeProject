@@ -13,7 +13,6 @@ public class MerchantProductSearch extends JPanel {
     private static final int IMAGE_WIDTH = 350;
     private static final int IMAGE_HEIGHT = 280;
     private Font fontall = new Font("微软雅黑", Font.BOLD, 18);
-    private DataControl dataControl;
     private  DataControlProduct dataControlProduct  = new DataControlProduct();
     private MerchantInterFrm merchantInterFrm;
     private JComboBox<String> searchTypeComboBox;
@@ -21,8 +20,7 @@ public class MerchantProductSearch extends JPanel {
     private JButton searchButton;
     private JPanel productsPanel;
 
-    public MerchantProductSearch(DataControl dataControl, MerchantInterFrm merchantInterFrm) throws SQLException {
-        this.dataControl = dataControl;
+    public MerchantProductSearch(MerchantInterFrm merchantInterFrm) throws SQLException {
         this.merchantInterFrm = merchantInterFrm;
 
         setLayout(new BorderLayout());
