@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.sql.SQLException;
 
 //商品界面父类
 public class ProductofDialog extends JDialog {
     public DataControl dataControl;
+
+    public DataControlProduct dataControlProduct= new DataControlProduct();
     public Product product;
     public String newImgName;
     public JLabel imageLabel;
@@ -19,7 +22,7 @@ public class ProductofDialog extends JDialog {
     public GridBagConstraints gbc = new GridBagConstraints();
     public JPanel panel = new JPanel(new GridBagLayout());
 
-    public ProductofDialog(DataControl dataControl, Product product) {
+    public ProductofDialog(DataControl dataControl, Product product) throws SQLException {
         this.dataControl = dataControl;
         this.product = product;
         this.newImgName = product.getP_img();
@@ -136,7 +139,7 @@ public class ProductofDialog extends JDialog {
     // 用于处理“Update”按钮功能的方法
     protected boolean handleUpdateButton(String newName, String newDesc, String newClass, double newPrice, String newStatus, int newquantity) {
         boolean success;
-        success = dataControl.updateProduct(product.getP_id(), newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName);
+        success = dataControlProduct.updateProduct(product.getP_id(), newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName);
         return success;
     }
 
