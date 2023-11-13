@@ -8,8 +8,9 @@ public class ProductAddDialog extends ProductofDialog {
     private final int m_id;
     private final MerchantInterFrm mer;
     private final MerchantProductFrm merproduct;
+    private DataControlProduct dataControlProduct= new DataControlProduct();
 
-    public ProductAddDialog(DataControl dataControladd,Product product , MerchantInterFrm mer,MerchantProductFrm merproduct) {
+    public ProductAddDialog(DataControl dataControladd,Product product , MerchantInterFrm mer,MerchantProductFrm merproduct) throws SQLException {
         super(dataControladd, product);
         this.merproduct=merproduct;
         this.m_id =mer.getM_id();
@@ -134,7 +135,7 @@ public class ProductAddDialog extends ProductofDialog {
                         // 调用父类的方法
                         boolean success;
                         try {
-                            success = dataControl.addProduct(m_id, newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName);
+                            success = dataControlProduct.addProduct(m_id, newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
