@@ -2,13 +2,14 @@ package cn.bjut.jdbc;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
 
 //商品更新界面
 public class ProductUpdateDialog extends ProductofDialog {
 
     private MerchantProductFrm merProduct;
 
-    public ProductUpdateDialog(DataControl dataControl, Product product, MerchantProductFrm merProduct) {
+    public ProductUpdateDialog(DataControl dataControl, Product product, MerchantProductFrm merProduct) throws SQLException {
         super(dataControl, product);
         this.merProduct = merProduct;
         initComponents();
