@@ -815,7 +815,7 @@ public class UserFrm extends JFrame {
                                     int quantity = rs.getInt("quantity");
                                     String projectPath = System.getProperty("user.dir");
                                     boolean flag = false;
-                                    if (rs1.getString("p_img").equals("(Null)")) {
+                                    if (rs1.getString("p_img")==null) {//.equals("(Null)")
 
                                         flag = true;
                                     }
