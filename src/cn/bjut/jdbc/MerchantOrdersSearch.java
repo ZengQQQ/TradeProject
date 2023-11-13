@@ -220,63 +220,68 @@ public class MerchantOrdersSearch extends JPanel {
 
     // 商品信息搜索验证规则
     private boolean validateProductInput(String productType, String productf) {
-        switch (productType) {
-            case "商品名称":
-                // 商品名称可以包含字母、数字、汉字和常见标点符号
-                if (!productf.matches("^[a-zA-Z0-9\\u4e00-\\u9fa5.,!?-]*$")) {
+        if (!productf.isEmpty()) {
+            switch (productType) {
+                case "商品名称":
+                    // 商品名称可以包含字母、数字、汉字和常见标点符号
+                    if (!productf.matches("^[a-zA-Z0-9\\u4e00-\\u9fa5.,!?-]*$")) {
+                        return false;
+                    }
+                    break;
+                case "类别":
+                    // 类别必须是字符串，不包含数字
+                    if (productf.matches(".*[0-9].*")) {
+                        return false;
+                    }
+                    break;
+                case "价格":
+                    // 价格必须是合法的数字
+                    if (!isNumeric(productf)) {
+                        return false;
+                    }
+                    break;
+                case "数量":
+                    // 数量必须是整数
+                    if (!isInteger(productf)) {
+                        return false;
+                    }
+                    break;
+                default:
+                    // 未知的商品信息搜索类型
                     return false;
-                }
-                break;
-            case "类别":
-                // 类别必须是字符串，不包含数字
-                if (productf.matches(".*[0-9].*")) {
-                    return false;
-                }
-                break;
-            case "价格":
-                // 价格必须是合法的数字
-                if (!isNumeric(productf)) {
-                    return false;
-                }
-                break;
-            case "数量":
-                // 数量必须是整数
-                if (!isInteger(productf)) {
-                    return false;
-                }
-                break;
-            default:
-                // 未知的商品信息搜索类型
-                return false;
+            }
         }
+
         return true;
     }
 
     // 用户信息搜索验证规则
     private boolean validateUserInput(String userType, String userf) {
-        switch (userType) {
-            case "用户名":
-                // 用户名可以包含字母、数字、汉字和常见标点符号
-                if (!userf.matches("^[a-zA-Z0-9\\u4e00-\\u9fa5.,!?-]*$")) {
+        if (!userf.isEmpty()) {
+            switch (userType) {
+                case "用户名":
+                    // 用户名可以包含字母、数字、汉字和常见标点符号
+                    if (!userf.matches("^[a-zA-Z0-9\\u4e00-\\u9fa5.,!?-]*$")) {
+                        return false;
+                    }
+                    break;
+                case "性别":
+                    // 性别必须是"男"或"女"
+                    if (!userf.equals("男") && !userf.equals("女")) {
+                        return false;
+                    }
+                    break;
+                case "电话":
+                    // 电话号码验证规则，可以根据实际需求进一步完善
+                    // 假设电话号码必须是数字且长度为11
+                    if (!userf.matches("^[0-9]{11}$")) {
+                        return false;
+                    }
+                    break;
+                default:
+                    // 未知的用户信息搜索类型
                     return false;
-                }
-                break;
-            case "性别":
-                // 性别必须是"男"或"女"
-                if (!userf.equals("男") && !userf.equals("女")) {
-                    return false;
-                }
-                break;
-            case "电话":
-                // 电话号码验证规则，可以根据实际需求进一步完善
-                // 假设电话号码必须是数字且长度为11
-                if (!userf.matches("^[0-9]{11}$")) {
-                    return false;
-                }
-                break;
-            default:
-                // 未知的用户信息搜索类型
-                return false;
+            }
         }
         return true;
     }
