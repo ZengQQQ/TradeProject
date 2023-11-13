@@ -84,7 +84,7 @@ public class UserFrm extends JFrame {
 // 创建一个网格布局的面板，放在第一个界面的下半部分
         JPanel bottomPanel = new JPanel(); // 创建一个空的面板
 // 创建一个网格布局管理器，指定4行6列
-        GridLayout gridLayout = new GridLayout(4, 6);
+        GridLayout gridLayout = new GridLayout(0, 6);
 // 设置网格之间的水平和垂直间距
         gridLayout.setHgap(10);
         gridLayout.setVgap(10);
