@@ -1,6 +1,7 @@
 package cn.bjut.jdbc;
 
 import javax.swing.*;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -35,6 +36,11 @@ public class ForumPage extends JPanel {
 
 
     private void initComponents() throws SQLException {
+        try{UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+        e.printStackTrace();
+    }
+
         this.setLayout(new BorderLayout());
 
         commentPanel.setLayout(new GridLayout(0,1));
@@ -62,7 +68,8 @@ public class ForumPage extends JPanel {
             }
         });
         add(newCommentButton, BorderLayout.SOUTH);
-    setBounds(0,0,1200,900);
+
+        setBounds(0,0,1200,900);
 
     }
 

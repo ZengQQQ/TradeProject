@@ -382,7 +382,7 @@ public class UserFrm extends JFrame {
                         // 如果不是，弹出提示框
                         JOptionPane.showMessageDialog(null, "请输入一个正整数", "输入无效", JOptionPane.ERROR_MESSAGE);
                         // 恢复原来的值
-                        cartTable.setValueAt(e.getOldValue(), row, 4);
+                       // cartTable.setValueAt(e.getOldValue(), row, 4);
                         return;
                     }
 
@@ -415,7 +415,7 @@ public class UserFrm extends JFrame {
                                 // 如果不是，弹出提示框
                                 JOptionPane.showMessageDialog(null, "库存不足，无法修改数量", "修改失败", JOptionPane.WARNING_MESSAGE);
                                 // 恢复原来的值
-                                cartTable.setValueAt(e.getOldValue(), row, 4);
+                                //cartTable.setValueAt(e.getOldValue(), row, 4);
                             }
                         }
                         stmt.close();

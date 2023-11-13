@@ -221,7 +221,6 @@ public class CommentBar extends JPanel {
             JScrollPane scrollPane = new JScrollPane(replyPanel); // Wrap the panel in a JScrollPane
             basicPanel.add(scrollPane, BorderLayout.CENTER);
             this.add(basicPanel, BorderLayout.CENTER);
-            this.add(new JLabel("回复列表"), BorderLayout.NORTH);
 
             setSize(650, 800);
             setVisible(true);
