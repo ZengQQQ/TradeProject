@@ -28,7 +28,7 @@ public class ProductofDialog extends JDialog {
 
     private void initComponents() {
         // 创建微软雅黑16号字体
-        Font customFont = new Font("微软雅黑", Font.PLAIN, 16);
+        Font customFont = new Font("微软雅黑", Font.BOLD, 22);
 
         setSize(900, 700);
         setLocationRelativeTo(null); // 居中显示
