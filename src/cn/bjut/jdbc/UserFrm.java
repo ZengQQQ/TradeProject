@@ -1155,9 +1155,21 @@ public class UserFrm extends JFrame {
         // 创建一个新的卡片对象
         JPanel productPanel = new JPanel();
         productPanel.setLayout(new BorderLayout());
+        String m_name=null;
+        try {
+            DataControlMercahnt dataControlMercahnt=new DataControlMercahnt();
+            m_name=dataControlMercahnt.getMerchantm_name(m_id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         // 创建一个标签，显示商品名称
-        JLabel nameLabel = new JLabel(name);
+        JLabel mnameLabel = new JLabel("商家名称："+m_name);
+        mnameLabel.setFont(new Font("宋体", Font.BOLD, 24));
+        mnameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // 创建一个标签，显示商品名称
+        JLabel nameLabel = new JLabel("商品名称："+name);
         nameLabel.setFont(new Font("宋体", Font.BOLD, 24));
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -1166,7 +1178,7 @@ public class UserFrm extends JFrame {
         imageLabel.setIcon(new ImageIcon(imagePath));
 
         // 创建一个标签，显示商品价格
-        JLabel priceLabel = new JLabel("¥" + price);
+        JLabel priceLabel = new JLabel("商品价格：¥" + price);
         priceLabel.setFont(new Font("宋体", Font.BOLD, 18));
         priceLabel.setForeground(Color.RED);
         priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1206,10 +1218,19 @@ public class UserFrm extends JFrame {
             }
         });
 
+        // 创建一个新的面板，用于放置nameLabel和priceLabel
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        northPanel.setBackground(Color.WHITE);
+        northPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        northPanel.add(nameLabel);
+        northPanel.add(priceLabel);
+        northPanel.add(mnameLabel);
+        productPanel.add(northPanel, BorderLayout.NORTH);
+
+
         // 将各个组件添加到卡片中，使用不同的方位
-        productPanel.add(nameLabel, BorderLayout.NORTH);
         productPanel.add(imageLabel, BorderLayout.CENTER);
-        productPanel.add(priceLabel, BorderLayout.SOUTH);
         productPanel.add(descriptionPane, BorderLayout.EAST);
         productPanel.add(addToCartButton, BorderLayout.WEST);
         productPanel.add(followButton, BorderLayout.SOUTH);
@@ -1230,7 +1251,7 @@ public class UserFrm extends JFrame {
         // 连接数据库
         DataBase dataBase = new DataBase();
         dataBase.OpenDB();
-        String[] columnnames={"name","price","img"};
+        String[] columnnames={"name","price"};
         Object data[][]=null;
         Statement stmt = null;
         DefaultTableModel tableModel=new DefaultTableModel(data,columnnames);
@@ -1247,7 +1268,7 @@ public class UserFrm extends JFrame {
                     String p_name = rs1.getString("p_name");
                     String p_price = rs1.getString("p_price");
                     ImageIcon image = new ImageIcon(rs1.getString("p_img"));
-                    tableModel.addRow(new Object[]{image, p_name, p_price,});
+                    tableModel.addRow(new Object[]{ p_name, p_price});
 
                 }
                 rs1.close();
