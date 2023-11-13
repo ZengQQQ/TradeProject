@@ -9,8 +9,8 @@ public class ProductUpdateDialog extends ProductofDialog {
 
     private MerchantProductFrm merProduct;
 
-    public ProductUpdateDialog(DataControl dataControl, Product product, MerchantProductFrm merProduct) throws SQLException {
-        super(dataControl, product);
+    public ProductUpdateDialog(Product product, MerchantProductFrm merProduct) throws SQLException {
+        super(product);
         this.merProduct = merProduct;
         initComponents();
     }
@@ -109,7 +109,7 @@ public class ProductUpdateDialog extends ProductofDialog {
                 JOptionPane.showMessageDialog(this, "图片上传失败", "错误", JOptionPane.ERROR_MESSAGE);
             }
         });
-        gbc.gridx=2;
+        gbc.gridx = 2;
 
         // 创建“Update”按钮
         JButton updateButton = new JButton("修改");
