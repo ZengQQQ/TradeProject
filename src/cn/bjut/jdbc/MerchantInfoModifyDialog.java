@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class MerchantInfoModifyDialog extends JDialog {
     private Merchant oldmerchant;
-    private DataControlMercahnt dataControlmer  = new DataControlMercahnt();
+    private DataControlMercahnt dataControlmer = new DataControlMercahnt();
     private int m_id;
     private Font font = new Font("微软雅黑", Font.BOLD, 16);
 
@@ -79,7 +79,7 @@ public class MerchantInfoModifyDialog extends JDialog {
 
             // 保存修改后的信息并显示成功消息
             try {
-                dataControlmer.updateMerchant(m_id, newAccount, newName, newGender, newPhone,newPsw);
+                dataControlmer.updateMerchant(m_id, newAccount, newName, newGender, newPhone, newPsw);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
@@ -90,16 +90,16 @@ public class MerchantInfoModifyDialog extends JDialog {
 
         // 添加组件到对话框的内容窗格
         JPanel panel = new JPanel(new GridLayout(6, 2));
-        panel.add(new JLabel("账号名:")).setFont(new Font("微软雅黑", Font.BOLD, 16));
-        panel.add(accountField).setFont(new Font("微软雅黑", Font.BOLD, 16));
-        panel.add(new JLabel("密码:")).setFont(new Font("微软雅黑", Font.BOLD, 16));
-        panel.add(pswField).setFont(new Font("微软雅黑", Font.BOLD, 16));
-        panel.add(new JLabel("昵称:")).setFont(new Font("微软雅黑", Font.BOLD, 16));
-        panel.add(nameField).setFont(new Font("微软雅黑", Font.BOLD, 16));
-        panel.add(new JLabel("性别:")).setFont(new Font("微软雅黑", Font.BOLD, 16));
-        panel.add(genderField).setFont(new Font("微软雅黑", Font.BOLD, 16));
-        panel.add(new JLabel("电话:")).setFont(new Font("微软雅黑", Font.BOLD, 16));
-        panel.add(phoneField).setFont(new Font("微软雅黑", Font.BOLD, 16));
+        panel.add(new JLabel("账号名:")).setFont(font);
+        panel.add(accountField).setFont(font);
+        panel.add(new JLabel("密码:")).setFont(font);
+        panel.add(pswField).setFont(font);
+        panel.add(new JLabel("昵称:")).setFont(font);
+        panel.add(nameField).setFont(font);
+        panel.add(new JLabel("性别:")).setFont(font);
+        panel.add(genderField).setFont(font);
+        panel.add(new JLabel("电话:")).setFont(font);
+        panel.add(phoneField).setFont(font);
         panel.add(saveButton);
 
         getContentPane().add(panel);
