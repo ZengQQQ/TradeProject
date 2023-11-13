@@ -377,21 +377,46 @@ public class UserFrm extends JFrame {
                     int quantity = (int) cartTable.getValueAt(row, 4);
                     Object join_time = cartTable.getValueAt(row, 3);
 
+                    // 检查quantity是否是正整数
+                    if (!String.valueOf(quantity).matches("\\d+")) {
+                        // 如果不是，弹出提示框
+                        JOptionPane.showMessageDialog(null, "请输入一个正整数", "输入无效", JOptionPane.ERROR_MESSAGE);
+                        // 恢复原来的值
+                        cartTable.setValueAt(e.getOldValue(), row, 4);
+                        return;
+                    }
+
                     // 更新数据库中的数量
                     Statement stmt = null;
                     try {
                         stmt = dataBase.getCon().createStatement();
-                        // 判断数量是否为0
-                        if (quantity == 0) {
-                            // 如果是0，就执行一个删除语句
-                            String deleteQuery = "DELETE FROM cart WHERE u_id=" + u_id + " AND join_time='" + join_time + "'";
-                            stmt.executeUpdate(deleteQuery);
-                            // 从表格模型中移除对应的行
-                            ((DefaultTableModel)cartTable.getModel()).removeRow(row);
-                        } else {
-                            // 如果不是0，就执行一个更新语句
-                            String updateQuery = "UPDATE cart SET quantity=" + quantity + " WHERE u_id=" + u_id + " AND join_time='" + join_time + "'";
-                            stmt.executeUpdate(updateQuery);
+                        // 查询product表中的p_quantity
+                        String selectQuery = "SELECT p_quantity FROM product WHERE p_id=" + cartTable.getValueAt(row, 0);
+                        ResultSet rs = stmt.executeQuery(selectQuery);
+                        // 如果查询结果不为空
+                        if (rs.next()) {
+                            // 获取p_quantity的值
+                            int p_quantity = rs.getInt("p_quantity");
+                            // 判断quantity是否小于p_quantity
+                            if (quantity < p_quantity) {
+                                // 如果是，判断quantity是否为0
+                                if (quantity == 0) {
+                                    // 如果是0，就执行一个删除语句
+                                    String deleteQuery = "DELETE FROM cart WHERE u_id=" + u_id + " AND join_time='" + join_time + "'";
+                                    stmt.executeUpdate(deleteQuery);
+                                    // 从表格模型中移除对应的行
+                                    ((DefaultTableModel)cartTable.getModel()).removeRow(row);
+                                } else {
+                                    // 如果不是0，就执行一个更新语句
+                                    String updateQuery = "UPDATE cart SET quantity=" + quantity + " WHERE u_id=" + u_id + " AND join_time='" + join_time + "'";
+                                    stmt.executeUpdate(updateQuery);
+                                }
+                            } else {
+                                // 如果不是，弹出提示框
+                                JOptionPane.showMessageDialog(null, "库存不足，无法修改数量", "修改失败", JOptionPane.WARNING_MESSAGE);
+                                // 恢复原来的值
+                                cartTable.setValueAt(e.getOldValue(), row, 4);
+                            }
                         }
                         stmt.close();
                         dataBase.getCon().close();
@@ -401,6 +426,7 @@ public class UserFrm extends JFrame {
                 }
             }
         });
+
 
         // 创建一个JLabel对象，用于显示总价
         JLabel totalLabel = new JLabel("总价：0 元");
@@ -431,8 +457,8 @@ public class UserFrm extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 遍历表格的数据模型
-                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                // 遍历表格的数据模型，从后往前遍历
+                for (int i = tableModel.getRowCount() - 1; i >= 0; i--) {
                     // 获取选择列的值
                     boolean selected = (boolean) tableModel.getValueAt(i, 5);
                     String join_time=(String) tableModel.getValueAt(i, 3);
@@ -444,10 +470,13 @@ public class UserFrm extends JFrame {
                             ex.printStackTrace();
                         }
                         dataControl.insertOrderFromCart(u_id,p_id);
+                        // 删除表格中该条记录
+                        tableModel.removeRow(i);
                     }
                 }
             }
         });
+
 
 
         // 将结算按钮添加到totalPanel的东边
@@ -818,7 +847,7 @@ public class UserFrm extends JFrame {
                                     int quantity = rs.getInt("quantity");
                                     String projectPath = System.getProperty("user.dir");
                                     boolean flag = false;
-                                    if (rs1.getString("p_img").equals("(Null)")) {
+                                    if (rs1.getString("p_img")==null) {//.equals("(Null)")
 
                                         flag = true;
                                     }

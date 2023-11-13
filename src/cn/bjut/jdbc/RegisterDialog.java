@@ -55,7 +55,7 @@ public class RegisterDialog extends JDialog {
         JLabel label3 = new JLabel("身份:");
         label3.setFont(new Font("微软雅黑", Font.BOLD, 16));
 
-        registerRoleComboBox = new JComboBox<>(new String[]{"用户", "商家", "管理员"});
+        registerRoleComboBox = new JComboBox<>(new String[]{"用户", "商家"});
         registerRoleComboBox.setFont(new Font("微软雅黑", Font.BOLD, 16));
 
         JLabel label4 = new JLabel("性别:");
