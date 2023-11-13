@@ -31,10 +31,10 @@ public class ProductUpdateDialog extends ProductofDialog {
         getContentPane().add(panel, BorderLayout.CENTER);
 
         // 创建微软雅黑16号字体
-        Font customFont = new Font("微软雅黑", Font.PLAIN, 12);
+        Font customFont = new Font("微软雅黑", Font.PLAIN, 20);
 
         setTitle("修改商品信息");
-        int textFieldColumns = 30;
+        int textFieldColumns = 20;
         gbc.gridx = 1;
         gbc.gridy = 0;
 
@@ -97,7 +97,7 @@ public class ProductUpdateDialog extends ProductofDialog {
 
         // 创建“Change Image”按钮
         JButton changeImgButton = new JButton("修改图片");
-        changeImgButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        changeImgButton.setFont(new Font("微软雅黑", Font.BOLD, 22));
         panel.add(changeImgButton, gbc);
         changeImgButton.addActionListener(e -> {
             // 调用父类的方法
@@ -113,7 +113,7 @@ public class ProductUpdateDialog extends ProductofDialog {
 
         // 创建“Update”按钮
         JButton updateButton = new JButton("修改");
-        updateButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        updateButton.setFont(new Font("微软雅黑", Font.BOLD, 22));
         panel.add(updateButton, gbc);
         updateButton.addActionListener(e -> {
             // 从文本字段和单选按钮获取值
