@@ -10,8 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class MerchantOrdersFrm extends JPanel {
-    private final DataControl data;
-    private  DataControlOrder dataControlOrder= new DataControlOrder();
+    private DataControlOrder dataControlOrder = new DataControlOrder();
     public final int m_id;
 
     private static final int DEFAULT_IMAGE_WIDTH = 220;
@@ -19,14 +18,12 @@ public class MerchantOrdersFrm extends JPanel {
     private static final int ORDER_PANEL_HEIGHT = 200;
     private List<Order> orders = null;
 
-    public MerchantOrdersFrm(DataControl data, int m_id) throws SQLException {
-        this.data = data;
+    public MerchantOrdersFrm(int m_id) throws SQLException {
         this.m_id = m_id;
         initComponents();
     }
 
-    public MerchantOrdersFrm(DataControl data, int mId, List<Order> orders) throws SQLException {
-        this.data = data;
+    public MerchantOrdersFrm(int mId, List<Order> orders) throws SQLException {
         this.m_id = mId;
         this.orders = orders;
         initComponents();
@@ -35,10 +32,9 @@ public class MerchantOrdersFrm extends JPanel {
     private void initComponents() throws SQLException {
         setLayout(new BorderLayout());
 
-
         String[] columnNames = {"商品图片", "商品详细信息", "用户信息", "购买商品数量", "订单总价格", "购买时间"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-        if(orders!=null){
+        if (orders != null) {
             for (Order order : orders) {
                 JLabel img = createImageLabel(order.getProduct(), DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT);
                 String productInfo = getProductInfo(order.getProduct());
@@ -50,7 +46,7 @@ public class MerchantOrdersFrm extends JPanel {
                 Object[] rowData = {img, productInfo, userInfo, quantityInfo, totalPriceInfo, buyTimeInfo};
                 tableModel.addRow(rowData);
             }
-        }else {
+        } else {
             List<Order> orderInfoList = dataControlOrder.getOrderInfoByM_id(m_id);
             for (Order order : orderInfoList) {
                 JLabel img = createImageLabel(order.getProduct(), DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT);
@@ -98,10 +94,8 @@ public class MerchantOrdersFrm extends JPanel {
             return;
         }
 
-
         DefaultTableModel tableModel = (DefaultTableModel) ((JTable) ((JScrollPane) getComponent(0)).getViewport().getView()).getModel();
         tableModel.setRowCount(0);
-
 
         for (Order order : updatedOrderInfoList) {
             JLabel img = createImageLabel(order.getProduct(), DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT);
@@ -114,7 +108,6 @@ public class MerchantOrdersFrm extends JPanel {
             Object[] rowData = {img, productInfo, userInfo, quantityInfo, totalPriceInfo, buyTimeInfo};
             tableModel.addRow(rowData);
         }
-
 
         tableModel.fireTableDataChanged();
     }
@@ -154,18 +147,12 @@ public class MerchantOrdersFrm extends JPanel {
 
     // 生成产品信息的字符串
     private String getProductInfo(Product product) {
-        return "名称: " + product.getP_name() + "\n" +
-                "描述: " + product.getP_desc() + "\n" +
-                "分类: " + product.getP_class() + "\n" +
-                "价格: " + product.getP_price() + "\n" +
-                "数量: " + product.getP_quantity();
+        return "名称: " + product.getP_name() + "\n" + "描述: " + product.getP_desc() + "\n" + "分类: " + product.getP_class() + "\n" + "价格: " + product.getP_price() + "\n" + "数量: " + product.getP_quantity();
     }
 
     // 生成用户信息的字符串
     private String getUserInfo(User user) {
-        return "用户名: " + user.getU_name() + "\n" +
-                "性别: " + user.getU_sex() + "\n" +
-                "电话: " + user.getU_tele();
+        return "用户名: " + user.getU_name() + "\n" + "性别: " + user.getU_sex() + "\n" + "电话: " + user.getU_tele();
     }
 
     // 创建包含产品图片的JLabel
@@ -206,7 +193,7 @@ public class MerchantOrdersFrm extends JPanel {
 
     public static void main(String[] args) throws SQLException {
         DataControl data = new DataControl();
-        MerchantOrdersFrm mero = new MerchantOrdersFrm(data, 1);
+        MerchantOrdersFrm mero = new MerchantOrdersFrm(1);
 
         JFrame frame = new JFrame("商品订单");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
