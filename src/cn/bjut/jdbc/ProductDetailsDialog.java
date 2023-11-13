@@ -6,11 +6,12 @@ import java.sql.SQLException;
 
 //商品详情界面
 public class ProductDetailsDialog extends ProductofDialog {
-    private  MerchantProductFrm merproduct;
-    private DataControlProduct dataControlProduct= new DataControlProduct();
-    public ProductDetailsDialog(DataControl dataControl,Product product,MerchantProductFrm merproduct) throws SQLException {
-        super(dataControl, product);
-        this.merproduct =merproduct;
+    private MerchantProductFrm merproduct;
+    private DataControlProduct dataControlProduct = new DataControlProduct();
+
+    public ProductDetailsDialog(Product product, MerchantProductFrm merproduct) throws SQLException {
+        super(product);
+        this.merproduct = merproduct;
         initComponents();
     }
 
@@ -95,7 +96,7 @@ public class ProductDetailsDialog extends ProductofDialog {
         modifyButton.addActionListener(e -> {
             ProductUpdateDialog updateDialog = null;
             try {
-                updateDialog = new ProductUpdateDialog(dataControl, product, merproduct);
+                updateDialog = new ProductUpdateDialog(product, merproduct);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
