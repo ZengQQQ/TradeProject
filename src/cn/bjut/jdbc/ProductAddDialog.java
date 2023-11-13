@@ -75,7 +75,7 @@ public class ProductAddDialog extends ProductofDialog {
         gbc.gridx = 1;
         // 创建“Change Image”按钮
         JButton upImgButton = new JButton("上传图片");
-        upImgButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        upImgButton.setFont(new Font("微软雅黑", Font.BOLD, 22));
         panel.add(upImgButton, gbc);
         upImgButton.addActionListener(e -> {
             // 调用父类的方法
@@ -92,7 +92,7 @@ public class ProductAddDialog extends ProductofDialog {
 
         // 创建“创建”按钮
         JButton createProductButton = new JButton("创建");
-        createProductButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        createProductButton.setFont(new Font("微软雅黑", Font.BOLD, 22));
         panel.add(createProductButton, gbc);
         createProductButton.addActionListener(e -> {
             // 从文本字段和单选按钮获取值
