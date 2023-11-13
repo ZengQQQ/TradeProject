@@ -271,10 +271,14 @@ public class DataControl {
                 insertStmt.setInt(2, u_id);
                 insertStmt.setObject(3, currentDateTime);
                 insertStmt.setInt(4, quantity);
+
+
+
                 int rowsInserted = insertStmt.executeUpdate();
 
                 if (rowsInserted > 0) {
                     System.out.println("插入成功！");
+
                 } else {
                     System.out.println("插入失败！");
                 }
