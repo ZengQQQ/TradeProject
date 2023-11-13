@@ -115,7 +115,7 @@ public class ProductAddDialog extends ProductofDialog {
                 JOptionPane.showMessageDialog(this, "所有字段都必须填写", "警告", JOptionPane.WARNING_MESSAGE);
             } else {
                 // 检查格式和范围
-                if (!newName.matches(nameRegex) || !newName.isEmpty()) {
+                if (!newName.matches(nameRegex)) {
                     JOptionPane.showMessageDialog(this, "商品名格式不正确，只能为字母和中文还有数字，长度限制在30", "警告", JOptionPane.WARNING_MESSAGE);
                 } else if (!newDesc.matches(descRegex)) {
                     JOptionPane.showMessageDialog(this, "商品描述格式不正确，只能为字母和中文还有数字，长度限制在40", "警告", JOptionPane.WARNING_MESSAGE);
