@@ -49,6 +49,8 @@ public class ForumPage extends JPanel {
 
         JScrollPane scrollPane = new JScrollPane(commentPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();// 获取垂直滚动条
+        verticalScrollBar.setUnitIncrement(30);
         scrollPane.setVisible(true);
 
 
