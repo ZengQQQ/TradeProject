@@ -45,7 +45,7 @@ public class login extends JFrame {
                             JOptionPane.showMessageDialog(null, "登录成功", "登录", JOptionPane.INFORMATION_MESSAGE);
                             UserFrm userFrame = new UserFrm(dataControl.getUserid(logname));
                             userFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                            userFrame.setSize(400, 300);
+                            userFrame.setSize(1200, 1000);
                             userFrame.setVisible(true);
                             dispose();
                         } else {
