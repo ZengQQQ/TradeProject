@@ -5,10 +5,6 @@ public class Merchant extends People {
     private String m_sex;
     private String m_tele;
 
-    public Merchant(String ID, String acc, String psw) {
-        super(ID, acc, psw);
-    }
-
     public Merchant(String ID, String acc, String psw, String m_name, String m_sex, String m_tele) {
         super(ID, acc, psw);
         this.m_name = m_name;
