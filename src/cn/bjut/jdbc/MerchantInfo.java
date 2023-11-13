@@ -5,16 +5,16 @@ import java.awt.*;
 import java.sql.SQLException;
 
 public class MerchantInfo extends JDialog {
-    private  DataControlMercahnt dataControlmer = new DataControlMercahnt();
+    private DataControlMercahnt dataControlmer = new DataControlMercahnt();
     private int m_id;
     private Font fort = new Font("微软雅黑", Font.BOLD, 35);
-
 
     public MerchantInfo(int m_id) throws SQLException {
         this.m_id = m_id;
         initComponents();
     }
-    private  class BackgroundPanel extends JPanel {
+
+    private class BackgroundPanel extends JPanel {
         private ImageIcon background;
 
         public BackgroundPanel(String gifPath) {
