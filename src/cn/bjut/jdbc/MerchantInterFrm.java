@@ -10,23 +10,25 @@ import java.util.List;
 public class MerchantInterFrm extends JFrame {
 
     private final CardLayout cardLayout = new CardLayout();
-    public  JPanel mainPanel = new JPanel();
+    public JPanel mainPanel = new JPanel();
     private final int m_id;
 
     public DataControl dataControl = new DataControl();
-    private  DataControlMercahnt dataControlmer = new DataControlMercahnt();
-    private  MerchantProductFrm merproduct;
+    private DataControlMercahnt dataControlmer = new DataControlMercahnt();
+    private MerchantProductFrm merproduct;
     private MerchantOrdersFrm merorder;
     private final Timer initialInfoTimer;
     private final Font fontall = new Font("微软雅黑", Font.BOLD, 18);
+
     public MerchantInterFrm(int mid) throws SQLException {
         this.m_id = mid;
         initComponents();
-     // 创建一个计时器，延迟后触发
+        // 创建一个计时器，延迟后触发
         initialInfoTimer = new Timer(500, e -> showInitialInfoPopup());
         initialInfoTimer.setRepeats(false); // 只触发一次
         initialInfoTimer.start();
     }
+
     public int getM_id() {
         return m_id;
     }
@@ -46,16 +48,16 @@ public class MerchantInterFrm extends JFrame {
 
         //第一个界面------------------------------------------------
         JPanel card1 = new JPanel(new BorderLayout());
-        merproduct = new MerchantProductFrm(this,dataControl);
-       // 创建一个顶部的面板，用于放置按钮
+        merproduct = new MerchantProductFrm(this);
+        // 创建一个顶部的面板，用于放置按钮
         JPanel topPanel = new JPanel(new GridLayout(1, 2));
         JButton addProductButton = new JButton("增加商品");
         addProductButton.setFont(fontall);
         addProductButton.addActionListener(e -> {
             Product newproduct = new Product();
-            ProductAddDialog detailsDialog = null;
+            ProductAddDialog detailsDialog;
             try {
-                detailsDialog = new ProductAddDialog(dataControl,newproduct,this,merproduct);
+                detailsDialog = new ProductAddDialog(newproduct, this, merproduct);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
@@ -67,7 +69,7 @@ public class MerchantInterFrm extends JFrame {
 
         topPanel.add(searchProductButton);
         topPanel.add(addProductButton);
-        card1.add(topPanel,BorderLayout.NORTH);
+        card1.add(topPanel, BorderLayout.NORTH);
         card1.add(merproduct, BorderLayout.CENTER);
         JScrollPane scrollPane = new JScrollPane(card1);// 创建一个 JScrollPane 来包装 card1 面板
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();// 获取垂直滚动条
@@ -82,22 +84,22 @@ public class MerchantInterFrm extends JFrame {
         JButton searchorderButton = new JButton("搜索订单");
         searchorderButton.setFont(fontall);
         topPanel2.add(searchorderButton);
-        merorder = new MerchantOrdersFrm(dataControl,m_id);
+        merorder = new MerchantOrdersFrm(m_id);
 
-        card2.add(topPanel2,BorderLayout.NORTH);
-        card2.add(merorder,BorderLayout.CENTER);
+        card2.add(topPanel2, BorderLayout.NORTH);
+        card2.add(merorder, BorderLayout.CENTER);
 
         mainPanel.add(card2, "card2");
         //第三个界面------------------------------------------------
-        JPanel card3 = new ForumPage(dataControl.selectMerchant(m_id),"商家");
+        JPanel card3 = new ForumPage(dataControl.selectMerchant(m_id), "商家");
         mainPanel.add(card3, "card3");
 
         //搜索商品界面------------------------------------------------
-        MerchantProductSearch searchproduct = new MerchantProductSearch(dataControl,this);
+        MerchantProductSearch searchproduct = new MerchantProductSearch(this);
         mainPanel.add(searchproduct, "card5");
 
         //搜索订单界面
-        MerchantOrdersSearch searchorder = new MerchantOrdersSearch(dataControl,merorder);
+        MerchantOrdersSearch searchorder = new MerchantOrdersSearch(merorder);
         mainPanel.add(searchorder, "card6");
 
         // 按钮------------------------------------------------
@@ -303,14 +305,16 @@ public class MerchantInterFrm extends JFrame {
         menuBar.add(menu);
         return menuBar;
     }
+
     private void showMerchantInfoDialog() {
         try {
-            MerchantInfo merchantInfo = new MerchantInfo( m_id);
+            MerchantInfo merchantInfo = new MerchantInfo(m_id);
             merchantInfo.setVisible(true);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
     private void showMerchantInfoModifyDialog() {
         try {
             Merchant merchant = dataControlmer.MerchantQuery(m_id);
