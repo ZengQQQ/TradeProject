@@ -1,4 +1,5 @@
 package cn.bjut.jdbc;
+
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
@@ -8,12 +9,12 @@ public class ProductAddDialog extends ProductofDialog {
     private final int m_id;
     private final MerchantInterFrm mer;
     private final MerchantProductFrm merproduct;
-    private DataControlProduct dataControlProduct= new DataControlProduct();
+    private DataControlProduct dataControlProduct = new DataControlProduct();
 
-    public ProductAddDialog(DataControl dataControladd,Product product , MerchantInterFrm mer,MerchantProductFrm merproduct) throws SQLException {
-        super(dataControladd, product);
-        this.merproduct=merproduct;
-        this.m_id =mer.getM_id();
+    public ProductAddDialog(Product product, MerchantInterFrm mer, MerchantProductFrm merproduct) throws SQLException {
+        super(product);
+        this.merproduct = merproduct;
+        this.m_id = mer.getM_id();
         this.mer = mer;
         initComponents();
     }
@@ -87,7 +88,7 @@ public class ProductAddDialog extends ProductofDialog {
             }
         });
 
-        gbc.gridx=2;
+        gbc.gridx = 2;
 
         // 创建“创建”按钮
         JButton createProductButton = new JButton("创建");
@@ -112,7 +113,7 @@ public class ProductAddDialog extends ProductofDialog {
             }
             if (newName.isEmpty() || newDesc.isEmpty() || newClass.isEmpty() || priceText.isEmpty() || quantityText.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "所有字段都必须填写", "警告", JOptionPane.WARNING_MESSAGE);
-            }else {
+            } else {
                 // 检查格式和范围
                 if (!newName.matches(nameRegex) || !newName.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "商品名格式不正确，只能为字母和中文还有数字，长度限制在30", "警告", JOptionPane.WARNING_MESSAGE);
