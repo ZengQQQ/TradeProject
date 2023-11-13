@@ -110,7 +110,6 @@ public class MerchantInterFrm extends JFrame {
         order.setFont(fontall);
         JButton forum = new JButton("论坛");
         forum.setFont(fontall);
-
         // 设置按钮的高度（例如，将高度设置为 50 像素）
         int buttonHeight = 45;
         upproject.setPreferredSize(new Dimension(upproject.getPreferredSize().width, buttonHeight));

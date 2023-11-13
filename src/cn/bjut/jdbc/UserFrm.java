@@ -55,6 +55,8 @@ public class UserFrm extends JFrame {
                     ex.printStackTrace();
                 } catch (IllegalAccessException ex) {
                     ex.printStackTrace();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
         });
@@ -280,6 +282,7 @@ public class UserFrm extends JFrame {
         JPanel cardF = null;
         try {
             cardF = new ForumPage(dataControl2.selectuser(u_id),"用户");
+            cardF.setPreferredSize(new Dimension(1150,920));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1459,7 +1462,7 @@ public class UserFrm extends JFrame {
     }
 
 
-    private void closeAndOpenLogin() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private void closeAndOpenLogin() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         this.dispose(); // 关闭当前窗口
         login loginFrm = null; // 创建一个新的登录窗口
         try {
@@ -1469,7 +1472,8 @@ public class UserFrm extends JFrame {
         }
         loginFrm.setLocationRelativeTo(null); // 将登录窗口设置为居中显示
         loginFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        loginFrm.setSize(900, 600);
+        loginFrm.setSize(1200, 1000);
+        loginFrm.setLocationRelativeTo(null);
         loginFrm.setVisible(true);
     }
 

@@ -17,16 +17,34 @@ public class AdminFrame extends JFrame {
     private void initComponents() throws SQLException {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
-        JPanel buttonpane = new JPanel();
-        buttonpane.setLayout(new FlowLayout());
         DataControl data = new DataControl();
         setSize(600,450);
+
+
+        JMenuBar menuBar = new JMenuBar();
+        // 创建菜单
+        JMenu viewMenu = new JMenu("菜单");
+        // 创建菜单项
+        JMenuItem viewUsersItem = new JMenuItem("查看用户");
+        JMenuItem viewMerchantsItem = new JMenuItem("查看商家");
+        JMenuItem exitItem = new JMenuItem("退出");
+        JMenuItem logoutItem = new JMenuItem("注销");
+
+    // 添加菜单项到菜单
+            viewMenu.add(viewUsersItem);
+            viewMenu.add(viewMerchantsItem);
+            viewMenu.addSeparator(); // 添加分隔线
+            viewMenu.add(logoutItem);
+            viewMenu.add(exitItem);
+            // 添加菜单到菜单栏
+            menuBar.add(viewMenu);
+
+            // 设置菜单栏到框架
+            this.setJMenuBar(menuBar);
 //用户------------------------------------------------------------------
         AdminUserFrame adminuser = new AdminUserFrame(this,data);
         // 用户管理页
-        JButton viewUsersButton = new JButton("查看用户");
-        buttonpane.add(viewUsersButton);
-        viewUsersButton.addActionListener(new ActionListener() {
+        viewUsersItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 添加查看用户的逻辑
@@ -37,9 +55,7 @@ public class AdminFrame extends JFrame {
 //商家------------------------------------------------------------------
         AdminMerchantFrame adminMerchantFrame = new AdminMerchantFrame(this,data);
         // 商家管理页
-        JButton viewMerchantButton = new JButton("查看商家");
-        buttonpane.add(viewMerchantButton);
-        viewMerchantButton.addActionListener(new ActionListener() {
+        viewMerchantsItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 添加查看商家的逻辑
@@ -48,30 +64,33 @@ public class AdminFrame extends JFrame {
             }
         });
 
-        JPanel card2 = new JPanel();
-        // 论坛评论页
-        JButton viewCommentsButton = new JButton("查看论坛");
-        buttonpane.add(viewCommentsButton);
-        viewCommentsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // 添加查看评论的逻辑
-                cardLayout.show(cardPanel,"card2");
-                JOptionPane.showMessageDialog(AdminFrame.this, "查看评论功能");
-            }
-        });
 
         setLayout(new BorderLayout());
         add(cardPanel, BorderLayout.CENTER);
-        add(buttonpane,BorderLayout.SOUTH);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        pack();
 
 
         cardPanel.add(adminuser, "card1");
-        cardPanel.add(card2, "card2");
         cardPanel.add(adminMerchantFrame, "card3");
+
+        exitItem.addActionListener(e -> {
+            System.exit(0);
+        });
+        logoutItem.addActionListener(e -> {
+            AdminFrame.this.dispose();
+            SwingUtilities.invokeLater(() -> {
+                login login;
+                try {
+                    login = new login();
+                } catch (UnsupportedLookAndFeelException | InstantiationException | ClassNotFoundException |
+                         IllegalAccessException | SQLException x) {
+                    throw new RuntimeException(x);
+                }
+                login.setVisible(true);
+            });
+        });
     }
 
     public static void main(String[] args) {

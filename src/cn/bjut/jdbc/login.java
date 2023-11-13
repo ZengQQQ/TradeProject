@@ -46,6 +46,7 @@ public class login extends JFrame {
                             UserFrm userFrame = new UserFrm(dataControl.getUserid(logname));
                             userFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                             userFrame.setSize(1500, 1000);
+                            userFrame.setLocationRelativeTo(null);
                             userFrame.setVisible(true);
                             dispose();
                         } else {
@@ -59,6 +60,7 @@ public class login extends JFrame {
                             merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                             merchantFrame.setSize(1200, 1000);
                             merchantFrame.setVisible(true);
+                            merchantFrame.setLocationRelativeTo(null);
                             dispose();
                         } else {
                             loadingDialog.dispose();
@@ -69,8 +71,9 @@ public class login extends JFrame {
                             JOptionPane.showMessageDialog(null, "登录成功", "登录", JOptionPane.INFORMATION_MESSAGE);
                             AdminFrame adminFrame = new AdminFrame();
                             adminFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                            adminFrame.setSize(400, 300);
+                            adminFrame.setSize(1200, 1000);
                             adminFrame.setVisible(true);
+                            adminFrame.setLocationRelativeTo(null);
                             dispose();
                         } else {
                             loadingDialog.dispose();
@@ -175,8 +178,9 @@ public class login extends JFrame {
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.CENTER;
         loginPanelBackground.add(registerButton, constraints);
-
-        pack();
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
+        setLocationRelativeTo(null);
     }
 
     private void registerButtonMouseClicked() {
@@ -225,8 +229,6 @@ public class login extends JFrame {
                      IllegalAccessException | SQLException e) {
                 throw new RuntimeException(e);
             }
-            login.setLocationRelativeTo(null); // 居中显示
-            login.setSize(900, 600);
             login.setVisible(true);
         });
     }

@@ -37,15 +37,21 @@ public class ForumPage extends JPanel {
     private void initComponents() throws SQLException {
         this.setLayout(new BorderLayout());
 
-        commentPanel.setLayout(new BoxLayout(commentPanel, BoxLayout.Y_AXIS));
+        commentPanel.setLayout(new GridLayout(0,1));
 
         refreshComments();
 
         JScrollPane scrollPane = new JScrollPane(commentPanel);
-        this.add(scrollPane,BorderLayout.CENTER);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVisible(true);
 
 
-        JButton newCommentButton = new JButton("New Comment");
+
+        this.add(scrollPane, BorderLayout.CENTER);
+
+        JButton newCommentButton = new JButton("发表评论");
+        newCommentButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        newCommentButton.setBackground(new Color(122, 191, 255));
         newCommentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -56,6 +62,7 @@ public class ForumPage extends JPanel {
             }
         });
         add(newCommentButton, BorderLayout.SOUTH);
+    setBounds(0,0,1200,900);
 
     }
 
@@ -178,6 +185,8 @@ public class ForumPage extends JPanel {
         for (CommentBar comment : commentBars) {
             commentPanel.add(comment);
         }
+
+
 
         // 刷新面板
         commentPanel.revalidate();

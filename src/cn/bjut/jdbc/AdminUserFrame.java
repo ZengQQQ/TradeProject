@@ -36,7 +36,7 @@ public class AdminUserFrame extends JPanel {
         JButton editButton4 = new JButton("添加");
 
         //使用panel容器添加按钮
-        JPanel editButtonPanel = new JPanel(new FlowLayout());
+        JPanel editButtonPanel = new JPanel(new GridLayout(1,4));
         editButtonPanel.add(editButton);
         editButtonPanel.add(editButton2);
         editButtonPanel.add(editButton3);

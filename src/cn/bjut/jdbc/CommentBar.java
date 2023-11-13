@@ -33,6 +33,27 @@ public class CommentBar extends JPanel {
         this.user = user;
         this.merchant = merchant;
         initComponents();
+        setDefaultFont();
+    }
+
+    private void setDefaultFont() {
+        Font font = new Font("微软雅黑", Font.PLAIN, 18);
+
+        for (Component component : getComponents()) {
+            setComponentFont(component, font);
+        }
+    }
+
+    private void setComponentFont(Component component, Font font) {
+        if (component instanceof JTextArea || component instanceof JLabel || component instanceof JButton) {
+            component.setFont(font);
+        }
+
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                setComponentFont(child, font);
+            }
+        }
     }
 
     private void initComponents() {
@@ -50,7 +71,7 @@ public class CommentBar extends JPanel {
         topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
 
         JLabel nameLabel = new JLabel("Name: " + userName);
-        JLabel flagLabel = new JLabel("来自: " + flag);
+        JLabel flagLabel = new JLabel("   \r 来自: " + flag);
         JLabel timeLabel = new JLabel("Time: " + time);
         topPanel.add(nameLabel, BorderLayout.WEST);
         topPanel.add(flagLabel, BorderLayout.CENTER);
@@ -69,18 +90,30 @@ public class CommentBar extends JPanel {
         JPanel bottomPanel = new JPanel(new BorderLayout());
 
         // 查看回复按钮
-        JButton viewRepliesButton = new JButton("View Replies");
+        JButton viewRepliesButton = new JButton("查看回复");
         viewRepliesButton.setPreferredSize(new Dimension(100, 30)); // 设置按钮大小
         viewRepliesButton.addActionListener(e -> {
+            DataControl data = null;
+            int count = 0;
             try {
-                viewReplies(this);
+                data = new DataControl();
+                count = data.getCommentCount(this.ID);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            try {
+                if(count == 0){
+                    JOptionPane.showMessageDialog(null, "暂无回复");
+                }
+                else
+                    viewReplies(this);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
         });
 
         // 回复按钮
-        JButton replyButton = new JButton("Reply");
+        JButton replyButton = new JButton("回复");
         replyButton.setPreferredSize(new Dimension(100, 30)); // 设置按钮大小
         replyButton.addActionListener(e -> {
             try {
@@ -100,6 +133,7 @@ public class CommentBar extends JPanel {
 
         // 添加底部面板到主面板
         add(bottomPanel, BorderLayout.SOUTH);
+        setPreferredSize(new Dimension(600, 200));
     }
 
     public void addReply(Comment reply) {
@@ -130,7 +164,6 @@ public class CommentBar extends JPanel {
 //查看当前评论的回复
     private void viewReplies(CommentBar commentBar) throws SQLException {
         RepliesDialog repliesDialog = new RepliesDialog(this.ID);
-        //todo:在这里添加回复的内容
         repliesDialog.setVisible(true);
     }
     //回复当前某一条评论
@@ -139,47 +172,74 @@ public class CommentBar extends JPanel {
         newCommentDialog.setVisible(true);
     }
 
-    public class RepliesDialog extends JDialog {
+    public class RepliesDialog extends JFrame{
         private String ID;
 
         private List<Comment> replyList;
         public RepliesDialog(String ID) throws SQLException {
             this.ID = ID;
             initComponents();
+            setDefaultFont();
+        }
+
+        private void setDefaultFont() {
+            Font font = new Font("微软雅黑", Font.PLAIN, 20);
+
+            for (Component component : getComponents()) {
+                setComponentFont(component, font);
+            }
+        }
+
+        private void setComponentFont(Component component, Font font) {
+            if (component instanceof JTextArea || component instanceof JLabel || component instanceof JButton) {
+                component.setFont(font);
+            }
+
+            if (component instanceof Container) {
+                for (Component child : ((Container) component).getComponents()) {
+                    setComponentFont(child, font);
+                }
+            }
         }
 
         private void initComponents() throws SQLException {
-            this.setLayout(new BorderLayout());
-            setTitle("Replies");
+            JPanel basicPanel = new JPanel();
+            basicPanel.setLayout(new BorderLayout());
+            setTitle("回复列表");
             DataControl data = new DataControl();
-
-            this.setLayout(new BorderLayout());
+            basicPanel.setSize(600, 800);
             replyList = data.selectReplyTable(ID);
 
-            JScrollPane scrollPane = new JScrollPane();
             JPanel replyPanel = new JPanel();
             replyPanel.setLayout(new BoxLayout(replyPanel, BoxLayout.Y_AXIS));
-
             for (Comment reply : replyList) {
-                System.out.println((reply.getFlag()));
-                replyPanel.add(new replyBar(reply));
+                replyBar replys = new replyBar(reply);
+                replys.setPreferredSize(new Dimension(600, 100));
+                replyPanel.add(replys);
             }
 
-            scrollPane.setViewportView(replyPanel);
-            add(scrollPane);
-            setSize(500, 500);
-            setLocationRelativeTo(null); // 居中显示对话框
+            JScrollPane scrollPane = new JScrollPane(replyPanel); // Wrap the panel in a JScrollPane
+            basicPanel.add(scrollPane, BorderLayout.CENTER);
+            this.add(basicPanel, BorderLayout.CENTER);
+            this.add(new JLabel("回复列表"), BorderLayout.NORTH);
+
+            setSize(650, 800);
+            setVisible(true);
+            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            this.setLocationRelativeTo(null);
         }
+
 
     }
 
 
-    public class replyBar extends JPanel{
+    public class replyBar extends JPanel {
         private String name;
         private String time;
         private String content;
         private String flag;
-        public replyBar(String name,String time,String content,String flag){
+
+        public replyBar(String name, String time, String content, String flag) {
             this.name = name;
             this.time = time;
             this.content = content;
@@ -187,55 +247,60 @@ public class CommentBar extends JPanel {
             initComponents();
         }
 
-        public replyBar(Comment comment){
+        public replyBar(Comment comment) {
             this.name = comment.getUserName();
             this.time = comment.getTime();
             this.content = comment.getContent();
             this.flag = comment.getFlag();
             initComponents();
         }
-        public void initComponents(){
-            setLayout(new BorderLayout(10, 10));
+
+        public void initComponents() {
+            // 设置边框
             setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createEmptyBorder(10, 10, 10, 10),
-                    BorderFactory.createLineBorder(Color.BLACK)
+                    BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK), // 上下横线
+                    BorderFactory.createEmptyBorder(10, 10, 10, 10) // 内边距
             ));
+
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
             JPanel topPanel = new JPanel();
             topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
-            JLabel nameLabel = new JLabel("Name: " + name);
-            JLabel timeLabel = new JLabel("Time: " + time);
-            topPanel.add(nameLabel, BorderLayout.WEST);
+            JLabel nameLabel = new JLabel("From: " + name);
+            topPanel.add(nameLabel);
+
+            // 添加 "Name" 和 "Time" 之间的间隔
             topPanel.add(Box.createHorizontalGlue());
-            topPanel.add(timeLabel, BorderLayout.EAST);
+
+            // 为 "Time" 添加边框
+            JLabel timeLabel = new  JLabel("Time: " + time);
+            topPanel.add(timeLabel);
+
+            this.add(topPanel);
 
             JTextArea contentTextArea = new JTextArea(content);
             contentTextArea.setLineWrap(true);
             contentTextArea.setEditable(false);
             contentTextArea.setBackground(this.getBackground());
-
+            contentTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // 添加边距
+            this.add(contentTextArea);
 
             JPanel bottomPanel = new JPanel();
             bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
-            JLabel label = new JLabel("来自: " + flag);
-            label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-            bottomPanel.add(Box.createHorizontalGlue());
-            bottomPanel.add(label);
 
-            add(topPanel, BorderLayout.NORTH);
-            add(contentTextArea, BorderLayout.CENTER);
-            add(bottomPanel, BorderLayout.SOUTH);
+            JLabel label = new JLabel( flag);
+            bottomPanel.add(label,Component.RIGHT_ALIGNMENT);
+            this.add(bottomPanel);
 
-            setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            setMinimumSize(new Dimension(600, 200));
+            setPreferredSize(new Dimension(600, 200));
+            setMaximumSize(new Dimension(600, 200));
         }
-
-
 
     }
 
-
-
-//回复某条评论的对话框
+        //回复某条评论的对话框
     public class replyCommentDialog extends JDialog {
 
         private String ID;//待回复的评论的id
@@ -266,7 +331,7 @@ public class CommentBar extends JPanel {
 
 
     private void initComponents() {
-        setTitle("New Comment");
+        setTitle("回复评论");
         setModal(true);
         JPanel basicPanel = new JPanel();
 
@@ -299,7 +364,6 @@ public class CommentBar extends JPanel {
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
-                // TODO: 保存评论到数据库
                 dispose(); // 关闭对话框
             }
         });
@@ -310,7 +374,7 @@ public class CommentBar extends JPanel {
         basicPanel.add(buttonPanel); // 将按钮面板添加到主面板中
         add(basicPanel);
         setLocationRelativeTo(null); // 居中显示对话框
-        pack();
+        setSize(400, 200);
     }
 
     }

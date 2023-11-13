@@ -799,6 +799,17 @@ public class DataControl {
         }
     }
 
+    public int getCommentCount(String ID) throws SQLException {
+        String sql = "select count(*) from forum where reply_to = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, Integer.parseInt(ID));
+        ResultSet rs = stmt.executeQuery();
+        if(rs.next()){
+            return rs.getInt(1);
+        }
+        else return 0;
+    }
 }
 
 

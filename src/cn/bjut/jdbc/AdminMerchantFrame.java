@@ -56,7 +56,7 @@ public class AdminMerchantFrame extends JPanel {
         JButton editMerButton4 = new JButton("添加");
 
         //商家修改按钮组
-        JPanel merchantButtonPanel = new JPanel(new FlowLayout());
+        JPanel merchantButtonPanel = new JPanel(new GridLayout(1, 4));
         merchantButtonPanel.add(editMerButton);
         merchantButtonPanel.add(editMerButton2);
         merchantButtonPanel.add(editMerButton3);
