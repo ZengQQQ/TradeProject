@@ -23,9 +23,8 @@ public class MerchantInterFrm extends JFrame {
     public MerchantInterFrm(int mid) throws SQLException {
         this.m_id = mid;
         initComponents();
-        // 创建一个计时器，延迟后触发
         initialInfoTimer = new Timer(500, e -> showInitialInfoPopup());
-        initialInfoTimer.setRepeats(false); // 只触发一次
+        initialInfoTimer.setRepeats(false);
         initialInfoTimer.start();
     }
 
@@ -33,7 +32,6 @@ public class MerchantInterFrm extends JFrame {
         return m_id;
     }
 
-    //主界面的创建
     private void initComponents() throws SQLException {
         setTitle("商家管理界面");
         mainPanel.setLayout(cardLayout);
@@ -46,10 +44,9 @@ public class MerchantInterFrm extends JFrame {
         combinedMenuBar.add(myInfoMenu);
         setJMenuBar(combinedMenuBar);
 
-        //第一个界面------------------------------------------------
         JPanel card1 = new JPanel(new BorderLayout());
         merproduct = new MerchantProductFrm(this);
-        // 创建一个顶部的面板，用于放置按钮
+
         JPanel topPanel = new JPanel(new GridLayout(1, 2));
         JButton addProductButton = new JButton("增加商品");
         addProductButton.setFont(fontall);
@@ -71,14 +68,13 @@ public class MerchantInterFrm extends JFrame {
         topPanel.add(addProductButton);
         card1.add(topPanel, BorderLayout.NORTH);
         card1.add(merproduct, BorderLayout.CENTER);
-        JScrollPane scrollPane = new JScrollPane(card1);// 创建一个 JScrollPane 来包装 card1 面板
-        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();// 获取垂直滚动条
-        verticalScrollBar.setUnitIncrement(30);// 设置单次滚动单位的大小为 20 像素
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);// 设置垂直滚动条自动出现
+        JScrollPane scrollPane = new JScrollPane(card1);
+        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+        verticalScrollBar.setUnitIncrement(30);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         mainPanel.add(scrollPane, "card1");
 
-        //第二个界面------------------------------------------------
         JPanel card2 = new JPanel(new BorderLayout());
         JPanel topPanel2 = new JPanel(new GridLayout(1, 1));
         JButton searchorderButton = new JButton("搜索订单");
@@ -90,33 +86,28 @@ public class MerchantInterFrm extends JFrame {
         card2.add(merorder, BorderLayout.CENTER);
 
         mainPanel.add(card2, "card2");
-        //第三个界面------------------------------------------------
+
         JPanel card3 = new ForumPage(dataControl.selectMerchant(m_id), "商家");
         mainPanel.add(card3, "card3");
 
-        //搜索商品界面------------------------------------------------
         MerchantProductSearch searchproduct = new MerchantProductSearch(this);
         mainPanel.add(searchproduct, "card5");
 
-        //搜索订单界面
         MerchantOrdersSearch searchorder = new MerchantOrdersSearch(merorder);
         mainPanel.add(searchorder, "card6");
 
-        // 按钮------------------------------------------------
-        // 创建按钮
         JButton upproject = new JButton("商品管理");
         upproject.setFont(fontall);
         JButton order = new JButton("订单");
         order.setFont(fontall);
         JButton forum = new JButton("论坛");
         forum.setFont(fontall);
-        // 设置按钮的高度（例如，将高度设置为 50 像素）
+
         int buttonHeight = 45;
         upproject.setPreferredSize(new Dimension(upproject.getPreferredSize().width, buttonHeight));
         order.setPreferredSize(new Dimension(order.getPreferredSize().width, buttonHeight));
         forum.setPreferredSize(new Dimension(forum.getPreferredSize().width, buttonHeight));
 
-        //设置动作
         searchProductButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -152,7 +143,6 @@ public class MerchantInterFrm extends JFrame {
             }
         });
 
-
         JPanel buttonPanel2 = new JPanel();
         buttonPanel2.setLayout(new GridLayout(1, 4));
         buttonPanel2.add(upproject);
@@ -164,10 +154,9 @@ public class MerchantInterFrm extends JFrame {
 
         contentPane.add(mainPanel, BorderLayout.CENTER);
         contentPane.add(buttonPanel2, BorderLayout.SOUTH);
-        //----------------------------------------------------------------
+
         pack();
         setLocationRelativeTo(getOwner());
-
     }
 
     public void refreshCard1() {
@@ -190,9 +179,7 @@ public class MerchantInterFrm extends JFrame {
         merorder.refreshData();
     }
 
-
     private JMenuBar createMenuBar() {
-        // 设置字体和高度
         Font font = new Font("微软雅黑", Font.BOLD, 18);
 
         int buttonHeight = 40;
@@ -217,29 +204,33 @@ public class MerchantInterFrm extends JFrame {
         refreshButton4.setFont(font);
         refreshButton4.setBackground(Color.red);
         refreshButton4.setPreferredSize(new Dimension(refreshButton4.getPreferredSize().width, buttonHeight));
+
         refreshButton1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 refreshCard1();
             }
         });
+
         refreshButton2.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 refreshCard2();
             }
         });
+
         refreshButton3.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 showMerchantInfoDialog();
             }
         });
+
         refreshButton4.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-                    closeAndOpenLogin(); // 点击退出按钮时关闭当前窗口并打开登录窗口
+                    closeAndOpenLogin();
                 } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException |
                          IllegalAccessException | SQLException ex) {
                     throw new RuntimeException(ex);
@@ -250,7 +241,7 @@ public class MerchantInterFrm extends JFrame {
         JPanel buttonPanel = new JPanel(new GridLayout(4, 1));
         buttonPanel.add(refreshButton1);
         buttonPanel.add(refreshButton2);
-        buttonPanel.add(refreshButton3);// 添加新的刷新用户信息按钮
+        buttonPanel.add(refreshButton3);
         buttonPanel.add(refreshButton4);
         menu.add(buttonPanel);
         menuBar.add(menu);
@@ -258,9 +249,9 @@ public class MerchantInterFrm extends JFrame {
     }
 
     private void closeAndOpenLogin() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
-        this.dispose(); // 关闭当前窗口
-        login loginFrm = new login(); // 创建一个新的登录窗口
-        loginFrm.setLocationRelativeTo(null); // 将登录窗口设置为居中显示
+        this.dispose();
+        login loginFrm = new login();
+        loginFrm.setLocationRelativeTo(null);
         loginFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrm.setSize(900, 600);
         loginFrm.setVisible(true);
@@ -286,14 +277,14 @@ public class MerchantInterFrm extends JFrame {
         refreshButton1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                showMerchantInfoDialog(); // 显示我的信息界面
+                showMerchantInfoDialog();
             }
         });
 
         refreshButton2.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                showMerchantInfoModifyDialog(); // 弹出修改信息对话框
+                showMerchantInfoModifyDialog();
             }
         });
 
@@ -328,7 +319,6 @@ public class MerchantInterFrm extends JFrame {
         JOptionPane.showMessageDialog(this, "点击图片查看更多", "提示", JOptionPane.INFORMATION_MESSAGE);
     }
 
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             MerchantInterFrm frame;
@@ -337,11 +327,10 @@ public class MerchantInterFrm extends JFrame {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            frame.setLocationRelativeTo(null); // 居中显示
+            frame.setLocationRelativeTo(null);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(1200, 1000);
             frame.setVisible(true);
         });
     }
 }
-
