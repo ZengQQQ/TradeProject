@@ -9,7 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 public class MerchantOrdersSearch extends JPanel {
-    private final DataControl data;
+    private final DataControl dataControl;
+    private  DataControlOrder dataControlOrder= new DataControlOrder();
     private final MerchantOrdersFrm merorderFrm;
     private final Font font = new Font("微软雅黑", Font.PLAIN, 16);
     private JComboBox<String> productsearchBox= new JComboBox<>(new String[]{"商品名称", "类别", "价格", "数量"});
@@ -24,7 +25,7 @@ public class MerchantOrdersSearch extends JPanel {
     private JPanel ordersPanel ;
 
     public MerchantOrdersSearch(DataControl data, MerchantOrdersFrm parentFrame) throws SQLException {
-        this.data = data;
+        this.dataControl = data;
         this.merorderFrm = parentFrame;
         initComponents();
     }
@@ -160,7 +161,7 @@ public class MerchantOrdersSearch extends JPanel {
     private void showAllOrders() throws SQLException {
         ordersPanel.removeAll();
 
-        orderDisplayPanel = new MerchantOrdersFrm(data, merorderFrm.m_id);
+        orderDisplayPanel = new MerchantOrdersFrm(dataControl, merorderFrm.m_id);
         ordersPanel.add(orderDisplayPanel);
         ordersPanel.revalidate();
         ordersPanel.repaint();
@@ -181,13 +182,13 @@ public class MerchantOrdersSearch extends JPanel {
             JOptionPane.showMessageDialog(null, validationError, "输入验证错误", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        List<Order> orders = data.searchOrders( merorderFrm.m_id,productType, userType,dateType, productf, userf, quantityf, totalpricef, datef);
+        List<Order> orders = dataControlOrder.searchOrders( merorderFrm.m_id,productType, userType,dateType, productf, userf, quantityf, totalpricef, datef);
 
         if (orders != null) {
 
             ordersPanel.removeAll();
 
-            orderDisplayPanel = new MerchantOrdersFrm(data, merorderFrm.m_id, orders);
+            orderDisplayPanel = new MerchantOrdersFrm(dataControl, merorderFrm.m_id, orders);
             ordersPanel.add(orderDisplayPanel);
 
             ordersPanel.revalidate();
