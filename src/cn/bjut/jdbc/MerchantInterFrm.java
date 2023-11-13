@@ -14,6 +14,7 @@ public class MerchantInterFrm extends JFrame {
     private final int m_id;
 
     public DataControl dataControl = new DataControl();
+    private  DataControlMercahnt dataControlmer = new DataControlMercahnt();
     private  MerchantProductFrm merproduct;
     private MerchantOrdersFrm merorder;
     private final Timer initialInfoTimer;
@@ -52,7 +53,12 @@ public class MerchantInterFrm extends JFrame {
         addProductButton.setFont(fontall);
         addProductButton.addActionListener(e -> {
             Product newproduct = new Product();
-            ProductAddDialog detailsDialog = new ProductAddDialog(dataControl,newproduct,this,merproduct);
+            ProductAddDialog detailsDialog = null;
+            try {
+                detailsDialog = new ProductAddDialog(dataControl,newproduct,this,merproduct);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             detailsDialog.setVisible(true);
         });
 
@@ -166,7 +172,7 @@ public class MerchantInterFrm extends JFrame {
     public void refreshCard1() {
         merproduct.removeAll();
         try {
-            List<Product> products = dataControl.MerchantProductQuery(getM_id());
+            List<Product> products = dataControlmer.MerchantProductQuery(getM_id());
             for (Product product : products) {
                 JPanel productPanel = merproduct.createProductPanel(product);
                 productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -234,7 +240,7 @@ public class MerchantInterFrm extends JFrame {
                 try {
                     closeAndOpenLogin(); // 点击退出按钮时关闭当前窗口并打开登录窗口
                 } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException |
-                         IllegalAccessException ex) {
+                         IllegalAccessException | SQLException ex) {
                     throw new RuntimeException(ex);
                 }
             }
@@ -250,7 +256,7 @@ public class MerchantInterFrm extends JFrame {
         return menuBar;
     }
 
-    private void closeAndOpenLogin() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private void closeAndOpenLogin() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         this.dispose(); // 关闭当前窗口
         login loginFrm = new login(); // 创建一个新的登录窗口
         loginFrm.setLocationRelativeTo(null); // 将登录窗口设置为居中显示
@@ -299,7 +305,7 @@ public class MerchantInterFrm extends JFrame {
     }
     private void showMerchantInfoDialog() {
         try {
-            MerchantInfo merchantInfo = new MerchantInfo(dataControl, m_id);
+            MerchantInfo merchantInfo = new MerchantInfo( m_id);
             merchantInfo.setVisible(true);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -307,8 +313,8 @@ public class MerchantInterFrm extends JFrame {
     }
     private void showMerchantInfoModifyDialog() {
         try {
-            Merchant merchant = dataControl.MerchantQuery(m_id);
-            MerchantInfoModifyDialog modifyDialog = new MerchantInfoModifyDialog(merchant, dataControl, m_id);
+            Merchant merchant = dataControlmer.MerchantQuery(m_id);
+            MerchantInfoModifyDialog modifyDialog = new MerchantInfoModifyDialog(merchant, m_id);
             modifyDialog.setVisible(true);
         } catch (SQLException e) {
             e.printStackTrace();
