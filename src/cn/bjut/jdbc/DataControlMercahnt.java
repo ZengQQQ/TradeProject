@@ -46,6 +46,24 @@ public class DataControlMercahnt extends DataControl{
         return m_id;
     }
 
+    public String getMerchantm_name(int m_id) throws SQLException {
+        String m_name=null;
+        String sql = "select m_name from  merchant " + " where  m_id" + " = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, m_id);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            m_name=rs.getString("m_name");
+        }
+        if (con != null) {
+            con.close();
+        }
+        return m_name;
+    }
+
+
+
     //获得指定商家的所有商品
     public List<Product> MerchantProductQuery(int m_id) throws SQLException {
         List<Product> products = new ArrayList<>();
