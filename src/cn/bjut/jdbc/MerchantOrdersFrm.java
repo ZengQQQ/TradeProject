@@ -62,18 +62,18 @@ public class MerchantOrdersFrm extends JPanel {
         }
         JTable table = new JTable(tableModel);
         JTableHeader header = table.getTableHeader();
-        header.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        header.setFont(new Font("微软雅黑", Font.BOLD, 20));
         table.setRowHeight(ORDER_PANEL_HEIGHT);
 
         // 禁用表格编辑
         table.setDefaultEditor(Object.class, null);
 
         // 设置自定义单元格渲染器以显示大字体
-        table.getColumnModel().getColumn(1).setCellRenderer(new CustomCellRenderer(16));
-        table.getColumnModel().getColumn(2).setCellRenderer(new CustomCellRenderer(16));
-        table.getColumnModel().getColumn(3).setCellRenderer(new CustomCellRenderer(16));
-        table.getColumnModel().getColumn(4).setCellRenderer(new CustomCellRenderer(16));
-        table.getColumnModel().getColumn(5).setCellRenderer(new CustomCellRenderer(16));
+        table.getColumnModel().getColumn(1).setCellRenderer(new CustomCellRenderer(20));
+        table.getColumnModel().getColumn(2).setCellRenderer(new CustomCellRenderer(20));
+        table.getColumnModel().getColumn(3).setCellRenderer(new CustomCellRenderer(20));
+        table.getColumnModel().getColumn(4).setCellRenderer(new CustomCellRenderer(20));
+        table.getColumnModel().getColumn(5).setCellRenderer(new CustomCellRenderer(20));
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageCellRenderer());
 
         JScrollPane scrollPane = new JScrollPane(table);
