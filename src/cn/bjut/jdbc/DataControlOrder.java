@@ -16,7 +16,7 @@ public class DataControlOrder extends DataControl{
     public DataControlOrder() throws SQLException {
     }
 
-    //根据m_id查找订单有关的用户和商品
+    // 根据m_id查找订单有关的用户和商品
     public List<Order> getOrderInfoByM_id(int m_id) throws SQLException {
         List<Order> orderInfoList = new ArrayList<>();
 
@@ -25,13 +25,14 @@ public class DataControlOrder extends DataControl{
         ResultSet rs = null;
         try {
             // 编写SQL查询语句，根据m_id查找订单、用户和商品信息
-            String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity,o.totalprice, " +
-                    "p.p_name, p.p_desc, p.p_class, p.p_price, p.p_status, p.p_quantity, p.p_img, " +
-                    "u.u_acc, u.u_name, u.u_sex, u.u_tele " +
+            String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity, o.totalprice, " +
+                    "p.p_name, p.p_desc, p.p_class, p.p_price, p.p_quantity, p.p_img, " +
+                    "u.u_name, u.u_sex, u.u_tele " +
                     "FROM orders o " +
-                    "INNER JOIN product p ON o.p_id = p.p_id AND o.m_id = p.m_id " +
+                    "INNER JOIN product p ON o.p_id = p.p_id " +
                     "INNER JOIN user u ON o.u_id = u.u_id " +
-                    "WHERE o.m_id = ?";
+                    "WHERE p.m_id = ?";  // 修改这里的条件，根据商品表的m_id进行查询
+
             // 创建PreparedStatement对象，设置参数并执行查询
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, m_id);
@@ -68,12 +69,19 @@ public class DataControlOrder extends DataControl{
             e.printStackTrace();
         } finally {
             // 关闭数据库连接和资源
-            rs.close();
-            stmt.close();
-            con.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null) {
+                con.close();
+            }
         }
         return orderInfoList;
     }
+
 
 
     // 根据一定的信息查找订单
@@ -85,7 +93,7 @@ public class DataControlOrder extends DataControl{
             String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity, o.totalprice, p.p_name, p.p_desc, p.p_class, p.p_price,p_img,p_quantity, u.u_name, u.u_sex, u.u_tele FROM orders o ";
             String joinProduct = "INNER JOIN product p ON o.p_id = p.p_id ";
             String joinUser = "INNER JOIN user u ON o.u_id = u.u_id ";
-            String whereClause = "WHERE o.m_id = ? ";
+            String whereClause = "WHERE p.m_id = ? ";
             List<Object> parameters = new ArrayList<>();
             parameters.add(m_id);
 
