@@ -24,7 +24,7 @@ public class ProductDetailsDialog extends ProductofDialog {
         getContentPane().add(panel, BorderLayout.CENTER);
 
         // 创建微软雅黑黑的16号字体
-        Font customFont = new Font("微软雅黑", Font.PLAIN, 16);
+        Font customFont = new Font("微软雅黑", Font.PLAIN, 22);
 
         setTitle("商品详细信息");
         gbc.gridx = 1;
@@ -83,13 +83,13 @@ public class ProductDetailsDialog extends ProductofDialog {
 
         // 添加“修改”按钮
         JButton modifyButton = new JButton("修改");
-        modifyButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        modifyButton.setFont(new Font("微软雅黑", Font.BOLD, 22));
         gbc.gridy++;
         panel.add(modifyButton, gbc);
 
         // 添加“删除”按钮
         JButton deleteButton = new JButton("删除");
-        deleteButton.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        deleteButton.setFont(new Font("微软雅黑", Font.BOLD, 22));
         gbc.gridx++;
         panel.add(deleteButton, gbc);
         // 在点击“修改”按钮后
