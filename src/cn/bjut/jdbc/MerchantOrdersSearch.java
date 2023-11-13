@@ -9,23 +9,21 @@ import java.util.Date;
 import java.util.List;
 
 public class MerchantOrdersSearch extends JPanel {
-    private final DataControl dataControl;
-    private  DataControlOrder dataControlOrder= new DataControlOrder();
+    private DataControlOrder dataControlOrder = new DataControlOrder();
     private final MerchantOrdersFrm merorderFrm;
     private final Font font = new Font("微软雅黑", Font.PLAIN, 16);
-    private JComboBox<String> productsearchBox= new JComboBox<>(new String[]{"商品名称", "类别", "价格", "数量"});
+    private JComboBox<String> productsearchBox = new JComboBox<>(new String[]{"商品名称", "类别", "价格", "数量"});
     private JComboBox<String> usersearchBox = new JComboBox<>(new String[]{"用户名", "性别", "电话"});
-    private JComboBox<String> datesearchBox= new JComboBox<>(new String[]{"日期", "年", "月", "日"});
-    private JTextField searchproductField= new JTextField(20);
-    private JTextField usersearchField= new JTextField(20);
+    private JComboBox<String> datesearchBox = new JComboBox<>(new String[]{"日期", "年", "月", "日"});
+    private JTextField searchproductField = new JTextField(20);
+    private JTextField usersearchField = new JTextField(20);
     private JTextField quantityField = new JTextField(20);
     private JTextField totalPriceField = new JTextField(20);
     private JTextField dateField = new JTextField(20);
     private MerchantOrdersFrm orderDisplayPanel;
-    private JPanel ordersPanel ;
+    private JPanel ordersPanel;
 
-    public MerchantOrdersSearch(DataControl data, MerchantOrdersFrm parentFrame) throws SQLException {
-        this.dataControl = data;
+    public MerchantOrdersSearch(MerchantOrdersFrm parentFrame) throws SQLException {
         this.merorderFrm = parentFrame;
         initComponents();
     }
@@ -33,7 +31,7 @@ public class MerchantOrdersSearch extends JPanel {
     private void initComponents() throws SQLException {
         Font font = new Font("微软雅黑", Font.PLAIN, 14);
 
-         // 设置字体
+        // 设置字体
         searchproductField.setFont(font);
         usersearchField.setFont(font);
         quantityField.setFont(font);
@@ -161,11 +159,12 @@ public class MerchantOrdersSearch extends JPanel {
     private void showAllOrders() throws SQLException {
         ordersPanel.removeAll();
 
-        orderDisplayPanel = new MerchantOrdersFrm(dataControl, merorderFrm.m_id);
+        orderDisplayPanel = new MerchantOrdersFrm(merorderFrm.m_id);
         ordersPanel.add(orderDisplayPanel);
         ordersPanel.revalidate();
         ordersPanel.repaint();
     }
+
     private void performSearch() throws SQLException {
 
         String productType = (String) productsearchBox.getSelectedItem();
@@ -182,19 +181,17 @@ public class MerchantOrdersSearch extends JPanel {
             JOptionPane.showMessageDialog(null, validationError, "输入验证错误", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        List<Order> orders = dataControlOrder.searchOrders( merorderFrm.m_id,productType, userType,dateType, productf, userf, quantityf, totalpricef, datef);
+        List<Order> orders = dataControlOrder.searchOrders(merorderFrm.m_id, productType, userType, dateType, productf, userf, quantityf, totalpricef, datef);
 
         if (orders != null) {
-
             ordersPanel.removeAll();
-
-            orderDisplayPanel = new MerchantOrdersFrm(dataControl, merorderFrm.m_id, orders);
+            orderDisplayPanel = new MerchantOrdersFrm(merorderFrm.m_id, orders);
             ordersPanel.add(orderDisplayPanel);
-
             ordersPanel.revalidate();
             ordersPanel.repaint();
         }
     }
+
     //返回错误消息
     private String validateInput(String productType, String userType, String dateType, String productf, String userf, String quantityf, String totalpricef, String datef) {
         // 商品信息搜索验证
@@ -296,7 +293,7 @@ public class MerchantOrdersSearch extends JPanel {
 
     // 购买时间验证规则
     private boolean validateDateInput(String dateType, String datef) {
-        if (datef.isEmpty()){
+        if (datef.isEmpty()) {
             return true;
         }
         switch (dateType) {
@@ -330,6 +327,7 @@ public class MerchantOrdersSearch extends JPanel {
         }
         return true;
     }
+
     // 添加日期格式验证规则
     private boolean isValidDate(String dateStr, String dateFormat) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
@@ -349,6 +347,7 @@ public class MerchantOrdersSearch extends JPanel {
         }
         return str.matches("\\d+(\\.\\d+)?");
     }
+
     // 检查字符串是否为整数
     private boolean isInteger(String str) {
         if (str == null || str.isEmpty()) {
