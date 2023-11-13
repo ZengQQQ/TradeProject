@@ -11,6 +11,7 @@ import java.util.List;
 
 public class MerchantOrdersFrm extends JPanel {
     private final DataControl data;
+    private  DataControlOrder dataControlOrder= new DataControlOrder();
     public final int m_id;
 
     private static final int DEFAULT_IMAGE_WIDTH = 220;
@@ -50,7 +51,7 @@ public class MerchantOrdersFrm extends JPanel {
                 tableModel.addRow(rowData);
             }
         }else {
-            List<Order> orderInfoList = data.getOrderInfoByM_id(m_id);
+            List<Order> orderInfoList = dataControlOrder.getOrderInfoByM_id(m_id);
             for (Order order : orderInfoList) {
                 JLabel img = createImageLabel(order.getProduct(), DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT);
                 String productInfo = getProductInfo(order.getProduct());
@@ -91,7 +92,7 @@ public class MerchantOrdersFrm extends JPanel {
 
         List<Order> updatedOrderInfoList;
         try {
-            updatedOrderInfoList = data.getOrderInfoByM_id(m_id);
+            updatedOrderInfoList = dataControlOrder.getOrderInfoByM_id(m_id);
         } catch (SQLException e) {
             e.printStackTrace();
             return;

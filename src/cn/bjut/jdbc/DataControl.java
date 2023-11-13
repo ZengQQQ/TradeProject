@@ -332,37 +332,6 @@ public class DataControl {
 
     }
 
-    public String getMerchantPsw(String account) throws SQLException {
-        String psw = null;
-        String sql = "select m_psw from  merchant " + " where  m_acc" + " = ?";
-        Connection con = DataBase.OpenDB();
-        PreparedStatement stmt = con.prepareStatement(sql);
-        stmt.setString(1, account);
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            psw=(rs.getString("m_psw"));
-        }
-        if (con != null) {
-            con.close();
-        }
-        return psw;
-    }
-
-    public int getMerchantm_id(String account) throws SQLException {
-        int m_id=0;
-        String sql = "select m_id from  merchant " + " where  m_acc" + " = ?";
-        Connection con = DataBase.OpenDB();
-        PreparedStatement stmt = con.prepareStatement(sql);
-        stmt.setString(1, account);
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            m_id=rs.getInt("m_id");
-        }
-        if (con != null) {
-            con.close();
-        }
-        return m_id;
-    }
 
     public String getAdminPsw(String account) throws SQLException {
 
@@ -385,159 +354,6 @@ public class DataControl {
 
     }
 
-
-    //获得指定商家的所有商品
-    public List<Product> MerchantProductQuery(int m_id) throws SQLException {
-        List<Product> products = new ArrayList<>();
-        Connection con = DataBase.OpenDB();
-        String sql = "SELECT p_id, p_name, p_desc, p_class, p_price, p_status,p_quantity, p_img " +
-                "FROM product " + "WHERE m_id = ?";
-        PreparedStatement stmt = null;
-        if (con != null) {
-            stmt = con.prepareStatement(sql);
-        }
-        if (stmt != null) {
-            stmt.setInt(1, m_id);
-        }
-        ResultSet rs = null;
-        if (stmt != null) {
-            rs = stmt.executeQuery();
-        }
-        if (rs != null) {
-            while (rs.next()) {
-                Product product = new Product();
-                product.setP_id(rs.getInt("p_id"));
-                product.setP_name(rs.getString("p_name"));
-                product.setP_desc(rs.getString("p_desc"));
-                product.setP_class(rs.getString("p_class"));
-                product.setP_price(rs.getString("p_price"));
-                product.setP_status(rs.getString("p_status"));
-                product.setP_quantity(rs.getInt("p_quantity"));
-                product.setP_img(rs.getString("p_img"));
-                products.add(product);
-            }
-        }
-        return products;
-    }
-
-    //获得指定商家的所有信息
-    public Merchant MerchantQuery(int m_id) throws SQLException {
-        Merchant merchant = new Merchant();
-        Connection con = DataBase.OpenDB();
-        String sql = "SELECT  m_acc,m_psw, m_name, m_sex,m_tele " +
-                "FROM merchant " + "WHERE m_id = ?";
-        PreparedStatement stmt = null;
-        if (con != null) {
-            stmt = con.prepareStatement(sql);
-        }
-        if (stmt != null) {
-            stmt.setInt(1, m_id);
-        }
-        ResultSet rs = null;
-        if (stmt != null) {
-            rs = stmt.executeQuery();
-        }
-        if (rs != null) {
-            while (rs.next()) {
-                merchant.setAcc(rs.getString("m_acc"));
-                merchant.setPsw(rs.getString("m_psw"));
-                merchant.setM_name(rs.getString("m_name"));
-                merchant.setM_sex(rs.getString("m_sex"));
-                merchant.setM_tele(rs.getString("m_tele"));
-            }
-        }
-        return merchant;
-    }
-
-    //在商家页面里修改商品信息
-    public boolean updateProduct(int p_id, String newName, String newdesc, String newclass, double newPrice, String newsta, int newquantity, String newimg) {
-        // 创建连接
-        Connection con = null;
-        PreparedStatement preparedStatement;
-        DataBase dataBase = new DataBase();
-        try {
-            // 建立数据库连接
-            con = dataBase.OpenDB();
-            // 创建SQL更新语句
-            String sql = "UPDATE product SET p_name = ?, p_desc = ?, p_class = ?, p_price = ?, p_status = ?,p_quantity = ?, p_img = ? WHERE p_id = ?";
-            // 创建 PreparedStatement 对象
-            preparedStatement = con.prepareStatement(sql);
-            // 设置参数
-            preparedStatement.setString(1, newName);
-            preparedStatement.setString(2, newdesc);
-            preparedStatement.setString(3, newclass);
-            preparedStatement.setDouble(4, newPrice);
-            preparedStatement.setString(5, newsta);
-            preparedStatement.setInt(6, newquantity);
-            preparedStatement.setString(7, newimg);
-            preparedStatement.setInt(8, p_id);
-            // 执行更新
-            int rowsAffected = preparedStatement.executeUpdate();
-            // 如果更新成功，rowsAffected 应该为 1
-            return rowsAffected == 1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    //删除商品
-    public boolean deleteProduct(int productId) throws SQLException {
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
-        boolean deleted = false;
-        try {
-            // 创建连接
-            DataBase dataBase = new DataBase();
-            con = dataBase.OpenDB();
-            // 创建SQL删除语句
-            String deleteQuery = "DELETE FROM product WHERE p_id = ?";
-            // 准备并执行SQL语句
-            preparedStatement = con.prepareStatement(deleteQuery);
-            preparedStatement.setInt(1, productId);
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                // 如果成功删除了行，则返回true
-                deleted = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return deleted;
-    }
-
-    //添加商品
-    public boolean addProduct(int m_id, String productName, String productDesc, String productClass, double productPrice, String productState, int productQuantity, String productImg) throws SQLException {
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
-        boolean added = false;
-        try {
-            // 创建连接
-            DataBase dataBase = new DataBase();
-            con = dataBase.OpenDB();
-            // 创建SQL插入语句
-            String insertQuery = "INSERT INTO product (m_id, p_name, p_desc, p_class, p_price, p_status, p_quantity, p_img) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            // 准备并执行SQL语句
-            preparedStatement = con.prepareStatement(insertQuery);
-            preparedStatement.setInt(1, m_id);
-            preparedStatement.setString(2, productName);
-            preparedStatement.setString(3, productDesc);
-            preparedStatement.setString(4, productClass);
-            preparedStatement.setDouble(5, productPrice);
-            preparedStatement.setString(6, productState);
-            preparedStatement.setInt(7, productQuantity);
-            preparedStatement.setString(8, productImg);
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                // 如果成功插入了行，则返回true
-                added = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return added;
-    }
 
     //将商品表信息插入到购物车表中
     public void insert_cart(int u_id, int p_id, int quantity) {
@@ -699,7 +515,6 @@ public class DataControl {
 
     }
 
-
     //查找所有商家的信息，不用参数
     public List<Merchant> selectMerchantTable() throws SQLException {
         String sql = "select *  from  merchant";
@@ -828,25 +643,8 @@ public class DataControl {
 
     }
 
-    //使用m_id来修改merchanttable，全部更新,
-    public String updateMerchant(int m_id, String new_m_acc, String new_m_name, String new_m_sex, String new_m_tele,String new_m_psw) throws SQLException {
-        String sql = "UPDATE merchant SET m_acc = ?, m_name = ?, m_sex = ?, m_tele = ?,m_psw WHERE m_id = ?";
-        Connection con = DataBase.OpenDB();
-        PreparedStatement stmt = con.prepareStatement(sql);
-        stmt.setString(1, new_m_acc);
-        stmt.setString(2, new_m_name);
-        stmt.setString(3, new_m_sex);
-        stmt.setString(4, new_m_tele);
-        stmt.setString(5, new_m_psw);
-        stmt.setInt(6, m_id);
-        int result = stmt.executeUpdate();
-        con.close();
-        if (result > 0) {
-            return "修改成功";
-        } else {
-            return "修改失败";
-        }
-    }
+
+
     //查找某一商家的信息，m-id
     public Merchant selectMerchant(int m_id) throws SQLException {
         String sql = "select * from merchant where m_id = ?";
@@ -891,13 +689,13 @@ public class DataControl {
     }
 
     //查找评论表，有回复id的不用返回，返回论坛发表的评论
-    public List<CommentBar> selectForumList(User user,Merchant merchant) throws SQLException {
+    public List<CommentBar> selectForumList(User user, Merchant merchant) throws SQLException {
         String sql = "SELECT f.f_id, " +
                 "       COALESCE(u.u_name, m.m_name) as author_name, " +
                 "       f.f_time, " +
                 "       f.f_con,  " +
                 "       f.flag,  " +
-                " u.u_id , m.m_id "+
+                " u.u_id , m.m_id " +
                 " FROM forum f " +
                 " LEFT JOIN user u ON f.u_id = u.u_id  " +
                 " LEFT JOIN merchant m ON f.m_id = m.m_id  " +
@@ -912,448 +710,27 @@ public class DataControl {
             String f_time = rs.getString("f_time");
             String f_con = rs.getString("f_con");
             String flag = rs.getString("flag");
-            CommentBar commentBar = new CommentBar(id,author_name, f_time, f_con, flag, user, merchant);
+            CommentBar commentBar = new CommentBar(id, author_name, f_time, f_con, flag, user, merchant);
             commentBarList.add(commentBar);
         }
 
         return commentBarList;
     }
 
-    //根据选项搜索商品信息
-    public List<Product> searchProducts(int m_id, String searchType, String searchValue) throws SQLException {
-        List<Product> productList = new ArrayList<>();
-        Connection con = DataBase.OpenDB();
-        String sql = "SELECT * FROM product WHERE m_id = ?";
-
-        if (searchType != null && !searchType.isEmpty() && searchValue != null && !searchValue.isEmpty()) {
-            switch (searchType) {
-                case "商品名称":
-                    sql += " AND p_name LIKE ?";
-                    break;
-                case "类别":
-                    sql += " AND p_class LIKE ?";
-                    break;
-                case "价格":
-                    double priceValue = Double.parseDouble(searchValue);
-                    if (Math.floor(priceValue) == priceValue) {
-                        sql += " AND CAST(p_price AS DECIMAL(10, 0)) = ?";
-                    } else if (Math.round(priceValue * 10.0) == priceValue * 10.0) {
-                        sql += " AND CAST(p_price AS DECIMAL(10, 1)) = ?";
-                    } else {
-                        sql += " AND CAST(p_price AS DECIMAL(10, 2)) = ?";
-                    }
-                    break;
-                case "状态":
-                    sql += " AND p_status LIKE ?";
-                    break;
-                case "数量":
-                    sql += " AND p_quantity = ?";
-                    break;
-                default:
-                    break;
-            }
-        }
-        PreparedStatement stmt = con.prepareStatement(sql);
-        stmt.setInt(1, m_id);
-
-        if (searchType != null && !searchType.isEmpty() && searchValue != null && !searchValue.isEmpty()) {
-            int parameterIndex = 2;
-
-            if (searchType.equals("数量")) {
-                stmt.setInt(parameterIndex, Integer.parseInt(searchValue));
-            } else if (searchType.equals("价格")) {
-                double price = Double.parseDouble(searchValue);
-                stmt.setDouble(parameterIndex, price);
-            } else {
-                stmt.setString(parameterIndex, "%" + searchValue + "%");
-            }
-        }
-
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            do {
-                Product product = new Product();
-                product.setP_id(rs.getInt("p_id"));
-                product.setP_name(rs.getString("p_name"));
-                product.setP_desc(rs.getString("p_desc"));
-                product.setP_class(rs.getString("p_class"));
-                product.setP_price(String.valueOf(rs.getDouble("p_price")));
-                product.setP_status(rs.getString("p_status"));
-                product.setP_img(rs.getString("p_img"));
-                product.setP_quantity(rs.getInt("p_quantity"));
-                productList.add(product);
-            } while (rs.next());
-            rs.close();
-            stmt.close();
-            con.close();
-            return productList;
-        } else {
-            rs.close();
-            stmt.close();
-            if (searchType.equals("价格") && productList.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "商品结果没有找到，给您价格最接近的5个商品", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
-                // Perform a secondary query to find the closest products based on the specified price value
-                List<Product> closestProducts = findClosestProducts(searchValue, m_id);
-                return closestProducts;
-            }
-            return productList;
-        }
-    }
-
-    private List<Product> findClosestProducts(String searchValue, int m_id) {
-        List<Product> closestProducts = new ArrayList<>();
-        Connection con = DataBase.OpenDB();
-
-        try {
-            String sql = "SELECT * FROM product WHERE m_id = ? ORDER BY ABS(p_price - ?) LIMIT 5";
-
-            PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setInt(1, m_id);
-
-            double priceValue = Double.parseDouble(searchValue);
-            stmt.setDouble(2, priceValue);
-
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Product product = new Product();
-                product.setP_id(rs.getInt("p_id"));
-                product.setP_name(rs.getString("p_name"));
-                product.setP_desc(rs.getString("p_desc"));
-                product.setP_class(rs.getString("p_class"));
-                product.setP_price(String.valueOf(rs.getDouble("p_price")));
-                product.setP_status(rs.getString("p_status"));
-                product.setP_img(rs.getString("p_img"));
-                product.setP_quantity(rs.getInt("p_quantity"));
-                closestProducts.add(product);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return closestProducts;
-    }
-
-
-    //根据m_id查找订单有关的用户和商品
-    public List<Order> getOrderInfoByM_id(int m_id) throws SQLException {
-        List<Order> orderInfoList = new ArrayList<>();
-
-        Connection con = DataBase.OpenDB();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            // 编写SQL查询语句，根据m_id查找订单、用户和商品信息
-            String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity,o.totalprice, " +
-                    "p.p_name, p.p_desc, p.p_class, p.p_price, p.p_status, p.p_quantity, p.p_img, " +
-                    "u.u_acc, u.u_name, u.u_sex, u.u_tele " +
-                    "FROM orders o " +
-                    "INNER JOIN product p ON o.p_id = p.p_id AND o.m_id = p.m_id " +
-                    "INNER JOIN user u ON o.u_id = u.u_id " +
-                    "WHERE o.m_id = ?";
-            // 创建PreparedStatement对象，设置参数并执行查询
-            stmt = con.prepareStatement(sql);
-            stmt.setInt(1, m_id);
-            rs = stmt.executeQuery();
-
-            // 处理查询结果
-            while (rs.next()) {
-                Order order = new Order();
-                order.setP_id(rs.getInt("p_id"));
-                order.setU_id(rs.getInt("u_id"));
-                order.setBuytime(rs.getString("buy_time"));
-                order.setQuantity(rs.getInt("quantity"));
-                order.setTotalprice(String.valueOf(rs.getDouble("totalprice")));
-
-                Product product = new Product();
-                product.setP_name(rs.getString("p_name"));
-                product.setP_desc(rs.getString("p_desc"));
-                product.setP_class(rs.getString("p_class"));
-                product.setP_price(rs.getString("p_price"));
-                product.setP_quantity(rs.getInt("p_quantity"));
-                product.setP_img(rs.getString("p_img"));
-
-                User user = new User();
-                user.setU_name(rs.getString("u_name"));
-                user.setU_sex(rs.getString("u_sex"));
-                user.setU_tele(rs.getString("u_tele"));
-
-                order.setProduct(product);
-                order.setUser(user);
-
-                orderInfoList.add(order);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            // 关闭数据库连接和资源
-            rs.close();
-            stmt.close();
-            con.close();
-        }
-        return orderInfoList;
-    }
-
-
-    // 根据一定的信息查找订单
-    public List<Order> searchOrders(int m_id, String productType, String userType, String dateType, String productf, String userf, String quantityf, String totalpricef, String datef) throws SQLException {
-        List<Order> orderList = new ArrayList<>();
-        Connection con = DataBase.OpenDB();
-
-        try {
-            String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity, o.totalprice, p.p_name, p.p_desc, p.p_class, p.p_price,p_img,p_quantity, u.u_name, u.u_sex, u.u_tele FROM orders o ";
-            String joinProduct = "INNER JOIN product p ON o.p_id = p.p_id ";
-            String joinUser = "INNER JOIN user u ON o.u_id = u.u_id ";
-            String whereClause = "WHERE o.m_id = ? ";
-            List<Object> parameters = new ArrayList<>();
-            parameters.add(m_id);
-
-            if (productf != null && !productf.isEmpty() && !productType.isEmpty()) {
-                switch (productType) {
-                    case "商品名称":
-                        whereClause += "AND p.p_name LIKE ? ";
-                        parameters.add("%" + productf + "%");
-                        break;
-                    case "类别":
-                        whereClause += "AND p.p_class LIKE ? ";
-                        parameters.add("%" + productf + "%");
-                        break;
-                    case "价格":
-                        if (totalpricef == null || totalpricef.isEmpty()) {
-                            double price = Double.parseDouble(productf);
-                            if (Math.floor(price) == price) {
-                                whereClause += "AND CAST(p.p_price AS DECIMAL(10, 0)" + ") = ? ";
-                            } else if (Math.round(price * 10.0) == price * 10.0) {
-                                whereClause += "AND CAST(p.p_price AS DECIMAL(10, 1)" + ") = ? ";
-                            } else {
-                                whereClause += "AND CAST(p.p_price AS DECIMAL(10, 2)" + ") = ? ";
-                            }
-                            parameters.add(price);
-                        }
-                        break;
-                    case "数量":
-                        whereClause += "AND p.p_quantity = ? ";
-                        parameters.add(Integer.parseInt(productf));
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            if (userType != null && !userType.isEmpty()) {
-                switch (userType) {
-                    case "用户名":
-                        whereClause += "AND u.u_name LIKE ? ";
-                        parameters.add("%" + userf + "%");
-                        break;
-                    case "性别":
-                        whereClause += "AND u.u_sex LIKE ? ";
-                        parameters.add("%" + userf + "%");
-                        break;
-                    case "电话":
-                        whereClause += "AND u.u_tele LIKE ? ";
-                        parameters.add("%" + userf + "%");
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            if (quantityf != null && !quantityf.isEmpty()) {
-                whereClause += "AND o.quantity = ? ";
-                parameters.add(Integer.parseInt(quantityf));
-            }
-
-            if (totalpricef != null && !totalpricef.isEmpty()) {
-                double totalPrice = Double.parseDouble(totalpricef);
-                if (Math.floor(totalPrice) == totalPrice) {
-                    whereClause += "AND ABS(o.totalprice - ?) < 1 ";
-                } else if (Math.round(totalPrice * 10.0) == totalPrice * 10.0) {
-                    whereClause += "AND CAST(o.totalprice AS DECIMAL(10, 1)" + ") = ? ";
-                } else {
-                    whereClause += "AND CAST(o.totalprice AS DECIMAL(10, 2)" + ") = ? ";
-                }
-                parameters.add(totalPrice);
-            }
-
-            if (datef != null && !datef.isEmpty()) {
-                switch (dateType) {
-                    case "日期":
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.M.d");
-                        Date inputDate = dateFormat.parse(datef);
-                        String startDate = new SimpleDateFormat("yyyy-MM-dd").format(inputDate);
-                        String endDate = new SimpleDateFormat("yyyy-MM-dd").format(inputDate) + " 23:59:59";
-                        whereClause += "AND o.buy_time >= ? AND o.buy_time <= ? ";
-                        parameters.add(startDate);
-                        parameters.add(endDate);
-                        break;
-                    case "年":
-                        int year = Integer.parseInt(datef);
-                        whereClause += "AND YEAR(o.buy_time) = ? ";
-                        parameters.add(year);
-                        break;
-                    case "月":
-                        int month = Integer.parseInt(datef);
-                        whereClause += "AND MONTH(o.buy_time) = ? ";
-                        parameters.add(month);
-                        break;
-                    case "日":
-                        int day = Integer.parseInt(datef);
-                        whereClause += "AND DAY(o.buy_time) = ? ";
-                        parameters.add(day);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            sql += joinProduct + joinUser + whereClause;
-
-            PreparedStatement stmt = con.prepareStatement(sql);
-            for (int i = 0; i < parameters.size(); i++) {
-                stmt.setObject(i + 1, parameters.get(i));
-            }
-
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Order order = createOrderFromResultSet(rs);
-                orderList.add(order);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        if (orderList.isEmpty()) {
-            System.out.println("cuole");
-        }
-
-        if (orderList.isEmpty() && ((userf != null && !userf.isEmpty()) || (quantityf != null && !quantityf.isEmpty()) ||
-                (datef != null && !datef.isEmpty()) || !(productType.equals("价格") && !productf.isEmpty()))) {
-            JOptionPane.showMessageDialog(null, "订单结果没有找到", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
-            return null;
-        } else if (orderList.isEmpty() && (totalpricef != null && !totalpricef.isEmpty())) {
-            // 执行次要查询以根据指定的条件找到最接近的订单
-            return findClosestOrders(productf, totalpricef, m_id);
-        }
-
-        return orderList;
-    }
-
-
-    // 找到最接近的订单
-    private List<Order> findClosestOrders(String productPrice, String totalPrice, int m_id) {
-        List<Order> closestOrders = new ArrayList<>();
-        Connection con = DataBase.OpenDB();
-
-        try {
-            // 构建 SQL 查询基于可用的条件
-            String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity, o.totalprice, p.p_name, p.p_desc, p.p_class, p.p_price,p.p_img,p.p_quantity, u.u_name, u.u_sex, u.u_tele " +
-                    "FROM orders o " +
-                    "INNER JOIN product p ON o.p_id = p.p_id " +
-                    "INNER JOIN user u ON o.u_id = u.u_id " +
-                    "WHERE o.m_id = ? ";
-
-            if (totalPrice != null && !totalPrice.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "订单结果没有找到，给您订单总价格最接近的3个订单", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
-                try {
-                    sql += "ORDER BY ABS(o.totalprice - ?) LIMIT 3";
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("无效的总价格式。");
-                }
-            } else if (productPrice != null && !productPrice.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "订单结果没有找到，给您商品价格最接近的3个订单", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
-                try {
-                    sql += "ORDER BY ABS(p.p_price - ?) LIMIT 3";
-                } catch (NumberFormatException e) {
-                    // 处理 productPrice 不是有效数字的情况
-                    throw new IllegalArgumentException("无效的商品价格格式。");
-                }
-            }
-
-            // 执行查询
-            PreparedStatement stmt = con.prepareStatement(sql);
-            int parameterIndex = 1;  // 从第一个参数开始
-
-            stmt.setInt(parameterIndex, m_id);  // 设置第一个参数
-            if (totalPrice != null && !totalPrice.isEmpty()) {
-                stmt.setDouble(2, Double.parseDouble(totalPrice));
-            } else if (productPrice != null && !productPrice.isEmpty()) {
-                stmt.setDouble(2, Double.parseDouble(productPrice));
-            }
-
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Order order = createOrderFromResultSet(rs);
-                closestOrders.add(order);
-            }
-            rs.close();
-            stmt.close();
-            con.close();
-        } catch (NumberFormatException | SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return closestOrders;
-    }
-
-    // 从 ResultSet 中创建 Order 对象
-    private Order createOrderFromResultSet(ResultSet rs) throws SQLException {
-        Order order = new Order();
-        order.setP_id(rs.getInt("p_id"));
-        order.setU_id(rs.getInt("u_id"));
-        order.setBuytime(rs.getString("buy_time"));
-        order.setQuantity(rs.getInt("quantity"));
-        order.setTotalprice(String.valueOf(rs.getDouble("totalprice")));
-
-        Product product = new Product();
-        product.setP_name(rs.getString("p_name"));
-        product.setP_desc(rs.getString("p_desc"));
-        product.setP_class(rs.getString("p_class"));
-        product.setP_price(rs.getString("p_price"));
-        product.setP_img(rs.getString("p_img"));
-        product.setP_quantity(rs.getInt("p_quantity"));
-
-        User user = new User();
-        user.setU_name(rs.getString("u_name"));
-        user.setU_sex(rs.getString("u_sex"));
-        user.setU_tele(rs.getString("u_tele"));
-
-        order.setProduct(product);
-        order.setUser(user);
-
-        return order;
-    }
-
-
-    public int insertCommentToforum(User user,String content,String flag) throws SQLException {
+    public int insertCommentToforum(User user, String content, String flag) throws SQLException {
         Connection con = DataBase.OpenDB();
         String sql = "insert into forum values (null,?,null,?,?,null,?)";
         PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(user.getID()));
-            stmt.setString(2, LocalDateTime.now().toString());
-            stmt.setString(3, content);
-            stmt.setString(4, flag);
-            int result = stmt.executeUpdate();
-            con.close();
-            return  result;
+        stmt.setInt(1, Integer.parseInt(user.getID()));
+        stmt.setString(2, LocalDateTime.now().toString());
+        stmt.setString(3, content);
+        stmt.setString(4, flag);
+        int result = stmt.executeUpdate();
+        con.close();
+        return result;
     }
 
-    public int insertCommentToforum(Merchant merchant,String content,String flag) throws SQLException {
+    public int insertCommentToforum(Merchant merchant, String content, String flag) throws SQLException {
         Connection con = DataBase.OpenDB();
         String sql = "insert into forum values (null,null,?,?,?,null,?)";
         PreparedStatement stmt = con.prepareStatement(sql);
@@ -1369,11 +746,11 @@ public class DataControl {
         return result;
     }
 
-    public void insertReplyToforum(String reply_to,String content,User user,Merchant merhant) throws SQLException {
+    public void insertReplyToforum(String reply_to, String content, User user, Merchant merhant) throws SQLException {
         Connection con = DataBase.OpenDB();
         String sql;
-        int x =1;
-        if(user!=null){
+        int x = 1;
+        if (user != null) {
             sql = "insert into forum values (null,?,null,?,?,?,?)";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setInt(1, Integer.parseInt(user.getID()));
@@ -1383,7 +760,7 @@ public class DataControl {
             stmt.setString(5, "用户");
             int result = stmt.executeUpdate();
 
-        }else{
+        } else {
             sql = "insert into forum values (null,null,?,?,?,?,?)";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setInt(1, Integer.parseInt(merhant.getID()));
@@ -1395,6 +772,31 @@ public class DataControl {
         }
         con.close();
 
+    }
+
+    //注册用户
+    public boolean register(String useraccount, String password, String name, String role, String sex, String tele) throws SQLException {
+        Connection con = DataBase.OpenDB();
+        String sql;
+
+        if ("用户".equals(role)) {
+            sql = "INSERT INTO user (u_acc, u_psw, u_name, u_sex, u_tele) VALUES (?, ?, ?, ?, ?)";
+        } else if ("商家".equals(role)) {
+            sql = "INSERT INTO merchant (m_acc, m_psw, m_name, m_sex, m_tele) VALUES (?, ?, ?, ?, ?)";
+        } else {
+            return false;
+        }
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, useraccount);
+            stmt.setString(2, password);
+            stmt.setString(3, name);
+            stmt.setString(4, sex);
+            stmt.setString(5, tele);
+
+            int rowsAffected = stmt.executeUpdate();
+
+            return rowsAffected > 0;
+        }
     }
 
 }

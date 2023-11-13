@@ -12,9 +12,10 @@ public class MerchantProductFrm extends JPanel {
 
     private MerchantInterFrm merchantInterFrm;
     private DataControl data;
+    private  DataControlMercahnt dataControlmer = new DataControlMercahnt();
     private ProductDetailsDialog currentDetailsDialog; // 用于存储当前显示的商品详情对话框
 
-    public MerchantProductFrm(MerchantInterFrm mer, DataControl data) {
+    public MerchantProductFrm(MerchantInterFrm mer, DataControl data) throws SQLException {
         this.data = data;
         this.merchantInterFrm = mer;
         initComponent();
@@ -104,14 +105,18 @@ public class MerchantProductFrm extends JPanel {
         imageLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                showProductDetails(product);
+                try {
+                    showProductDetails(product);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
         return imageLabel;
     }
 
-    private void showProductDetails(Product product) {
+    private void showProductDetails(Product product) throws SQLException {
         // 关闭当前显示的商品详情对话框，如果有的话
         if (currentDetailsDialog != null) {
             currentDetailsDialog.dispose();
@@ -140,8 +145,7 @@ public class MerchantProductFrm extends JPanel {
 
     public void createproductcard() {
         try {
-            DataControl dataControl = new DataControl();
-            List<Product> products = dataControl.MerchantProductQuery(merchantInterFrm.getM_id());
+            List<Product> products = dataControlmer.MerchantProductQuery(merchantInterFrm.getM_id());
             // 创建一个JPanel，用于放置所有的商品面板
             this.setLayout(new GridLayout(0, 2)); // 任意行，两列
             for (Product product : products) {

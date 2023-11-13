@@ -1,11 +1,9 @@
 package cn.bjut.jdbc;
 
-public class Merchant extends People{
-
+public class Merchant extends People {
     private String m_name;
     private String m_sex;
     private String m_tele;
-
 
     public Merchant(String ID, String acc, String psw) {
         super(ID, acc, psw);

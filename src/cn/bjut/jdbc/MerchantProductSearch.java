@@ -14,13 +14,14 @@ public class MerchantProductSearch extends JPanel {
     private static final int IMAGE_HEIGHT = 280;
     private Font fontall = new Font("微软雅黑", Font.BOLD, 18);
     private DataControl dataControl;
+    private  DataControlProduct dataControlProduct  = new DataControlProduct();
     private MerchantInterFrm merchantInterFrm;
     private JComboBox<String> searchTypeComboBox;
     private JTextField searchField;
     private JButton searchButton;
     private JPanel productsPanel;
 
-    public MerchantProductSearch(DataControl dataControl, MerchantInterFrm merchantInterFrm) {
+    public MerchantProductSearch(DataControl dataControl, MerchantInterFrm merchantInterFrm) throws SQLException {
         this.dataControl = dataControl;
         this.merchantInterFrm = merchantInterFrm;
 
@@ -71,7 +72,7 @@ public class MerchantProductSearch extends JPanel {
         }
 
         try {
-            List<Product> searchResults = dataControl.searchProducts(merchantInterFrm.getM_id(), searchType, searchValue);
+            List<Product> searchResults = dataControlProduct.searchProducts(merchantInterFrm.getM_id(), searchType, searchValue);
             if (searchResults.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "找不到结果", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -94,7 +95,7 @@ public class MerchantProductSearch extends JPanel {
 
     private void showAllProducts() {
         try {
-            List<Product> allProducts = dataControl.searchProducts(merchantInterFrm.getM_id(), null, null);
+            List<Product> allProducts = dataControlProduct.searchProducts(merchantInterFrm.getM_id(), null, null);
             displaySearchResults(allProducts);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "获取所有商品时出错: " + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);

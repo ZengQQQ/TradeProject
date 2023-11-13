@@ -5,13 +5,12 @@ import java.awt.*;
 import java.sql.SQLException;
 
 public class MerchantInfo extends JDialog {
-    private DataControl dataControl;
+    private  DataControlMercahnt dataControlmer = new DataControlMercahnt();
     private int m_id;
     private Font fort = new Font("微软雅黑", Font.BOLD, 35);
 
 
-    public MerchantInfo(DataControl dataControl, int m_id) throws SQLException {
-        this.dataControl = dataControl;
+    public MerchantInfo(int m_id) throws SQLException {
         this.m_id = m_id;
         initComponents();
     }
@@ -41,7 +40,7 @@ public class MerchantInfo extends JDialog {
         getContentPane().add(panel, BorderLayout.CENTER);
 
         // 获取商家信息
-        Merchant merchant = dataControl.MerchantQuery(m_id);
+        Merchant merchant = dataControlmer.MerchantQuery(m_id);
 
         // 将标签和文本字段添加到面板
         JLabel label1 = new JLabel("账号名: " + merchant.getAcc());

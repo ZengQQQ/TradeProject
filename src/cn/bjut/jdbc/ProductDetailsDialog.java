@@ -7,7 +7,8 @@ import java.sql.SQLException;
 //商品详情界面
 public class ProductDetailsDialog extends ProductofDialog {
     private  MerchantProductFrm merproduct;
-    public ProductDetailsDialog(DataControl dataControl,Product product,MerchantProductFrm merproduct) {
+    private DataControlProduct dataControlProduct= new DataControlProduct();
+    public ProductDetailsDialog(DataControl dataControl,Product product,MerchantProductFrm merproduct) throws SQLException {
         super(dataControl, product);
         this.merproduct =merproduct;
         initComponents();
@@ -92,7 +93,12 @@ public class ProductDetailsDialog extends ProductofDialog {
         panel.add(deleteButton, gbc);
         // 在点击“修改”按钮后
         modifyButton.addActionListener(e -> {
-            ProductUpdateDialog updateDialog = new ProductUpdateDialog(dataControl, product, merproduct);
+            ProductUpdateDialog updateDialog = null;
+            try {
+                updateDialog = new ProductUpdateDialog(dataControl, product, merproduct);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             updateDialog.setVisible(true);
             // 关闭当前的详细信息窗口
             dispose();
@@ -107,7 +113,7 @@ public class ProductDetailsDialog extends ProductofDialog {
                 // 执行删除商品的操作，你需要实现该方法
                 boolean success;
                 try {
-                    success = dataControl.deleteProduct(productId);
+                    success = dataControlProduct.deleteProduct(productId);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
