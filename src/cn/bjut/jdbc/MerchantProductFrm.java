@@ -181,12 +181,12 @@ public class MerchantProductFrm extends JPanel {
     public void refreshCard1Product(Product updatedProduct) {
         int index = findProductIndex(updatedProduct);
         if (index >= 0) {
-            remove(index);
+            productsPanel.remove(index);
             JPanel productPanel = createProductPanel(updatedProduct);
             productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            add(productPanel, index);
-            revalidate();
-            repaint();
+            productsPanel.add(productPanel, index);
+            productsPanel.revalidate();
+            productsPanel.repaint();
         }
     }
 
