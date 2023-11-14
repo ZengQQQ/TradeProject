@@ -8,10 +8,12 @@ import java.sql.SQLException;
 public class ProductUpdateDialog extends ProductofDialog {
 
     private MerchantProductFrm merProduct;
+    private final MerchantInterFrm mer;
 
-    public ProductUpdateDialog(Product product, MerchantProductFrm merProduct) throws SQLException {
+    public ProductUpdateDialog(Product product, MerchantProductFrm merProduct, MerchantInterFrm mer) throws SQLException {
         super(product);
         this.merProduct = merProduct;
+        this.mer = mer;
         initComponents();
     }
 
@@ -161,7 +163,7 @@ public class ProductUpdateDialog extends ProductofDialog {
                         success = handleUpdateButton(newName, newDesc, newClass, newPrice, newStatus, newquantity);
                         if (success) {
                             JOptionPane.showMessageDialog(this, "修改成功，请等待一会", "提示", JOptionPane.INFORMATION_MESSAGE);
-                            merProduct.refreshCard1Product(new Product(product.getP_id(), newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName));
+                            mer.refreshCard1();
                             dispose(); // 关闭对话框
                         } else {
                             JOptionPane.showMessageDialog(this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
