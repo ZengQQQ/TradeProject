@@ -103,9 +103,9 @@ public class ProductAddDialog extends ProductofDialog {
             String quantityText = quantityField.getText();
             int newquantity = 0;
             // 定义正则表达式
-            String nameRegex = "^[\\u4e00-\\u9fa5a-zA-Z0-9]{1,30}$"; // 可以为字母和中文还有数字，长度限制在20
-            String descRegex = "^[\\u4e00-\\u9fa5a-zA-Z0-9]{1,40}$"; // 可以为字母和中文还有数字，长度限制在40
-            String classRegex = "^[\\u4e00-\\u9fa5a-zA-Z0-9]{1,20}$"; // 可以为字母和中文还有数字，长度限制在20
+            String nameRegex = "^.{1,20}$";
+            String descRegex = "^.{1,60}$";
+            String classRegex = "^.{1,20}$";
             String priceRegex = "^\\d+(\\.\\d+)?$"; // 只能为数字，可以有小数点
             String quantityRegex = "^\\d+$"; // 只能为数字，不能有小数点
             if (!quantityText.isEmpty()) {
@@ -116,11 +116,11 @@ public class ProductAddDialog extends ProductofDialog {
             } else {
                 // 检查格式和范围
                 if (!newName.matches(nameRegex)) {
-                    JOptionPane.showMessageDialog(this, "商品名格式不正确，只能为字母和中文还有数字，长度限制在30", "警告", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "商品名格式不正确，长度限制在20", "警告", JOptionPane.WARNING_MESSAGE);
                 } else if (!newDesc.matches(descRegex)) {
-                    JOptionPane.showMessageDialog(this, "商品描述格式不正确，只能为字母和中文还有数字，长度限制在40", "警告", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "商品描述格式不正确，长度限制在60", "警告", JOptionPane.WARNING_MESSAGE);
                 } else if (!newClass.matches(classRegex)) {
-                    JOptionPane.showMessageDialog(this, "商品类别格式不正确，只能为字母和中文还有数字，长度限制在20", "警告", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "商品类别格式不正确，长度限制在20", "警告", JOptionPane.WARNING_MESSAGE);
                 } else if (!priceText.matches(priceRegex)) {
                     JOptionPane.showMessageDialog(this, "商品价格格式不正确，只能为数字，可以有小数点", "警告", JOptionPane.WARNING_MESSAGE);
                 } else if (!quantityField.getText().matches(quantityRegex)) {
@@ -129,8 +129,8 @@ public class ProductAddDialog extends ProductofDialog {
                     double newPrice = Double.parseDouble(priceText);
                     if (newPrice < 0 || newPrice > 99999) {
                         JOptionPane.showMessageDialog(this, "商品价格范围不正确，不能为负和超过99999", "警告", JOptionPane.WARNING_MESSAGE);
-                    } else if (newquantity < 0 || newquantity > 100) {
-                        JOptionPane.showMessageDialog(this, "商品数量范围不正确，不能为负和超过100", "警告", JOptionPane.WARNING_MESSAGE);
+                    } else if (newquantity < 0 || newquantity > 99999) {
+                        JOptionPane.showMessageDialog(this, "商品数量范围不正确，不能为负和超过99999", "警告", JOptionPane.WARNING_MESSAGE);
                     } else {
                         String newStatus = onSaleRadioButton.isSelected() ? "上架" : "下架";
                         // 调用父类的方法
