@@ -226,7 +226,7 @@ public class DataControlOrder extends DataControl{
         }
 
         if (orderList.isEmpty() && ((userf != null && !userf.isEmpty()) || (quantityf != null && !quantityf.isEmpty()) ||
-                (datef != null && !datef.isEmpty()) || !(productType.equals("价格") && !productf.isEmpty()))) {
+                (datef != null && !datef.isEmpty()) || (productType.equals("价格") && !productf.isEmpty()))) {
             JOptionPane.showMessageDialog(null, "订单结果没有找到", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
             return null;
         } else if (orderList.isEmpty() && (totalpricef != null && !totalpricef.isEmpty())) {
@@ -249,7 +249,7 @@ public class DataControlOrder extends DataControl{
                     "FROM orders o " +
                     "INNER JOIN product p ON o.p_id = p.p_id " +
                     "INNER JOIN user u ON o.u_id = u.u_id " +
-                    "WHERE o.m_id = ? ";
+                    "WHERE p.m_id = ? ";
 
             if (totalPrice != null && !totalPrice.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "订单结果没有找到，给您订单总价格最接近的3个订单", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
