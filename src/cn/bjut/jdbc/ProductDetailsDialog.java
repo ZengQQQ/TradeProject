@@ -43,7 +43,7 @@ public class ProductDetailsDialog extends ProductofDialog {
         JLabel descField = new JLabel();
         descField.setFont(customFont); // 设置字体
         panel.add(descField, gbc);
-        
+
         String productDescription = product.getP_desc();
         int maxCharactersPerLine = 20;
         StringBuilder formattedDescription = new StringBuilder("<html>");
