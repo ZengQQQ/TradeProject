@@ -155,7 +155,7 @@ public class MerchantProductFrm extends JPanel {
             currentDetailsDialog.dispose();
         }
 
-        currentDetailsDialog = new ProductDetailsDialog(product, this);
+        currentDetailsDialog = new ProductDetailsDialog(product, merchantInterFrm,this);
         currentDetailsDialog.setVisible(true);
     }
 

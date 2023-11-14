@@ -7,11 +7,13 @@ import java.sql.SQLException;
 //商品详情界面
 public class ProductDetailsDialog extends ProductofDialog {
     private MerchantProductFrm merproduct;
+    private final MerchantInterFrm mer;
     private DataControlProduct dataControlProduct = new DataControlProduct();
 
-    public ProductDetailsDialog(Product product, MerchantProductFrm merproduct) throws SQLException {
+    public ProductDetailsDialog(Product product, MerchantInterFrm mer, MerchantProductFrm merproduct) throws SQLException {
         super(product);
         this.merproduct = merproduct;
+        this.mer = mer;
         initComponents();
     }
 
@@ -122,10 +124,7 @@ public class ProductDetailsDialog extends ProductofDialog {
                     // 删除成功
                     JOptionPane.showMessageDialog(null, "商品删除成功", "成功", JOptionPane.INFORMATION_MESSAGE);
                     // 刷新界面，删除商品对应的面板
-                    merproduct.remove(imageLabel.getParent());
-                    merproduct.revalidate();
-                    merproduct.repaint();
-
+                    mer.refreshCard1();
                     // 关闭当前的详细信息窗口
                     dispose();
                 } else {
