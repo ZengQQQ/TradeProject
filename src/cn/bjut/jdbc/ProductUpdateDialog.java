@@ -122,6 +122,7 @@ public class ProductUpdateDialog extends ProductofDialog {
             String newClass = classField.getText();
             String priceText = priceField.getText();
             String quantityText = quantityField.getText();
+            String newStatus = onSaleRadioButton.isSelected() ? "上架" : "下架";
             int newquantity = 0;
             // 定义正则表达式
             String nameRegex = "^[\\u4e00-\\u9fa5a-zA-Z0-9]{1,20}$"; // 可以为字母和中文还有数字，长度限制在20
@@ -146,14 +147,15 @@ public class ProductUpdateDialog extends ProductofDialog {
                     JOptionPane.showMessageDialog(this, "商品价格格式不正确，只能为数字，可以有小数点", "警告", JOptionPane.WARNING_MESSAGE);
                 } else if (!quantityField.getText().matches(quantityRegex)) {
                     JOptionPane.showMessageDialog(this, "商品数量格式不正确，只能为数字，不能有小数点", "警告", JOptionPane.WARNING_MESSAGE);
-                } else {
+                } else if (quantityText.equals("0") && newStatus.equals("上架")){
+                    JOptionPane.showMessageDialog(this, "商品数量为0时不能设置为上架", "警告", JOptionPane.WARNING_MESSAGE);
+                }else {
                     double newPrice = Double.parseDouble(priceText);
                     if (newPrice < 0 || newPrice > 99999) {
                         JOptionPane.showMessageDialog(this, "商品价格范围不正确，不能为负和超过99999", "警告", JOptionPane.WARNING_MESSAGE);
                     } else if (newquantity < 0 || newquantity > 100) {
                         JOptionPane.showMessageDialog(this, "商品数量范围不正确，不能为负和超过100", "警告", JOptionPane.WARNING_MESSAGE);
                     } else {
-                        String newStatus = onSaleRadioButton.isSelected() ? "上架" : "下架";
                         // 调用父类的方法
                         boolean success;
                         success = handleUpdateButton(newName, newDesc, newClass, newPrice, newStatus, newquantity);
