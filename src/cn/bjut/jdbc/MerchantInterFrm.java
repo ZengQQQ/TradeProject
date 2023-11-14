@@ -160,16 +160,16 @@ public class MerchantInterFrm extends JFrame {
     }
 
     public void refreshCard1() {
-        merproduct.removeAll();
+        merproduct.productsPanel.removeAll();
         try {
             List<Product> products = dataControlmer.MerchantProductQuery(getM_id());
             for (Product product : products) {
                 JPanel productPanel = merproduct.createProductPanel(product);
                 productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                merproduct.add(productPanel);
+                merproduct.productsPanel.add(productPanel);
             }
-            merproduct.revalidate();
-            merproduct.repaint();
+            merproduct.productsPanel.revalidate();
+            merproduct.productsPanel.repaint();
         } catch (SQLException e) {
             e.printStackTrace();
         }
