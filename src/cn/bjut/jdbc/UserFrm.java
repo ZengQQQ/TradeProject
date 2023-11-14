@@ -1525,7 +1525,7 @@ public class UserFrm extends JFrame {
         }
         loginFrm.setLocationRelativeTo(null); // 将登录窗口设置为居中显示
         loginFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        loginFrm.setSize(1200, 1000);
+        loginFrm.setSize(800, 600);
         loginFrm.setLocationRelativeTo(null);
         loginFrm.setVisible(true);
     }
