@@ -30,7 +30,7 @@ public class MerchantProductFrm extends JPanel {
         JPanel productPanel = new JPanel(new BorderLayout());
         productPanel.putClientProperty("product", product);
 
-        JLabel imageLabel = createImageLabel(product, 350, 300);
+        JLabel imageLabel = createImageLabel(product, 300, 280);
         productPanel.add(imageLabel, BorderLayout.WEST);
 
         JPanel infoPanel = createInfoPanel(product);
