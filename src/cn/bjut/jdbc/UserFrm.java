@@ -126,7 +126,7 @@ public class UserFrm extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id FROM product";
+        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id,p_status FROM product";
         final ResultSet[] rs = {null};
         try {
             rs[0] = stmt[0].executeQuery(query);
@@ -147,6 +147,13 @@ public class UserFrm extends JFrame {
             int id = 0;
             try {
                 id = rs[0].getInt("p_id");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            String status=null;
+            try {
+                status = rs[0].getString("p_status");
+                System.out.println(status);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -186,55 +193,55 @@ public class UserFrm extends JFrame {
             }
 
 
+            if (status.equals("上架")) {
+                // 创建一个按钮，设置图标和文本
+                JButton button = new JButton();
+                if (flag != true) {
 
-            // 创建一个按钮，设置图标和文本
-            JButton button = new JButton();
-            if (flag!=true){
-
-                // 获取原始图片
-                Image image = new ImageIcon(imagePath + "").getImage();
-                // 创建缩放后的图片
-                Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
-                // 设置按钮的图标
-                button.setIcon(new ImageIcon(newImage));
-            }
-            else {
-                // 获取原始图片
-                Image image = new ImageIcon(projectPath + File.separator + "src" + File.separator + "img" + File.separator +"R.jpg").getImage();
-                // 创建缩放后的图片
-                Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
-                // 设置按钮的图标
-                button.setIcon(new ImageIcon(newImage));
-            }
-            button.setText("<html>" + name + "<br>¥" + price + "</html>"); // 设置按钮的文本，使用html标签换行
-            button.setVerticalTextPosition(SwingConstants.BOTTOM); // 设置文本在图标下方
-            button.setHorizontalTextPosition(SwingConstants.CENTER); // 设置文本在图标中间
-
-            // 为按钮添加点击事件监听器，跳转到商品详情卡片
-            int finalId = id;//p_id
-            int finalm_Id=m_id;
-            String finalName = name;
-            String finalImagePath = imagePath;
-            double finalPrice = price;
-            String finaldesc = desc;
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // 根据商品id查找对应的卡片对象
-                    JPanel productPanel = productMap.get(finalId);
-                    if (productPanel == null) {
-                        // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
-                        productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc,finalm_Id);
-                        mainPanel.add(productPanel, "product" + finalId);
-                        productMap.put(finalId, productPanel);
-                    }
-                    // 切换到商品详情卡片
-                    cardLayout.show(mainPanel, "product" + finalId);
+                    // 获取原始图片
+                    Image image = new ImageIcon(imagePath + "").getImage();
+                    // 创建缩放后的图片
+                    Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                    // 设置按钮的图标
+                    button.setIcon(new ImageIcon(newImage));
+                } else {
+                    // 获取原始图片
+                    Image image = new ImageIcon(projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg").getImage();
+                    // 创建缩放后的图片
+                    Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                    // 设置按钮的图标
+                    button.setIcon(new ImageIcon(newImage));
                 }
-            });
+                button.setText("<html>" + name + "<br>¥" + price + "</html>"); // 设置按钮的文本，使用html标签换行
+                button.setVerticalTextPosition(SwingConstants.BOTTOM); // 设置文本在图标下方
+                button.setHorizontalTextPosition(SwingConstants.CENTER); // 设置文本在图标中间
 
-            // 将按钮添加到网格布局的面板中
-            bottomPanel.add(button);
+                // 为按钮添加点击事件监听器，跳转到商品详情卡片
+                int finalId = id;//p_id
+                int finalm_Id = m_id;
+                String finalName = name;
+                String finalImagePath = imagePath;
+                double finalPrice = price;
+                String finaldesc = desc;
+                button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 根据商品id查找对应的卡片对象
+                        JPanel productPanel = productMap.get(finalId);
+                        if (productPanel == null) {
+                            // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
+                            productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc, finalm_Id);
+                            mainPanel.add(productPanel, "product" + finalId);
+                            productMap.put(finalId, productPanel);
+                        }
+                        // 切换到商品详情卡片
+                        cardLayout.show(mainPanel, "product" + finalId);
+                    }
+                });
+                // 将按钮添加到网格布局的面板中
+                bottomPanel.add(button);
+            }
+
         }
 
 // 关闭数据库连接
