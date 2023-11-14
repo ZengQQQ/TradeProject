@@ -532,12 +532,16 @@ public class UserFrm extends JFrame {
                     // 计算总价并更新JLabel的显示内容
                     double total = 0;
                     for (int i = 0; i < tableModel.getRowCount(); i++) {
-                        String priceStr = (String) tableModel.getValueAt(i, 2);
-                        int q = (int) tableModel.getValueAt(i, 4);
-                        double price = Double.parseDouble(priceStr);
-                        total += price * q;
+                        // 只计算选择列为true的行
+                        if ((boolean) tableModel.getValueAt(i, 5)) {
+                            String priceStr = (String) tableModel.getValueAt(i, 2);
+                            int q = (int) tableModel.getValueAt(i, 4);
+                            double price = Double.parseDouble(priceStr);
+                            total += price * q;
+                        }
                     }
                     totalLabel.setText("总价：" + String.format("%.2f", total) + " 元");
+
                 }
             }
         });
@@ -607,7 +611,7 @@ public class UserFrm extends JFrame {
         JButton refreshButton = new JButton();
         refreshButton.setText("刷新");
 
-        // 在refreshButton的点击事件中，从cart表格中查询用户购物车中的商品信息，并更新JTable对象的数据模型
+// 在refreshButton的点击事件中，从cart表格中查询用户购物车中的商品信息，并更新JTable对象的数据模型
         refreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -655,10 +659,13 @@ public class UserFrm extends JFrame {
                                 tableModel.addRow(new Object[]{image, p_name, p_price, join_time, quantity, false,p_id});
                             }
 
-
-                            // 计算总价
-                            double price = Double.parseDouble(p_price);
-                            total += price * quantity;
+                            // 判断第六列是否为true
+                            boolean selected = (boolean)tableModel.getValueAt(tableModel.getRowCount()-1, 5);
+                            if (selected) {
+                                // 计算总价
+                                double price = Double.parseDouble(p_price);
+                                total += price * quantity;
+                            }
                         }
                         rs1.close();
                         stmt1.close();
@@ -671,6 +678,28 @@ public class UserFrm extends JFrame {
                     totalLabel.setText("总价：" + String.format("%.2f", total) + " 元");
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                }
+            }
+        });
+
+// 给表格模型添加一个监听器，监听第六列的复选框的状态改变
+        tableModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                // 如果是第六列的数据改变了
+                if (e.getColumn() == 5) {
+                    // 重新计算总价
+                    double total = 0;
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        boolean selected = (boolean)tableModel.getValueAt(i, 5);
+                        if (selected) {
+                            double price = Double.parseDouble((String)tableModel.getValueAt(i, 2));
+                            int quantity = (int)tableModel.getValueAt(i, 4);
+                            total += price * quantity;
+                        }
+                    }
+                    // 更新JLabel的显示内容
+                    totalLabel.setText("总价：" + String.format("%.2f", total) + " 元");
                 }
             }
         });
