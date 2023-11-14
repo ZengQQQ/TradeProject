@@ -126,7 +126,7 @@ public class ProductUpdateDialog extends ProductofDialog {
             int newquantity = 0;
             // 定义正则表达式
             String nameRegex = "^[\\u4e00-\\u9fa5a-zA-Z0-9]{1,20}$"; // 可以为字母和中文还有数字，长度限制在20
-            String descRegex = "^[\\u4e00-\\u9fa5a-zA-Z0-9]{1,60}$"; // 可以为字母和中文还有数字，长度限制在60
+            String descRegex = "^[\\u4e00-\\u9fa5a-zA-Z0-9\\p{P}]{1,80}$";// 可以为字母和中文还有数字，长度限制在80
             String classRegex = "^[\\u4e00-\\u9fa5a-zA-Z0-9]{1,20}$"; // 可以为字母和中文还有数字，长度限制在20
             String priceRegex = "^\\d+(\\.\\d+)?$"; // 只能为数字，可以有小数点
             String quantityRegex = "^\\d+$"; // 只能为数字，不能有小数点
@@ -140,7 +140,7 @@ public class ProductUpdateDialog extends ProductofDialog {
                 if (!newName.matches(nameRegex)) {
                     JOptionPane.showMessageDialog(this, "商品名格式不正确，只能为字母和中文还有数字，长度限制在20", "警告", JOptionPane.WARNING_MESSAGE);
                 } else if (!newDesc.matches(descRegex)) {
-                    JOptionPane.showMessageDialog(this, "商品描述格式不正确，只能为字母和中文还有数字，长度限制在60", "警告", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "商品描述格式不正确，只能为字母和中文还有数字，长度限制在80", "警告", JOptionPane.WARNING_MESSAGE);
                 } else if (!newClass.matches(classRegex)) {
                     JOptionPane.showMessageDialog(this, "商品类别格式不正确，只能为字母和中文还有数字，长度限制在20", "警告", JOptionPane.WARNING_MESSAGE);
                 } else if (!priceText.matches(priceRegex)) {
