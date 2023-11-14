@@ -211,7 +211,6 @@ public class AdminMerchantFrame extends JPanel {
                         try {
                             String deleteResult = data.deleteMerTable(m_id);
                             if (deleteResult.equals("删除成功") ) {
-                                data.deleteProductBym_id(m_id);
                                 DefaultTableModel model = (DefaultTableModel) merchantTable.getModel();
                                 model.removeRow(selectedRow);
                                 JOptionPane.showMessageDialog(adminFrame, "删除成功");
