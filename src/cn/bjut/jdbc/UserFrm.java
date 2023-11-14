@@ -126,7 +126,7 @@ public class UserFrm extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id FROM product";
+        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id,p_status FROM product";
         final ResultSet[] rs = {null};
         try {
             rs[0] = stmt[0].executeQuery(query);
@@ -147,6 +147,13 @@ public class UserFrm extends JFrame {
             int id = 0;
             try {
                 id = rs[0].getInt("p_id");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            String status=null;
+            try {
+                status = rs[0].getString("p_status");
+                System.out.println(status);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -186,55 +193,55 @@ public class UserFrm extends JFrame {
             }
 
 
+            if (status.equals("上架")) {
+                // 创建一个按钮，设置图标和文本
+                JButton button = new JButton();
+                if (flag != true) {
 
-            // 创建一个按钮，设置图标和文本
-            JButton button = new JButton();
-            if (flag!=true){
-
-                // 获取原始图片
-                Image image = new ImageIcon(imagePath + "").getImage();
-                // 创建缩放后的图片
-                Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
-                // 设置按钮的图标
-                button.setIcon(new ImageIcon(newImage));
-            }
-            else {
-                // 获取原始图片
-                Image image = new ImageIcon(projectPath + File.separator + "src" + File.separator + "img" + File.separator +"R.jpg").getImage();
-                // 创建缩放后的图片
-                Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
-                // 设置按钮的图标
-                button.setIcon(new ImageIcon(newImage));
-            }
-            button.setText("<html>" + name + "<br>¥" + price + "</html>"); // 设置按钮的文本，使用html标签换行
-            button.setVerticalTextPosition(SwingConstants.BOTTOM); // 设置文本在图标下方
-            button.setHorizontalTextPosition(SwingConstants.CENTER); // 设置文本在图标中间
-
-            // 为按钮添加点击事件监听器，跳转到商品详情卡片
-            int finalId = id;//p_id
-            int finalm_Id=m_id;
-            String finalName = name;
-            String finalImagePath = imagePath;
-            double finalPrice = price;
-            String finaldesc = desc;
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // 根据商品id查找对应的卡片对象
-                    JPanel productPanel = productMap.get(finalId);
-                    if (productPanel == null) {
-                        // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
-                        productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc,finalm_Id);
-                        mainPanel.add(productPanel, "product" + finalId);
-                        productMap.put(finalId, productPanel);
-                    }
-                    // 切换到商品详情卡片
-                    cardLayout.show(mainPanel, "product" + finalId);
+                    // 获取原始图片
+                    Image image = new ImageIcon(imagePath + "").getImage();
+                    // 创建缩放后的图片
+                    Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                    // 设置按钮的图标
+                    button.setIcon(new ImageIcon(newImage));
+                } else {
+                    // 获取原始图片
+                    Image image = new ImageIcon(projectPath + File.separator + "src" + File.separator + "img" + File.separator + "R.jpg").getImage();
+                    // 创建缩放后的图片
+                    Image newImage = image.getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+                    // 设置按钮的图标
+                    button.setIcon(new ImageIcon(newImage));
                 }
-            });
+                button.setText("<html>" + name + "<br>¥" + price + "</html>"); // 设置按钮的文本，使用html标签换行
+                button.setVerticalTextPosition(SwingConstants.BOTTOM); // 设置文本在图标下方
+                button.setHorizontalTextPosition(SwingConstants.CENTER); // 设置文本在图标中间
 
-            // 将按钮添加到网格布局的面板中
-            bottomPanel.add(button);
+                // 为按钮添加点击事件监听器，跳转到商品详情卡片
+                int finalId = id;//p_id
+                int finalm_Id = m_id;
+                String finalName = name;
+                String finalImagePath = imagePath;
+                double finalPrice = price;
+                String finaldesc = desc;
+                button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 根据商品id查找对应的卡片对象
+                        JPanel productPanel = productMap.get(finalId);
+                        if (productPanel == null) {
+                            // 如果没有找到，就创建一个新的卡片对象，并添加到主面板和HashMap中
+                            productPanel = createProductPanel(finalId, u_id, finalName, finalImagePath, finalPrice, finaldesc, finalm_Id);
+                            mainPanel.add(productPanel, "product" + finalId);
+                            productMap.put(finalId, productPanel);
+                        }
+                        // 切换到商品详情卡片
+                        cardLayout.show(mainPanel, "product" + finalId);
+                    }
+                });
+                // 将按钮添加到网格布局的面板中
+                bottomPanel.add(button);
+            }
+
         }
 
 // 关闭数据库连接
@@ -532,12 +539,16 @@ public class UserFrm extends JFrame {
                     // 计算总价并更新JLabel的显示内容
                     double total = 0;
                     for (int i = 0; i < tableModel.getRowCount(); i++) {
-                        String priceStr = (String) tableModel.getValueAt(i, 2);
-                        int q = (int) tableModel.getValueAt(i, 4);
-                        double price = Double.parseDouble(priceStr);
-                        total += price * q;
+                        // 只计算选择列为true的行
+                        if ((boolean) tableModel.getValueAt(i, 5)) {
+                            String priceStr = (String) tableModel.getValueAt(i, 2);
+                            int q = (int) tableModel.getValueAt(i, 4);
+                            double price = Double.parseDouble(priceStr);
+                            total += price * q;
+                        }
                     }
                     totalLabel.setText("总价：" + String.format("%.2f", total) + " 元");
+
                 }
             }
         });
@@ -607,7 +618,7 @@ public class UserFrm extends JFrame {
         JButton refreshButton = new JButton();
         refreshButton.setText("刷新");
 
-        // 在refreshButton的点击事件中，从cart表格中查询用户购物车中的商品信息，并更新JTable对象的数据模型
+// 在refreshButton的点击事件中，从cart表格中查询用户购物车中的商品信息，并更新JTable对象的数据模型
         refreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -655,10 +666,13 @@ public class UserFrm extends JFrame {
                                 tableModel.addRow(new Object[]{image, p_name, p_price, join_time, quantity, false,p_id});
                             }
 
-
-                            // 计算总价
-                            double price = Double.parseDouble(p_price);
-                            total += price * quantity;
+                            // 判断第六列是否为true
+                            boolean selected = (boolean)tableModel.getValueAt(tableModel.getRowCount()-1, 5);
+                            if (selected) {
+                                // 计算总价
+                                double price = Double.parseDouble(p_price);
+                                total += price * quantity;
+                            }
                         }
                         rs1.close();
                         stmt1.close();
@@ -671,6 +685,28 @@ public class UserFrm extends JFrame {
                     totalLabel.setText("总价：" + String.format("%.2f", total) + " 元");
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                }
+            }
+        });
+
+// 给表格模型添加一个监听器，监听第六列的复选框的状态改变
+        tableModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                // 如果是第六列的数据改变了
+                if (e.getColumn() == 5) {
+                    // 重新计算总价
+                    double total = 0;
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        boolean selected = (boolean)tableModel.getValueAt(i, 5);
+                        if (selected) {
+                            double price = Double.parseDouble((String)tableModel.getValueAt(i, 2));
+                            int quantity = (int)tableModel.getValueAt(i, 4);
+                            total += price * quantity;
+                        }
+                    }
+                    // 更新JLabel的显示内容
+                    totalLabel.setText("总价：" + String.format("%.2f", total) + " 元");
                 }
             }
         });
