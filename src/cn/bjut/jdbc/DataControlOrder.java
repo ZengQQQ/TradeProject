@@ -91,7 +91,7 @@ public class DataControlOrder extends DataControl{
 
         try {
             String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity, o.totalprice, p.p_name, p.p_desc, p.p_class, p.p_price,p_img,p_quantity, u.u_name, u.u_sex, u.u_tele FROM orders o ";
-            String joinProduct = "INNER JOIN product p ON o.p_id = p.p_id ";
+            String joinProduct = "LEFT JOIN product p ON o.p_id = p.p_id ";
             String joinUser = "INNER JOIN user u ON o.u_id = u.u_id ";
             String whereClause = "WHERE p.m_id = ? ";
             List<Object> parameters = new ArrayList<>();
