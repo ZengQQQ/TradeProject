@@ -40,9 +40,20 @@ public class ProductDetailsDialog extends ProductofDialog {
         gbc.gridy++;
 
         // 添加商品描述
-        JLabel descField = new JLabel(product.getP_desc());
+        JLabel descField = new JLabel();
         descField.setFont(customFont); // 设置字体
         panel.add(descField, gbc);
+        
+        String productDescription = product.getP_desc();
+        int maxCharactersPerLine = 20;
+        StringBuilder formattedDescription = new StringBuilder("<html>");
+        for (int i = 0; i < productDescription.length(); i += maxCharactersPerLine) {
+            int endIndex = Math.min(i + maxCharactersPerLine, productDescription.length());
+            String line = productDescription.substring(i, endIndex);
+            formattedDescription.append(line).append("<br>");
+        }
+        formattedDescription.append("</html>");
+        descField.setText(formattedDescription.toString());
 
         gbc.gridy++;
 
