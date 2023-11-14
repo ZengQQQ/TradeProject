@@ -261,24 +261,41 @@ public class DataControl {
             if (rs.next()) {
                 int quantity = rs.getInt("quantity");
 
-                // 将购物车内容插入订单表
-                String insertQuery = "INSERT INTO orders (p_id, u_id, buy_time, quantity) VALUES (?, ?, ?, ?)";
-                PreparedStatement insertStmt = dataBase.getCon().prepareStatement(insertQuery);
-                insertStmt.setInt(1, p_id);
-                insertStmt.setInt(2, u_id);
-                insertStmt.setObject(3, currentDateTime);
-                insertStmt.setInt(4, quantity);
+                // 查询商品价格
+                String productQuery = "SELECT p_price FROM product WHERE p_id=?";
+                PreparedStatement productStmt = dataBase.getCon().prepareStatement(productQuery);
+                productStmt.setInt(1, p_id);
+                ResultSet productRS = productStmt.executeQuery();
 
+                if (productRS.next()) {
+                    double p_price = productRS.getDouble("p_price");
 
+                    // 计算总价
+                    double totalprice = quantity * p_price;
 
-                int rowsInserted = insertStmt.executeUpdate();
+                    // 将购物车内容插入订单表
+                    String insertQuery = "INSERT INTO orders (p_id, u_id, buy_time, quantity, totalprice) VALUES (?, ?, ?, ?, ?)";
+                    PreparedStatement insertStmt = dataBase.getCon().prepareStatement(insertQuery);
+                    insertStmt.setInt(1, p_id);
+                    insertStmt.setInt(2, u_id);
+                    insertStmt.setObject(3, currentDateTime);
+                    insertStmt.setInt(4, quantity);
+                    insertStmt.setDouble(5, totalprice);
 
-                if (rowsInserted > 0) {
-                    JOptionPane.showMessageDialog(null, "插入成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    int rowsInserted = insertStmt.executeUpdate();
 
+                    if (rowsInserted > 0) {
+                        JOptionPane.showMessageDialog(null, "插入成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "插入失败！", "警告", JOptionPane.ERROR_MESSAGE);
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(null, "插入失败！", "警告", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "未找到商品价格！", "错误", JOptionPane.ERROR_MESSAGE);
                 }
+
+                // 关闭资源
+                productRS.close();
+                productStmt.close();
             } else {
                 JOptionPane.showMessageDialog(null, "购物车中不存在该商品！", "错误", JOptionPane.ERROR_MESSAGE);
             }
@@ -291,6 +308,7 @@ public class DataControl {
             e.printStackTrace();
         }
     }
+
 
 
     public int getUserid(String account) throws SQLException {
