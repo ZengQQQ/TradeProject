@@ -1,6 +1,7 @@
 package cn.bjut.jdbc;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,16 +19,55 @@ public class AdminUserFrame extends JPanel {
         this.adminFrame = adminFrame;
         this.data = data;
         initComponents();
+        setDefaultFont();
     }
+
+    private void setDefaultFont() {
+        Font font = new Font("微软雅黑", Font.PLAIN, 18);
+
+        for (Component component : getComponents()) {
+            setComponentFont(component, font);
+        }
+    }
+
+    private void setComponentFont(Component component, Font font) {
+        if (component instanceof JTextArea || component instanceof JLabel || component instanceof JButton) {
+            component.setFont(font);
+        }
+
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                setComponentFont(child, font);
+            }
+        }
+    }
+
 
     public void initComponents() throws SQLException {
         datamode = getUserMessageTable(data.selectUserTable());
         this.setLayout(new BorderLayout());//card1 borderlayout 容器使用设计界面。
 
 
-        JTable userTable = new JTable(getUserMessageTable(data.selectUserTable()));  //创建用户表展示
+        //JTable userTable = new JTable(getUserMessageTable(data.selectUserTable()));  //创建用户表展示
+        JTable userTable = new JTable(getUserMessageTable(data.selectUserTable())) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        userTable.setRowHeight(50);
+        userTable.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         JScrollPane scrollPane = new JScrollPane(userTable);
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        userTable.setDefaultRenderer(Object.class, centerRenderer);
         this.add(scrollPane,BorderLayout.CENTER);
+
+        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
+        headerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        setFont(new Font("微软雅黑",Font.PLAIN,18));
+        userTable.getTableHeader().setDefaultRenderer(headerRenderer);
+
 
         //创建修改按钮
         JButton editButton = new JButton("修改");
@@ -47,6 +87,7 @@ public class AdminUserFrame extends JPanel {
         JPanel searchPanel = new JPanel(new FlowLayout());
         String[] selectColumnNames = {"ID", "账户", "姓名"};
         JComboBox<String> columnSelector = new JComboBox<>(selectColumnNames);
+        columnSelector.setFont(new Font("微软雅黑", Font.PLAIN,18));
         JTextField searchField = new JTextField(20);
         JButton searchButton = new JButton("查找");
         JButton searchAll = new JButton("查看全部");

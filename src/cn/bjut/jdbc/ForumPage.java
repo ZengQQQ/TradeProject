@@ -192,6 +192,7 @@ public class ForumPage extends JPanel {
 
         // 将新的评论添加到面板中
         for (CommentBar comment : commentBars) {
+            comment.setPreferredSize(new Dimension(1200,150));
             commentPanel.add(comment);
         }
 

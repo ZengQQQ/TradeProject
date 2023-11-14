@@ -183,6 +183,8 @@ public class DataControl {
                 if (count > 0) {
                     // 输出提示信息
                     System.out.println("已经关注过了");
+                    //弹出对话框显示提示信息
+                    JOptionPane.showMessageDialog(null, "已经关注过了", "提示", JOptionPane.WARNING_MESSAGE);
                     // 结束方法，不再执行后面的代码
                     return;
                 }
@@ -222,9 +224,11 @@ public class DataControl {
             if (rows > 0) {
                 // 输出成功信息
                 System.out.println("关注成功");
+                JOptionPane.showMessageDialog(null, "关注成功", "提示", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 // 输出失败信息
                 System.out.println("关注失败");
+                JOptionPane.showMessageDialog(null, "关注失败", "提示", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException e) {
             // 处理异常

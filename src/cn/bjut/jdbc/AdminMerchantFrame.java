@@ -1,6 +1,7 @@
 package cn.bjut.jdbc;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,19 +18,59 @@ public class AdminMerchantFrame extends JPanel {
         this.adminFrame = adminFrame;
         this.data = data;
         initComponents();
+        setDefaultFont();
+    }
+
+    private void setDefaultFont() {
+        Font font = new Font("微软雅黑", Font.PLAIN, 18);
+
+        for (Component component : getComponents()) {
+            setComponentFont(component, font);
+        }
+    }
+
+    private void setComponentFont(Component component, Font font) {
+        if (component instanceof JTextArea || component instanceof JLabel || component instanceof JButton) {
+            component.setFont(font);
+        }
+
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                setComponentFont(child, font);
+            }
+        }
     }
 
     public void initComponents() throws SQLException {
         this.setLayout(new BorderLayout());
         // 商家信息展示界面
-        JTable merchantTable = new JTable(getMerchantMessageTable(data.selectMerchantTable()));
+        //JTable merchantTable = new JTable(getMerchantMessageTable(data.selectMerchantTable()));
+        JTable merchantTable = new JTable(getMerchantMessageTable(data.selectMerchantTable())) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        merchantTable.setRowHeight(50);
+        merchantTable.setFont(new Font("微软雅黑", Font.PLAIN, 18));
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        merchantTable.setDefaultRenderer(Object.class, centerRenderer);
         JScrollPane merchantScrollPane = new JScrollPane(merchantTable);
         this.add(merchantScrollPane, BorderLayout.CENTER);
+       // merchantTable.getTableHeader().setFont(new Font("微软雅黑",Font.PLAIN,18));
+
+        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
+        headerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        setFont(new Font("微软雅黑",Font.PLAIN,18));
+        merchantTable.getTableHeader().setDefaultRenderer(headerRenderer);
 
         //添加查找功能
         JPanel merchantSearchPanel = new JPanel(new FlowLayout());
         String[] merchantSelectColumnNames = {"ID", "账户", "姓名"};
         JComboBox<String> merchantColumnSelector = new JComboBox<>(merchantSelectColumnNames);
+        merchantColumnSelector.setFont(new Font("微软雅黑",Font.PLAIN,18));
         JTextField merchantSearchField = new JTextField(20);
         JButton merchantSearchButton = new JButton("查找商家");
         JButton merchantSearchAll = new JButton("查看全部");
