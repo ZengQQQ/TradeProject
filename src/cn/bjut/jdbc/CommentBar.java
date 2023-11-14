@@ -133,7 +133,9 @@ public class CommentBar extends JPanel {
 
         // 添加底部面板到主面板
         add(bottomPanel, BorderLayout.SOUTH);
+        setMinimumSize(new Dimension(600, 200));
         setPreferredSize(new Dimension(600, 200));
+        setMaximumSize(new Dimension(600, 200));
     }
 
     public void addReply(Comment reply) {

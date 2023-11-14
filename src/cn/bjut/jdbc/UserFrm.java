@@ -757,6 +757,7 @@ public class UserFrm extends JFrame {
                 // 弹出一个对话框，让用户输入旧密码和新密码
                 JDialog dialog = new JDialog(UserFrm.this, "修改密码", true);
                 dialog.setLayout(new GridLayout(3, 2));
+                dialog.setSize(new Dimension(200,150));
                 dialog.add(new JLabel("旧密码："));
                 JPasswordField oldPasswordField = new JPasswordField();
                 dialog.add(oldPasswordField);
@@ -798,9 +799,8 @@ public class UserFrm extends JFrame {
                     }
                 });
                 dialog.add(cancelButton);
-                dialog.pack();
                 dialog.setLocationRelativeTo(UserFrm.this);
-                dialog.setSize(200, 130);
+                dialog.setSize(400, 250);
                 dialog.setVisible(true); // 显示对话框
             }
         });
@@ -823,6 +823,7 @@ public class UserFrm extends JFrame {
                 JTextField teleField = new JTextField();
                 dialog.add(teleField);
                 JButton confirmButton = new JButton("确定");
+
                 confirmButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -849,7 +850,7 @@ public class UserFrm extends JFrame {
                     }
                 });
                 dialog.add(cancelButton);
-                dialog.pack();
+                dialog.setSize(new Dimension(400,250));
                 dialog.setLocationRelativeTo(UserFrm.this);
                 dialog.setVisible(true); // 显示对话框
             }

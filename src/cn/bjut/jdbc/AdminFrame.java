@@ -12,6 +12,27 @@ public class AdminFrame extends JFrame {
     public AdminFrame() throws SQLException {
         initComponents();
         setLocationRelativeTo(null);
+        setDefaultFont();
+    }
+
+    private void setDefaultFont() {
+        Font font = new Font("微软雅黑", Font.PLAIN, 18);
+
+        for (Component component : getComponents()) {
+            setComponentFont(component, font);
+        }
+    }
+
+    private void setComponentFont(Component component, Font font) {
+        if (component instanceof JTextArea || component instanceof JLabel || component instanceof JButton) {
+            component.setFont(font);
+        }
+
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                setComponentFont(child, font);
+            }
+        }
     }
 
     private void initComponents() throws SQLException {

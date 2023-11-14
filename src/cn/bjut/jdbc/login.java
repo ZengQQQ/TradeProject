@@ -37,14 +37,14 @@ public class login extends JFrame {
         if (role != null) {
             JDialog loadingDialog = new JDialog(this, "正在加载中...");
             loadingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-            loadingDialog.setSize(210, 210);
+            loadingDialog.setSize(300, 300);
             loadingDialog.setLocationRelativeTo(this);
             loadingDialog.setModal(true);
-            URL imageURL = login.class.getResource("/img/load.gif");
-            String imagePath = imageURL.getPath();
-            ImageIcon gif = new ImageIcon(imagePath);
+            // 使用ClassLoader加载图片资源
+            ClassLoader classLoader = getClass().getClassLoader();
+            URL imageURL = classLoader.getResource("img/load.gif");
+            ImageIcon gif = new ImageIcon(imageURL);
             JLabel imageLabel = new JLabel(gif);
-
             loadingDialog.getContentPane().add(imageLabel);
             SwingWorker<Void, Void> loginWorker = new SwingWorker<Void, Void>() {
                 @Override
