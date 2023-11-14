@@ -15,7 +15,7 @@ public class MerchantProductFrm extends JPanel {
     private MerchantInterFrm merchantInterFrm;
     private DataControlMercahnt dataControlmer = new DataControlMercahnt();
     private ProductDetailsDialog currentDetailsDialog;
-    private JPanel productsPanel;
+    public JPanel productsPanel;
 
     public MerchantProductFrm(MerchantInterFrm mer) throws SQLException {
         this.merchantInterFrm = mer;
