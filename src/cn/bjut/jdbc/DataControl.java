@@ -1,5 +1,6 @@
 package cn.bjut.jdbc;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -273,13 +274,13 @@ public class DataControl {
                 int rowsInserted = insertStmt.executeUpdate();
 
                 if (rowsInserted > 0) {
-                    System.out.println("插入成功！");
+                    JOptionPane.showMessageDialog(null, "插入成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
 
                 } else {
-                    System.out.println("插入失败！");
+                    JOptionPane.showMessageDialog(null, "插入失败！", "警告", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
-                System.out.println("购物车中不存在该商品！");
+                JOptionPane.showMessageDialog(null, "购物车中不存在该商品！", "错误", JOptionPane.ERROR_MESSAGE);
             }
 
             // 关闭资源
