@@ -15,6 +15,7 @@ public class MerchantProductFrm extends JPanel {
     private MerchantInterFrm merchantInterFrm;
     private DataControlMercahnt dataControlmer = new DataControlMercahnt();
     private ProductDetailsDialog currentDetailsDialog;
+    private JPanel productsPanel;
 
     public MerchantProductFrm(MerchantInterFrm mer) throws SQLException {
         this.merchantInterFrm = mer;
@@ -22,10 +23,27 @@ public class MerchantProductFrm extends JPanel {
     }
 
     public void initComponent() {
-        setLayout(new GridLayout(0, 2));
-        createProductCard();
-    }
+        setLayout(new BorderLayout());
 
+        productsPanel = new JPanel();
+        productsPanel.setLayout(new GridLayout(0, 2));
+        createProductCard();
+        add(productsPanel,BorderLayout.NORTH);
+    }
+    public void createProductCard() {
+        try {
+            List<Product> products = dataControlmer.MerchantProductQuery(merchantInterFrm.getM_id());
+            for (Product product : products) {
+                JPanel productPanel = createProductPanel(product);
+                productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                productsPanel.add(productPanel);
+            }
+            revalidate();
+            repaint();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public JPanel createProductPanel(Product product) {
         JPanel productPanel = new JPanel(new BorderLayout());
         productPanel.putClientProperty("product", product);
@@ -159,20 +177,6 @@ public class MerchantProductFrm extends JPanel {
         currentDetailsDialog.setVisible(true);
     }
 
-    public void createProductCard() {
-        try {
-            List<Product> products = dataControlmer.MerchantProductQuery(merchantInterFrm.getM_id());
-            for (Product product : products) {
-                JPanel productPanel = createProductPanel(product);
-                productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                add(productPanel);
-            }
-            revalidate();
-            repaint();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void refreshCard1Product(Product updatedProduct) {
         int index = findProductIndex(updatedProduct);
