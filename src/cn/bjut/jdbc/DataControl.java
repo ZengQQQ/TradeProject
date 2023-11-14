@@ -615,15 +615,7 @@ public class DataControl {
             return "删除失败";
         }
     }
-    public void deleteProductBym_id(int m_id) throws SQLException {
-        String sql = "DELETE FROM product WHERE m_id = ?";
-        Connection con = DataBase.OpenDB();
 
-        PreparedStatement stmt = con.prepareStatement(sql);
-        stmt.setInt(1, m_id);
-        int result = stmt.executeUpdate();
-        con.close();
-    }
 
     //插入一条新的商家信息，输入商家的所有信息，成功返回相应的字符串
     public String insertMerTable(String new_m_acc, String new_m_psw, String new_m_name, String new_m_sex, String new_m_tele) throws SQLException {
