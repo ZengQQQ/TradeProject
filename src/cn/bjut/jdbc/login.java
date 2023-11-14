@@ -24,7 +24,7 @@ public class login extends JFrame {
                 JOptionPane.showMessageDialog(login.this, "欢迎来到商品交易市场！", "欢迎", JOptionPane.INFORMATION_MESSAGE);
             }
         });
-        timer.setRepeats(false); 
+        timer.setRepeats(false);
         timer.start();
 
     }
