@@ -776,18 +776,27 @@ public class DataControl {
 
     }
 
-    //注册用户
+    // 注册用户
     public boolean register(String useraccount, String password, String name, String role, String sex, String tele) throws SQLException {
         Connection con = DataBase.OpenDB();
         String sql;
 
         if ("用户".equals(role)) {
+            if (isUserAccountExists("user", useraccount)) {
+                JOptionPane.showMessageDialog(null, "用户已存在", "提示", JOptionPane.WARNING_MESSAGE);
+                return false;
+            }
             sql = "INSERT INTO user (u_acc, u_psw, u_name, u_sex, u_tele) VALUES (?, ?, ?, ?, ?)";
         } else if ("商家".equals(role)) {
+            if (isUserAccountExists("merchant", useraccount)) {
+                JOptionPane.showMessageDialog(null, "商家已存在", "提示", JOptionPane.WARNING_MESSAGE);
+                return false;
+            }
             sql = "INSERT INTO merchant (m_acc, m_psw, m_name, m_sex, m_tele) VALUES (?, ?, ?, ?, ?)";
         } else {
             return false;
         }
+
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, useraccount);
             stmt.setString(2, password);
@@ -800,6 +809,25 @@ public class DataControl {
             return rowsAffected > 0;
         }
     }
+
+    private boolean isUserAccountExists(String tableName, String useraccount) throws SQLException {
+        Connection con = DataBase.OpenDB();
+        String sql = "SELECT COUNT(*) FROM " + tableName + " WHERE " + tableName.charAt(0) + "_acc = ?";
+
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, useraccount);
+
+            try (ResultSet resultSet = stmt.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
 
     public int getCommentCount(String ID) throws SQLException {
         String sql = "select count(*) from forum where reply_to = ?";
