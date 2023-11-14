@@ -178,29 +178,4 @@ public class MerchantProductFrm extends JPanel {
     }
 
 
-    public void refreshCard1Product(Product updatedProduct) {
-        int index = findProductIndex(updatedProduct);
-        if (index >= 0) {
-            productsPanel.remove(index);
-            JPanel productPanel = createProductPanel(updatedProduct);
-            productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            productsPanel.add(productPanel, index);
-            productsPanel.revalidate();
-            productsPanel.repaint();
-        }
-    }
-
-    private int findProductIndex(Product updatedProduct) {
-        Component[] components = getComponents();
-        for (int i = 0; i < components.length; i++) {
-            if (components[i] instanceof JPanel) {
-                JPanel productPanel = (JPanel) components[i];
-                Product product = (Product) productPanel.getClientProperty("product");
-                if (product != null && product.getP_id() == updatedProduct.getP_id()) {
-                    return i;
-                }
-            }
-        }
-        return -1;
-    }
 }
