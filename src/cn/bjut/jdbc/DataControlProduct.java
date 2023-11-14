@@ -44,19 +44,23 @@ public class DataControlProduct extends DataControl {
         return false;
     }
 
-    //删除商品
+    // 删除商品并修改m_id和p_status
     public boolean deleteProduct(int productId) throws SQLException {
         Connection con;
         PreparedStatement preparedStatement;
         boolean deleted = false;
+
         // 创建连接
         DataBase dataBase = new DataBase();
         con = dataBase.OpenDB();
-        // 创建SQL删除语句
-        String deleteQuery = "DELETE FROM product WHERE p_id = ?";
+
+        // 创建SQL删除语句，并修改m_id和p_status
+        String deleteQuery = "UPDATE product SET m_id = -1, p_status = '下架' WHERE p_id = ?";
+
         // 准备并执行SQL语句
         preparedStatement = con.prepareStatement(deleteQuery);
         preparedStatement.setInt(1, productId);
+
         int rowsAffected = preparedStatement.executeUpdate();
         if (rowsAffected > 0) {
             // 如果成功删除了行，则返回true
@@ -64,6 +68,7 @@ public class DataControlProduct extends DataControl {
         }
         return deleted;
     }
+
 
     //添加商品
     public boolean addProduct(int m_id, String productName, String productDesc, String productClass, double productPrice, String productState, int productQuantity, String productImg) throws SQLException {
