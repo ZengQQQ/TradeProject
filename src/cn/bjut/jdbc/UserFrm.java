@@ -427,7 +427,7 @@ public class UserFrm extends JFrame {
                             // 获取p_quantity的值
                             int p_quantity = rs.getInt("p_quantity");
                             // 判断quantity是否小于p_quantity
-                            if (quantity < p_quantity) {
+                            if (quantity <= p_quantity) {
                                 // 如果是，判断quantity是否为0
                                 if (quantity == 0) {
                                     // 如果是0，就执行一个删除语句
@@ -1364,7 +1364,7 @@ public class UserFrm extends JFrame {
                 Statement stmt1 = dataBase.getCon().createStatement();
                 Statement stmt2 = dataBase.getCon().createStatement();
 
-                String query1 = "SELECT p_name, p_price FROM product WHERE m_id=" + m_id;
+                String query1 = "SELECT p_name, p_price,p_status FROM product WHERE m_id=" + m_id;
                 ResultSet rs1 = stmt1.executeQuery(query1);
                 String query2 = "SELECT m_name FROM merchant WHERE m_id=" + m_id;
                 ResultSet rs2=stmt2.executeQuery(query2);
@@ -1372,8 +1372,9 @@ public class UserFrm extends JFrame {
                     String m_name=rs2.getString("m_name");
                 while (rs1.next()) {
                     String p_name = rs1.getString("p_name");
+                    String status = rs1.getString("p_status");
                     String p_price = rs1.getString("p_price");
-                    tableModel.addRow(new Object[]{ m_name,p_name, p_price});
+                    if (status.equals("上架")){tableModel.addRow(new Object[]{ m_name,p_name, p_price});}
 
                 }}
                 rs1.close();
@@ -1415,7 +1416,7 @@ public class UserFrm extends JFrame {
         dataBase.OpenDB();
 
         // 构建新的SQL查询语句
-        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id FROM product WHERE p_name LIKE '%" + keyword + "%' OR p_desc LIKE '%" + keyword + "%'";
+        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id,p_status FROM product WHERE p_name LIKE '%" + keyword + "%' OR p_desc LIKE '%" + keyword + "%'";
         Statement stmt = null;
         ResultSet rs;
 
@@ -1432,6 +1433,7 @@ public class UserFrm extends JFrame {
                 int id = rs.getInt("p_id");
                 int m_id = rs.getInt("m_id");
                 String name = rs.getString("p_name");
+                String status = rs.getString("p_status");
                 boolean flag = false;
                 String  imagePath = projectPath + File.separator + "src"
                         + File.separator + "img" + File.separator + rs.getString("p_img");
@@ -1440,7 +1442,7 @@ public class UserFrm extends JFrame {
                 }
                 String desc = rs.getString("p_desc");
                 double price = rs.getDouble("p_price");
-
+                if (status.equals("上架")){
                 JButton button = new JButton();
                 if (flag != true) {
 
@@ -1485,7 +1487,7 @@ public class UserFrm extends JFrame {
                     }
                 });
 
-                bottomPanel.add(button); // 将按钮添加到网格布局的面板中
+                bottomPanel.add(button); }// 将按钮添加到网格布局的面板中
             }
 
             // 关闭数据库连接
@@ -1589,7 +1591,7 @@ public class UserFrm extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id FROM product";
+        String query = "SELECT p_id, p_name, p_img ,p_price,p_desc,m_id,p_status FROM product";
         ResultSet rs = null;
         try {
             rs = stmt.executeQuery(query);
@@ -1625,6 +1627,12 @@ public class UserFrm extends JFrame {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            String status = null;
+            try {
+                status= rs.getString("p_status");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             String imagePath = null;
             boolean flag = false;
             try {
@@ -1650,7 +1658,7 @@ public class UserFrm extends JFrame {
                 e.printStackTrace();
             }
 
-
+            if (status.equals("上架")){
             // 创建一个按钮，设置图标和文本
             JButton button = new JButton();
             if (flag != true) {
@@ -1697,7 +1705,7 @@ public class UserFrm extends JFrame {
             });
 
             // 将按钮添加到网格布局的面板中
-            bottomPanel.add(button);
+            bottomPanel.add(button);}
         }
 
 // 关闭数据库连接
