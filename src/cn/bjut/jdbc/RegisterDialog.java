@@ -88,8 +88,8 @@ public class RegisterDialog extends JDialog {
                         return;
                     }
 
-                    if (!Pattern.matches("[\\u4e00-\\u9fa5a-zA-Z]{1,20}", useraccount) || !Pattern.matches("[\\u4e00-\\u9fa5a-zA-Z]{1,20}", username)) {
-                        JOptionPane.showMessageDialog(null, "账户和昵称只能为字母、中文和字符，且长度不超过20", "错误", JOptionPane.ERROR_MESSAGE);
+                    if (!Pattern.matches("[\\u4e00-\\u9fa5a-zA-Z1-9]{1,20}", useraccount) || !Pattern.matches("[\\u4e00-\\u9fa5a-zA-Z1-9]{1,20}", username)) {
+                        JOptionPane.showMessageDialog(null, "账户和昵称只能为字母、中文、数字和字符，且长度不超过20", "错误", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
