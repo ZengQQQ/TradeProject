@@ -1315,7 +1315,7 @@ public class UserFrm extends JFrame {
         // 连接数据库
         DataBase dataBase = new DataBase();
         dataBase.OpenDB();
-        String[] columnnames={"name","price"};
+        String[] columnnames={"商家名称","商品名称","价格"};
         Object data[][]=null;
         Statement stmt = null;
         DefaultTableModel tableModel=new DefaultTableModel(data,columnnames);
@@ -1326,17 +1326,24 @@ public class UserFrm extends JFrame {
             while (rs.next()) {
                 int m_id = rs.getInt("m_id");
                 Statement stmt1 = dataBase.getCon().createStatement();
-                String query1 = "SELECT p_name, p_price,p_img FROM product WHERE m_id=" + m_id;
+                Statement stmt2 = dataBase.getCon().createStatement();
+
+                String query1 = "SELECT p_name, p_price FROM product WHERE m_id=" + m_id;
                 ResultSet rs1 = stmt1.executeQuery(query1);
+                String query2 = "SELECT m_name FROM merchant WHERE m_id=" + m_id;
+                ResultSet rs2=stmt2.executeQuery(query2);
+                while (rs2.next()){
+                    String m_name=rs2.getString("m_name");
                 while (rs1.next()) {
                     String p_name = rs1.getString("p_name");
                     String p_price = rs1.getString("p_price");
-                    ImageIcon image = new ImageIcon(rs1.getString("p_img"));
-                    tableModel.addRow(new Object[]{ p_name, p_price});
+                    tableModel.addRow(new Object[]{ m_name,p_name, p_price});
 
-                }
+                }}
                 rs1.close();
+                rs2.close();
                 stmt1.close();
+                stmt2.close();
             }
 
             rs.close();
