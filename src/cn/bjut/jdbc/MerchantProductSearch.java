@@ -10,7 +10,7 @@ import java.util.List;
 public class MerchantProductSearch extends JPanel {
     private static final String[] SEARCH_TYPES = {"商品名称", "类别", "价格", "状态", "数量"};
     private static final String DEFAULT_IMAGE_PATH = "src/img/R.jpg";
-    private static final int IMAGE_WIDTH = 350;
+    private static final int IMAGE_WIDTH = 300;
     private static final int IMAGE_HEIGHT = 280;
     private Font fontall = new Font("微软雅黑", Font.BOLD, 18);
     private  DataControlProduct dataControlProduct  = new DataControlProduct();
