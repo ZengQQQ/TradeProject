@@ -503,6 +503,20 @@ public class UserFrm extends JFrame {
                         dataControl.insertOrderFromCart(u_id,p_id);
                         // 删除表格中该条记录
                         tableModel.removeRow(i);
+                        // 创建一个Statement对象
+                        Statement stmt = null;
+                        try {
+                            stmt = dataBase.getCon().createStatement();
+                            // 执行一个删除语句，根据你的数据库表结构和主键来修改
+                            String deleteQuery = "DELETE FROM cart WHERE u_id=" + u_id + " AND p_id=" + p_id;
+
+                            stmt.executeUpdate(deleteQuery);
+                            // 关闭Statement对象和数据库连接
+                            stmt.close();
+                            dataBase.getCon().close();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
             }
@@ -1278,6 +1292,8 @@ public class UserFrm extends JFrame {
         // 创建一个文本区域，显示商品描述
         JTextArea descriptionArea = new JTextArea();
         descriptionArea.setText(desc);
+        Font font = new Font("宋体", Font.PLAIN, 18); // 创建一个新的字体，宋体，普通样式，字号18
+        descriptionArea.setFont(font);
         descriptionArea.setLineWrap(true); // 设置自动换行
         descriptionArea.setEditable(false); // 设置不可编辑
 
