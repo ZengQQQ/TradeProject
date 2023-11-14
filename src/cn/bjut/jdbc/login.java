@@ -18,6 +18,15 @@ public class login extends JFrame {
     public login() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         initComponents();
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        Timer timer = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(login.this, "欢迎来到商品交易市场！", "欢迎", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        timer.setRepeats(false); 
+        timer.start();
+
     }
 
     private void button1MouseClicked(MouseEvent e) {
