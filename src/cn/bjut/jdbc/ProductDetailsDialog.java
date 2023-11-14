@@ -109,7 +109,7 @@ public class ProductDetailsDialog extends ProductofDialog {
         modifyButton.addActionListener(e -> {
             ProductUpdateDialog updateDialog = null;
             try {
-                updateDialog = new ProductUpdateDialog(product, merproduct);
+                updateDialog = new ProductUpdateDialog(product, merproduct, mer);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
