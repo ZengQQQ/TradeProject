@@ -24,6 +24,7 @@ public class UserFrm extends JFrame {
     private JButton myButton;
     private JPanel mainPanel = new JPanel();
     private CardLayout cardLayout = new CardLayout();
+    private int quantityy=10;
 
     private HashMap<Integer, JPanel> productMap = new HashMap<>();
 
@@ -368,6 +369,27 @@ public class UserFrm extends JFrame {
 // 设置表格可编辑
         cartTable.setEnabled(true);
 
+        // 添加鼠标事件监听器
+        cartTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("sadasdadsadafdsf");
+
+
+                int row = cartTable.getSelectedRow();
+                int col = cartTable.getSelectedColumn();
+                // 判断是否是数量列
+                if (col == 4) {
+                    // 获取数量数据
+                    quantityy = (int) cartTable.getValueAt(row, 4);
+                    // 在这里你可以对数量数据进行任何操作，例如打印出来或者传递给其他方法
+                    System.out.println(quantityy);
+
+                }
+
+            }
+        });
+
 // 添加表格编辑监听器
         cartTable.getModel().addTableModelListener(new TableModelListener() {
             @Override
@@ -382,7 +404,7 @@ public class UserFrm extends JFrame {
                         // 如果不是，弹出提示框
                         JOptionPane.showMessageDialog(null, "请输入一个正整数", "输入无效", JOptionPane.ERROR_MESSAGE);
                         // 恢复原来的值
-                       // cartTable.setValueAt(e.getOldValue(), row, 4);
+                        cartTable.setValueAt(quantityy, row, 4);
                         return;
                     }
 
@@ -391,7 +413,7 @@ public class UserFrm extends JFrame {
                     try {
                         stmt = dataBase.getCon().createStatement();
                         // 查询product表中的p_quantity
-                        String selectQuery = "SELECT p_quantity FROM product WHERE p_id=" + cartTable.getValueAt(row, 0);
+                        String selectQuery = "SELECT p_quantity FROM product WHERE p_id=" + cartTable.getValueAt(row, 6);
                         ResultSet rs = stmt.executeQuery(selectQuery);
                         // 如果查询结果不为空
                         if (rs.next()) {
@@ -415,7 +437,7 @@ public class UserFrm extends JFrame {
                                 // 如果不是，弹出提示框
                                 JOptionPane.showMessageDialog(null, "库存不足，无法修改数量", "修改失败", JOptionPane.WARNING_MESSAGE);
                                 // 恢复原来的值
-                                //cartTable.setValueAt(e.getOldValue(), row, 4);
+                                cartTable.setValueAt(quantityy, row, 4);
                             }
                         }
                         stmt.close();
@@ -426,6 +448,8 @@ public class UserFrm extends JFrame {
                 }
             }
         });
+
+
 
 
         // 创建一个JLabel对象，用于显示总价
