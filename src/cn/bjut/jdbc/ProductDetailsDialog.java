@@ -94,56 +94,6 @@ public class ProductDetailsDialog extends ProductofDialog {
         imageLabel = merproduct.createImageLabel(product, 350, 300);
         panel.add(imageLabel, gbc);
 
-        // 添加“修改”按钮
-        JButton modifyButton = new JButton("修改");
-        modifyButton.setFont(new Font("微软雅黑", Font.BOLD, 22));
-        gbc.gridy++;
-        panel.add(modifyButton, gbc);
-
-        // 添加“删除”按钮
-        JButton deleteButton = new JButton("删除");
-        deleteButton.setFont(new Font("微软雅黑", Font.BOLD, 22));
-        gbc.gridx++;
-        panel.add(deleteButton, gbc);
-        // 在点击“修改”按钮后
-        modifyButton.addActionListener(e -> {
-            ProductUpdateDialog updateDialog = null;
-            try {
-                updateDialog = new ProductUpdateDialog(product, merproduct, mer);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-            updateDialog.setVisible(true);
-            // 关闭当前的详细信息窗口
-            dispose();
-        });
-
-        // 在点击“删除”按钮后
-        deleteButton.addActionListener(e -> {
-            int option = JOptionPane.showConfirmDialog(null, "确定要删除该商品吗？", "确认删除", JOptionPane.YES_NO_OPTION);
-            if (option == JOptionPane.YES_OPTION) {
-                // 获取要删除的商品的唯一标识，通常是商品ID
-                int productId = product.getP_id();
-                // 执行删除商品的操作，你需要实现该方法
-                boolean success;
-                try {
-                    success = dataControlProduct.deleteProduct(productId);
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                if (success) {
-                    // 删除成功
-                    JOptionPane.showMessageDialog(null, "商品删除成功", "成功", JOptionPane.INFORMATION_MESSAGE);
-                    // 刷新界面，删除商品对应的面板
-                    mer.refreshCard1();
-                    // 关闭当前的详细信息窗口
-                    dispose();
-                } else {
-                    // 删除失败
-                    JOptionPane.showMessageDialog(null, "商品删除失败", "错误", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
     }
 
     private static class AnimatedBackgroundPanel extends JPanel {
