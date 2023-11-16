@@ -227,7 +227,6 @@ public class DataControlOrder extends DataControl{
 
         if (orderList.isEmpty() && ((userf != null && !userf.isEmpty()) || (quantityf != null && !quantityf.isEmpty()) ||
                 (datef != null && !datef.isEmpty()) || (productType.equals("价格") && !productf.isEmpty()))) {
-            JOptionPane.showMessageDialog(null, "订单结果没有找到", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
             return null;
         } else if (orderList.isEmpty() && (totalpricef != null && !totalpricef.isEmpty())) {
             // 执行次要查询以根据指定的条件找到最接近的订单
