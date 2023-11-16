@@ -213,4 +213,51 @@ public class DataControlProduct extends DataControl {
 
         return closestProducts;
     }
+
+    public Product getProductFromPId(int p_id) throws SQLException {
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Product product = null;
+
+        try {
+            // Create a connection
+            DataBase dataBase = new DataBase();
+            con = dataBase.OpenDB();
+
+            // Prepare the SQL statement to retrieve the product details based on p_id
+            String query = "SELECT * FROM product WHERE p_id = ?";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, p_id);
+
+            // Execute the query
+            resultSet = preparedStatement.executeQuery();
+
+            // Check if there is a result
+            if (resultSet.next()) {
+                // Extract data from the result set and create a Product object
+                int productId = resultSet.getInt("p_id");
+                String productName = resultSet.getString("p_name");
+                String productDescription = resultSet.getString("p_desc");
+                String productClass = resultSet.getString("p_class");
+                double productPrice = resultSet.getDouble("p_price");
+                String productStatus = resultSet.getString("p_status");
+                String productauditStatus = resultSet.getString("p_auditStatus");
+                String productImage = resultSet.getString("p_img");
+                int productQuantity = resultSet.getInt("p_quantity");
+
+                // Create a Product object
+                product = new Product(productId, productName, productDescription, productClass, productPrice, productStatus,  productQuantity,productauditStatus,productImage);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle exceptions as needed
+            resultSet.close();
+            preparedStatement.close();
+            con.close();
+        }
+
+        return product;
+    }
+
 }
