@@ -189,6 +189,11 @@ public class MerchantOrdersSearch extends JPanel {
             ordersPanel.add(orderDisplayPanel);
             ordersPanel.revalidate();
             ordersPanel.repaint();
+        }else{
+            ordersPanel.removeAll();
+            ordersPanel.revalidate();
+            ordersPanel.repaint();
+            JOptionPane.showMessageDialog(null, "没有搜索到订单", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
