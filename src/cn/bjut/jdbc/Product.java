@@ -10,11 +10,13 @@ public class Product {
     private String p_status;
     private int  p_quantity;
     private String p_img;
+    private String p_auditStatus;
+
 
     public Product() {
     }
 
-    public Product(int pid, String newName, String newdesc, String newclass, double newPrice, String newStatus,int newquantity, String newImgName) {
+    public Product(int pid, String newName, String newdesc, String newclass, double newPrice, String newStatus,int newquantity,String p_auditStatus, String newImgName) {
         this.p_id = pid;
         this.p_name = newName;
         this.p_desc = newdesc;
@@ -22,10 +24,11 @@ public class Product {
         this.p_price = String.valueOf(newPrice);
         this.p_status = newStatus;
         this.p_quantity=newquantity;
+        this.p_auditStatus=p_auditStatus;
         this.p_img = newImgName;
     }
 
-    public Product(String newName, String newdesc, String newclass, double newPrice, String newStatus,int newquantity, String newImgName,int m_id) {
+    public Product(String newName, String newdesc, String newclass, double newPrice, String newStatus,int newquantity, String p_auditStatus,String newImgName,int m_id) {
         this.m_id=m_id;
         this.p_name = newName;
         this.p_desc = newdesc;
@@ -33,7 +36,16 @@ public class Product {
         this.p_price = String.valueOf(newPrice);
         this.p_status = newStatus;
         this.p_quantity=newquantity;
+        this.p_auditStatus=p_auditStatus;
         this.p_img = newImgName;
+    }
+
+    public String getP_audiStatus() {
+        return p_auditStatus;
+    }
+
+    public void setP_audiStatus(String p_audiStatus) {
+        this.p_auditStatus = p_audiStatus;
     }
 
     public int getP_id() {
@@ -98,5 +110,13 @@ public class Product {
 
     public void setP_img(String p_img) {
         this.p_img = p_img;
+    }
+
+    public String getP_description() {
+        return p_desc;
+    }
+
+    public void setP_description(String p_description) {
+        this.p_desc = p_description;
     }
 }
