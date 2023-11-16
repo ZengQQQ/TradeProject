@@ -21,14 +21,12 @@ public class MerchantInfoModifyDialog extends JDialog {
         setTitle("修改您的信息");
 
         // 创建文本字段，用于填入旧的商家信息
-        JTextField accountField = new JTextField(oldmerchant.getAcc(), 20);
         JTextField nameField = new JTextField(oldmerchant.getM_name(), 20);
         JTextField genderField = new JTextField(oldmerchant.getM_sex(), 20);
         JTextField phoneField = new JTextField(oldmerchant.getM_tele(), 20);
         JTextField pswField = new JTextField(oldmerchant.getPsw(), 20);
 
         // 设置字体
-        accountField.setFont(font);
         nameField.setFont(font);
         genderField.setFont(font);
         phoneField.setFont(font);
@@ -39,22 +37,17 @@ public class MerchantInfoModifyDialog extends JDialog {
         saveButton.setFont(font);
         saveButton.addActionListener(e -> {
             // 从文本字段中获取修改后的信息
-            String newAccount = accountField.getText();
             String newName = nameField.getText();
             String newGender = genderField.getText();
             String newPhone = phoneField.getText();
             String newPsw = pswField.getText();
 
             // 验证账户、密码、姓名和电话号码
-            if (newAccount.isEmpty() || newName.isEmpty() || newGender.isEmpty() || newPhone.isEmpty() || newPsw.isEmpty()) {
+            if (newName.isEmpty() || newGender.isEmpty() || newPhone.isEmpty() || newPsw.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "所有字段都必须填写", "错误", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            if (!Pattern.matches("[\\u4e00-\\u9fa5a-zA-Z]{1,20}", newAccount)) {
-                JOptionPane.showMessageDialog(this, "账户只能为字母、中文和字符，且长度不超过20", "错误", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
 
             if (!Pattern.matches("[\\u4e00-\\u9fa5a-zA-Z]{1,20}", newName)) {
                 JOptionPane.showMessageDialog(this, "姓名只能为字母、中文和字符，且长度不超过20", "错误", JOptionPane.ERROR_MESSAGE);
@@ -79,7 +72,7 @@ public class MerchantInfoModifyDialog extends JDialog {
 
             // 保存修改后的信息并显示成功消息
             try {
-                dataControlmer.updateMerchant(m_id, newAccount, newName, newGender, newPhone, newPsw);
+                dataControlmer.updateMerchant(m_id, newName, newGender, newPhone, newPsw);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
@@ -90,8 +83,6 @@ public class MerchantInfoModifyDialog extends JDialog {
 
         // 添加组件到对话框的内容窗格
         JPanel panel = new JPanel(new GridLayout(6, 2));
-        panel.add(new JLabel("账号名:")).setFont(font);
-        panel.add(accountField).setFont(font);
         panel.add(new JLabel("密码:")).setFont(font);
         panel.add(pswField).setFont(font);
         panel.add(new JLabel("昵称:")).setFont(font);
