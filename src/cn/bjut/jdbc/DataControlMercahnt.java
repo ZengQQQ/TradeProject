@@ -68,7 +68,7 @@ public class DataControlMercahnt extends DataControl{
     public List<Product> MerchantProductQuery(int m_id) throws SQLException {
         List<Product> products = new ArrayList<>();
         Connection con = DataBase.OpenDB();
-        String sql = "SELECT p_id, p_name, p_desc, p_class, p_price, p_status,p_quantity, p_img " +
+        String sql = "SELECT p_id, p_name, p_desc, p_class, p_price, p_status,p_quantity, p_img,p_auditStatus " +
                 "FROM product " + "WHERE m_id = ?";
         PreparedStatement stmt = null;
         if (con != null) {
@@ -91,6 +91,7 @@ public class DataControlMercahnt extends DataControl{
                 product.setP_price(rs.getString("p_price"));
                 product.setP_status(rs.getString("p_status"));
                 product.setP_quantity(rs.getInt("p_quantity"));
+                product.setP_audiStatus(rs.getString("p_auditStatus"));
                 product.setP_img(rs.getString("p_img"));
                 products.add(product);
             }
@@ -127,16 +128,15 @@ public class DataControlMercahnt extends DataControl{
         return merchant;
     }
     //使用m_id来修改merchanttable，全部更新,
-    public String updateMerchant(int m_id, String new_m_acc, String new_m_name, String new_m_sex, String new_m_tele, String new_m_psw) throws SQLException {
-        String sql = "UPDATE merchant SET m_acc = ?, m_name = ?, m_sex = ?, m_tele = ?,m_psw WHERE m_id = ?";
+    public String updateMerchant(int m_id,String new_m_name, String new_m_sex, String new_m_tele, String new_m_psw) throws SQLException {
+        String sql = "UPDATE merchant SET m_name = ?, m_sex = ?, m_tele = ?,m_psw WHERE m_id = ?";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
-        stmt.setString(1, new_m_acc);
-        stmt.setString(2, new_m_name);
-        stmt.setString(3, new_m_sex);
-        stmt.setString(4, new_m_tele);
-        stmt.setString(5, new_m_psw);
-        stmt.setInt(6, m_id);
+        stmt.setString(1, new_m_name);
+        stmt.setString(2, new_m_sex);
+        stmt.setString(3, new_m_tele);
+        stmt.setString(4, new_m_psw);
+        stmt.setInt(5, m_id);
         int result = stmt.executeUpdate();
         con.close();
         if (result > 0) {
