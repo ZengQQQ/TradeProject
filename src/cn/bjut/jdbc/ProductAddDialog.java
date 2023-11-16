@@ -35,39 +35,59 @@ public class ProductAddDialog extends ProductofDialog {
         getContentPane().add(panel, BorderLayout.CENTER);
 
         setTitle("添加商品信息");
-        int textFieldColumns = 30;
+        int textFieldColumns = 20;
         gbc.gridx = 1;
         gbc.gridy = 0;
+
+        Font font = new Font("微软雅黑", Font.PLAIN, 18);
+
         JTextField nameField = new JTextField(textFieldColumns);
+        nameField.setFont(font);
         panel.add(nameField, gbc);
         gbc.gridy++;
-        JTextField descField = new JTextField(textFieldColumns);
-        panel.add(descField, gbc);
+
+        JTextArea descField = new JTextArea(3, textFieldColumns);
+        descField.setFont(font);
+        descField.setLineWrap(true);
+        descField.setWrapStyleWord(true);
+        JScrollPane scrollPane = new JScrollPane(descField);
+        panel.add(scrollPane, gbc);
         gbc.gridy++;
+
         JTextField classField = new JTextField(textFieldColumns);
+        classField.setFont(font);
         panel.add(classField, gbc);
         gbc.gridy++;
+
         JTextField priceField = new JTextField(textFieldColumns);
+        priceField.setFont(font);
         panel.add(priceField, gbc);
         gbc.gridy++;
+
         JTextField quantityField = new JTextField(textFieldColumns);
+        quantityField.setFont(font);
         panel.add(quantityField, gbc);
         gbc.gridy++;
+
         // 创建商品状态的单选框
         ButtonGroup statusGroup = new ButtonGroup();
-        onSaleRadioButton = new JRadioButton("上架");
-        offSaleRadioButton = new JRadioButton("下架");
+        JRadioButton onSaleRadioButton = new JRadioButton("上架");
+        JRadioButton offSaleRadioButton = new JRadioButton("下架");
         statusGroup.add(onSaleRadioButton);
         statusGroup.add(offSaleRadioButton);
+
         JPanel statusPanel = new JPanel();
         statusPanel.add(onSaleRadioButton);
         statusPanel.add(offSaleRadioButton);
+
         // 根据商品状态设置选择
         onSaleRadioButton.setSelected(true);
+        statusPanel.setFont(font);
+
         panel.add(statusPanel, gbc);
         gbc.gridy++;
 
-        imageLabel = merproduct.createImageLabel(product, 350, 300);
+        imageLabel = merproduct.createImageLabel(product, 250, 200);
         panel.add(imageLabel, gbc);
 
         //商品图片展示
@@ -142,7 +162,7 @@ public class ProductAddDialog extends ProductofDialog {
                         }
                         if (success) {
                             JOptionPane.showMessageDialog(this, "创建成功，请等待一会", "提示", JOptionPane.INFORMATION_MESSAGE);
-                            mer.refreshCard1();
+                            mer.refreshProducts();
                             dispose(); // 关闭对话框
                         } else {
                             JOptionPane.showMessageDialog(this, "创建失败", "错误", JOptionPane.ERROR_MESSAGE);
