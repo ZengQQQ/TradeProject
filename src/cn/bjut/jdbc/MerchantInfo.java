@@ -43,9 +43,6 @@ public class MerchantInfo extends JDialog {
         Merchant merchant = dataControlmer.MerchantQuery(m_id);
 
         // 将标签和文本字段添加到面板
-        JLabel label1 = new JLabel("账号名: " + merchant.getAcc());
-        label1.setFont(fort);
-        panel.add(label1);
 
         JLabel label2 = new JLabel("昵称: " + merchant.getM_name());
         label2.setFont(fort);
