@@ -46,9 +46,15 @@ public class ProductUpdateDialog extends ProductofDialog {
 
         gbc.gridy++;
 
-        JTextField descField = new JTextField(product.getP_desc(), textFieldColumns);
-        descField.setFont(customFont); // 设置字体
-        panel.add(descField, gbc);
+        JTextArea descField = new JTextArea(product.getP_description());
+        descField.setFont(customFont);
+        descField.setLineWrap(true);
+        descField.setWrapStyleWord(true);
+        descField.setRows(3);
+        JScrollPane scrollPane = new JScrollPane(descField);
+        scrollPane.setPreferredSize(new Dimension(385, 100));
+
+        panel.add(scrollPane, gbc);
 
         gbc.gridy++;
 
@@ -163,7 +169,7 @@ public class ProductUpdateDialog extends ProductofDialog {
                         success = handleUpdateButton(newName, newDesc, newClass, newPrice, newStatus, newquantity);
                         if (success) {
                             JOptionPane.showMessageDialog(this, "修改成功，请等待一会", "提示", JOptionPane.INFORMATION_MESSAGE);
-                            mer.refreshCard1();
+                            mer.refreshProducts();
                             dispose(); // 关闭对话框
                         } else {
                             JOptionPane.showMessageDialog(this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
