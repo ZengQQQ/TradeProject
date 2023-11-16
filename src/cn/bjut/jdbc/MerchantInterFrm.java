@@ -35,7 +35,7 @@ public class MerchantInterFrm extends JFrame {
     private void initComponents() throws SQLException {
         setTitle("商家管理界面");
         mainPanel.setLayout(cardLayout);
-
+        //----------------------------------------------------------------
         JMenuBar menuBar = createMenuBar();
         JMenuBar myInfoMenu = createmyinfoMenuBar();
 
@@ -43,71 +43,103 @@ public class MerchantInterFrm extends JFrame {
         combinedMenuBar.add(menuBar);
         combinedMenuBar.add(myInfoMenu);
         setJMenuBar(combinedMenuBar);
-
+        //----------------------------------------------------------------
         JPanel card1 = new JPanel(new BorderLayout());
+
+        JLabel homeLabel = new JLabel("这里是首页，您可以放置首页的内容。");
+        homeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        homeLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        card1.add(homeLabel, BorderLayout.CENTER);
+
+        mainPanel.add(card1, "card1");
+        //----------------------------------------------------------------
+        JPanel card2 = new JPanel(new BorderLayout());
         merproduct = new MerchantProductFrm(this);
 
         JPanel topPanel = new JPanel(new GridLayout(1, 2));
-        JButton addProductButton = new JButton("增加商品");
-        addProductButton.setFont(fontall);
-        addProductButton.addActionListener(e -> {
-            Product newproduct = new Product();
-            ProductAddDialog detailsDialog;
-            try {
-                detailsDialog = new ProductAddDialog(newproduct, this, merproduct);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-            detailsDialog.setVisible(true);
-        });
+
 
         JButton searchProductButton = new JButton("搜索商品");
         searchProductButton.setFont(fontall);
 
         topPanel.add(searchProductButton);
-        topPanel.add(addProductButton);
-        card1.add(topPanel, BorderLayout.NORTH);
-        card1.add(merproduct, BorderLayout.CENTER);
-        JScrollPane scrollPane = new JScrollPane(card1);
+
+
+        card2.add(topPanel, BorderLayout.NORTH);
+        card2.add(merproduct, BorderLayout.CENTER);
+
+        JScrollPane scrollPane = new JScrollPane(card2);
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
         verticalScrollBar.setUnitIncrement(30);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        mainPanel.add(scrollPane, "card1");
+        mainPanel.add(scrollPane, "card2");
+        //----------------------------------------------------------------
+        JPanel card3 = new JPanel(new BorderLayout());
 
-        JPanel card2 = new JPanel(new BorderLayout());
         JPanel topPanel2 = new JPanel(new GridLayout(1, 1));
         JButton searchorderButton = new JButton("搜索订单");
         searchorderButton.setFont(fontall);
         topPanel2.add(searchorderButton);
         merorder = new MerchantOrdersFrm(m_id);
 
-        card2.add(topPanel2, BorderLayout.NORTH);
-        card2.add(merorder, BorderLayout.CENTER);
+        card3.add(topPanel2, BorderLayout.NORTH);
+        card3.add(merorder, BorderLayout.CENTER);
 
-        mainPanel.add(card2, "card2");
-
-        JPanel card3 = new ForumPage(dataControl.selectMerchant(m_id), "商家");
         mainPanel.add(card3, "card3");
+        //----------------------------------------------------------------
+        JPanel card4 = new ForumPage(dataControl.selectMerchant(m_id), "商家");
+        mainPanel.add(card4, "card4");
+        //----------------------------------------------------------------
 
         MerchantProductSearch searchproduct = new MerchantProductSearch(this);
         mainPanel.add(searchproduct, "card5");
-
+        //----------------------------------------------------------------
         MerchantOrdersSearch searchorder = new MerchantOrdersSearch(merorder);
         mainPanel.add(searchorder, "card6");
-
-        JButton upproject = new JButton("商品管理");
-        upproject.setFont(fontall);
-        JButton order = new JButton("订单");
-        order.setFont(fontall);
-        JButton forum = new JButton("论坛");
-        forum.setFont(fontall);
+        //----------------------------------------------------------------
+        JButton homeButton = new JButton("首页");
+        homeButton.setFont(fontall);
+        JButton productButton = new JButton("商品管理");
+        productButton.setFont(fontall);
+        JButton orderButton = new JButton("订单");
+        orderButton.setFont(fontall);
+        JButton forumButton = new JButton("论坛");
+        forumButton.setFont(fontall);
 
         int buttonHeight = 45;
-        upproject.setPreferredSize(new Dimension(upproject.getPreferredSize().width, buttonHeight));
-        order.setPreferredSize(new Dimension(order.getPreferredSize().width, buttonHeight));
-        forum.setPreferredSize(new Dimension(forum.getPreferredSize().width, buttonHeight));
+        homeButton.setPreferredSize(new Dimension(homeButton.getPreferredSize().width, buttonHeight));
+        productButton.setPreferredSize(new Dimension(productButton.getPreferredSize().width, buttonHeight));
+        orderButton.setPreferredSize(new Dimension(orderButton.getPreferredSize().width, buttonHeight));
+        forumButton.setPreferredSize(new Dimension(forumButton.getPreferredSize().width, buttonHeight));
 
+        //----------------------------------------------------------------
+        homeButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainPanel, "card1");
+            }
+        });
+        productButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainPanel, "card2");
+            }
+        });
+
+        orderButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainPanel, "card3");
+            }
+        });
+
+        forumButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainPanel, "card4");
+            }
+        });
         searchProductButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -121,34 +153,14 @@ public class MerchantInterFrm extends JFrame {
                 cardLayout.show(mainPanel, "card6");
             }
         });
-
-        upproject.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                cardLayout.show(mainPanel, "card1");
-            }
-        });
-
-        order.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                cardLayout.show(mainPanel, "card2");
-            }
-        });
-
-        forum.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                cardLayout.show(mainPanel, "card3");
-            }
-        });
-
+        //----------------------------------------------------------------
         JPanel buttonPanel2 = new JPanel();
         buttonPanel2.setLayout(new GridLayout(1, 4));
-        buttonPanel2.add(upproject);
-        buttonPanel2.add(order);
-        buttonPanel2.add(forum);
-
+        buttonPanel2.add(homeButton); // 在按钮面板的最左边添加首页按钮
+        buttonPanel2.add(productButton);
+        buttonPanel2.add(orderButton);
+        buttonPanel2.add(forumButton);
+        //----------------------------------------------------------------
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
 
@@ -159,17 +171,14 @@ public class MerchantInterFrm extends JFrame {
         setLocationRelativeTo(getOwner());
     }
 
-    public void refreshCard1() {
-        merproduct.productsPanel.removeAll();
+    public void refreshProducts() {
         try {
-            List<Product> products = dataControlmer.MerchantProductQuery(getM_id());
+            List<Product> products = dataControlmer.MerchantProductQuery(m_id);
+            merproduct.tableModel.setRowCount(0); // 清空表格数据
             for (Product product : products) {
-                JPanel productPanel = merproduct.createProductPanel(product);
-                productPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                merproduct.productsPanel.add(productPanel);
+                Object[] rowData = {product.getP_id(), merproduct.getScaledImageIcon(product, 50, 50), product.getP_name(), product.getP_description(), product.getP_price(), product.getP_quantity(), product.getP_status()};
+                merproduct.tableModel.addRow(rowData);
             }
-            merproduct.productsPanel.revalidate();
-            merproduct.productsPanel.repaint();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -208,7 +217,7 @@ public class MerchantInterFrm extends JFrame {
         refreshButton1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                refreshCard1();
+                refreshProducts();
             }
         });
 
@@ -329,7 +338,7 @@ public class MerchantInterFrm extends JFrame {
             }
             frame.setLocationRelativeTo(null);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1200, 1000);
+            frame.setSize(1500, 1300);
             frame.setVisible(true);
         });
     }
