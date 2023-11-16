@@ -1058,12 +1058,40 @@ public class UserFrm extends JFrame {
 
                 // 创建一个面板，用于放置用户信息的标签
                 JPanel infoPanel = new JPanel();
-                infoPanel.setLayout(new GridLayout(4, 1,0,0));
-                infoPanel.add(nameLabel);
-                infoPanel.add(accLabel);
-                infoPanel.add(sexLabel);
-                infoPanel.add(teleLabel);
+                infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+                infoPanel.add(Box.createVerticalGlue()); // 添加垂直胶水
+
+                Box hBox1 = Box.createHorizontalBox();
+                hBox1.add(Box.createHorizontalGlue());
+                hBox1.add(nameLabel);
+                hBox1.add(Box.createHorizontalGlue());
+                infoPanel.add(hBox1);
+                infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // 添加固定大小的垂直空间
+
+                Box hBox2 = Box.createHorizontalBox();
+                hBox2.add(Box.createHorizontalGlue());
+                hBox2.add(accLabel);
+                hBox2.add(Box.createHorizontalGlue());
+                infoPanel.add(hBox2);
+                infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // 添加固定大小的垂直空间
+
+                Box hBox3 = Box.createHorizontalBox();
+                hBox3.add(Box.createHorizontalGlue());
+                hBox3.add(sexLabel);
+                hBox3.add(Box.createHorizontalGlue());
+                infoPanel.add(hBox3);
+                infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // 添加固定大小的垂直空间
+
+                Box hBox4 = Box.createHorizontalBox();
+                hBox4.add(Box.createHorizontalGlue());
+                hBox4.add(teleLabel);
+                hBox4.add(Box.createHorizontalGlue());
+                infoPanel.add(hBox4);
+                infoPanel.add(Box.createVerticalStrut(100));
+
                 card4.add(infoPanel, BorderLayout.CENTER);
+
+
             }
 
             // 关闭数据库连接
@@ -1126,15 +1154,22 @@ public class UserFrm extends JFrame {
         });
 
 
-// 将各个组件添加到卡片中，使用不同的方位
+
         JPanel buttonpanel=new JPanel();
         buttonpanel.add(changePasswordButton);
         buttonpanel.add(viewOrderButton);
         buttonpanel.add(modifyInfoButton);
         buttonpanel.add(myrefreshButton);
         card4.add(buttonpanel,BorderLayout.SOUTH);
-//        card4.add(changePasswordButton, BorderLayout.EAST);
-//        card4.add(viewOrderButton, BorderLayout.EAST);
+
+// 添加垂直空间
+        JPanel strutPanel = new JPanel();
+        strutPanel.setLayout(new BorderLayout());
+        strutPanel.add(buttonpanel, BorderLayout.NORTH);
+        strutPanel.add(Box.createVerticalStrut(250), BorderLayout.SOUTH); // 创建50像素的垂直空间
+
+        card4.add(strutPanel,BorderLayout.SOUTH);
+
 
 
         //-----------------------------------------------------------------------------------------------------------
@@ -1296,8 +1331,11 @@ public class UserFrm extends JFrame {
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // 创建一个标签，显示商品图片
+        Image image = new ImageIcon(imagePath).getImage();
+        Image newImage = image.getScaledInstance(600, 600, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel();
-        imageLabel.setIcon(new ImageIcon(imagePath));
+        imageLabel.setIcon(new ImageIcon(newImage));
+
 
         // 创建一个标签，显示商品价格
         JLabel priceLabel = new JLabel("商品价格：¥" + price);
@@ -1346,12 +1384,16 @@ public class UserFrm extends JFrame {
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         northPanel.setBackground(Color.WHITE);
-        northPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        northPanel.add(nameLabel);
-        northPanel.add(priceLabel);
         northPanel.add(imageLabel);
 
 
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setBackground(Color.WHITE);
+        centerPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        centerPanel.add(priceLabel);
+        centerPanel.add(nameLabel);
+        centerPanel.add(descriptionPane);
 
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -1364,7 +1406,7 @@ public class UserFrm extends JFrame {
 
         // 将各个组件添加到卡片中，使用不同的方位
         productPanel.add(northPanel, BorderLayout.NORTH);
-        productPanel.add(descriptionPane, BorderLayout.CENTER);
+        productPanel.add(centerPanel, BorderLayout.CENTER);
         productPanel.add(southPanel, BorderLayout.SOUTH);
 
         // 返回卡片对象
