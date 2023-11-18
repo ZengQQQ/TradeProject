@@ -146,14 +146,15 @@ public class DataControlMercahnt extends DataControl {
         }
     }
 
-    public List<Product> MerchantProductQueryByCategory(int m_id, String selectedCategory, String productId, String productName, String price, String quantity, String selectedStatus, String auditStatus) throws SQLException {
+    public List<Product> MerchantProductQueryByCategory(int m_id, String selectedCategory, String productId, String productName, String minPrice, String maxPrice, String minQuantity, String maxQuantity, String selectedStatus, String auditStatus) throws SQLException {
         List<Product> products = new ArrayList<>();
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            StringBuilder sql = new StringBuilder("SELECT p_id, p_name, p_desc, p_class, p_price, p_status, p_quantity, p_img, p_auditStatus FROM product WHERE m_id = ?" );
+            StringBuilder sql = new StringBuilder("SELECT p_id, p_name, p_desc, p_class, p_price, p_status, p_quantity, p_img, p_auditStatus FROM product WHERE m_id = ?");
+
             List<Object> params = new ArrayList<>(Arrays.asList(m_id));
 
             if (!productId.isEmpty()) {
@@ -164,13 +165,21 @@ public class DataControlMercahnt extends DataControl {
                 sql.append(" AND p_name LIKE ?");
                 params.add("%" + productName + "%");
             }
-            if (!price.isEmpty()) {
-                sql.append(" AND p_price = ?");
-                params.add(Double.parseDouble(price));
+            if (!minPrice.isEmpty()) {
+                sql.append(" AND p_price >= ?");
+                params.add(Double.parseDouble(minPrice));
             }
-            if (!quantity.isEmpty()) {
-                sql.append(" AND p_quantity = ?");
-                params.add(Integer.parseInt(quantity));
+            if (!maxPrice.isEmpty()) {
+                sql.append(" AND p_price <= ?");
+                params.add(Double.parseDouble(maxPrice));
+            }
+            if (!minQuantity.isEmpty()) {
+                sql.append(" AND p_quantity >= ?");
+                params.add(Integer.parseInt(minQuantity));
+            }
+            if (!maxQuantity.isEmpty()) {
+                sql.append(" AND p_quantity <= ?");
+                params.add(Integer.parseInt(maxQuantity));
             }
             if (!selectedStatus.isEmpty() && !"全部状态".equals(selectedStatus)) {
                 sql.append(" AND p_status = ?");
@@ -220,6 +229,7 @@ public class DataControlMercahnt extends DataControl {
 
         return products;
     }
+
 
 
 }
