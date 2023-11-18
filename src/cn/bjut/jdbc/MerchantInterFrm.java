@@ -56,16 +56,6 @@ public class MerchantInterFrm extends JFrame {
         JPanel card2 = new JPanel(new BorderLayout());
         merproduct = new MerchantProductFrm(this);
 
-        JPanel topPanel = new JPanel(new GridLayout(1, 2));
-
-
-        JButton searchProductButton = new JButton("搜索商品");
-        searchProductButton.setFont(fontall);
-
-        topPanel.add(searchProductButton);
-
-
-        card2.add(topPanel, BorderLayout.NORTH);
         card2.add(merproduct, BorderLayout.CENTER);
 
         JScrollPane scrollPane = new JScrollPane(card2);
@@ -107,7 +97,7 @@ public class MerchantInterFrm extends JFrame {
         JButton forumButton = new JButton("论坛");
         forumButton.setFont(fontall);
 
-        int buttonHeight = 45;
+        int buttonHeight = 60;
         homeButton.setPreferredSize(new Dimension(homeButton.getPreferredSize().width, buttonHeight));
         productButton.setPreferredSize(new Dimension(productButton.getPreferredSize().width, buttonHeight));
         orderButton.setPreferredSize(new Dimension(orderButton.getPreferredSize().width, buttonHeight));
@@ -140,12 +130,6 @@ public class MerchantInterFrm extends JFrame {
                 cardLayout.show(mainPanel, "card4");
             }
         });
-        searchProductButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                cardLayout.show(mainPanel, "card5");
-            }
-        });
 
         searchorderButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -176,7 +160,7 @@ public class MerchantInterFrm extends JFrame {
             List<Product> products = dataControlmer.MerchantProductQuery(m_id);
             merproduct.tableModel.setRowCount(0); // 清空表格数据
             for (Product product : products) {
-                Object[] rowData = {product.getP_id(), merproduct.getScaledImageIcon(product, 250, 200), product.getP_name(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus()};
+                Object[] rowData = {product.getP_id(), merproduct.getScaledImageIcon(product, 250, 200), product.getP_name(),product.getP_class(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus()};
                 merproduct.tableModel.addRow(rowData);
             }
         } catch (SQLException e) {
@@ -188,7 +172,7 @@ public class MerchantInterFrm extends JFrame {
             List<Product> products = dataControlmer.MerchantProductQuery(m_id);
             merproduct.tableModel.setRowCount(0); // 清空表格数据
             for (Product product : products) {
-                Object[] rowData = {product.getP_id(), merproduct.getScaledImageIcon(product, 250, 200), product.getP_name(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus()};
+                Object[] rowData = {product.getP_id(), merproduct.getScaledImageIcon(product, 250, 200), product.getP_name(),product.getP_class(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus()};
                 merproduct.tableModel.addRow(rowData);
                 merproduct.categoryComboBox.setSelectedItem("全部类别"); // 设置默认选择
             }
