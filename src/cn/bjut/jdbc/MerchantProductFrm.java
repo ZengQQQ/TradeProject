@@ -431,7 +431,7 @@ public class MerchantProductFrm extends JPanel {
         }
     }
 
-    private static class ImageCellRenderer extends DefaultTableCellRenderer {
+    static class ImageCellRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             if (value instanceof ImageIcon) {
