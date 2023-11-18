@@ -23,8 +23,10 @@ public class MerchantProductFrm extends JPanel {
     private JTable productTable;
     private JTextField productIdField;
     private JTextField productNameField;
-    private JTextField priceField;
-    private JTextField quantityField;
+    private JTextField minpriceField;
+    private JTextField maxPriceField;
+    private JTextField minquantityField;
+    private JTextField maxQuantityField;
     private JComboBox<String> statusComboBox;
     private JComboBox<String> auditStatusComboBox;
 
@@ -42,7 +44,7 @@ public class MerchantProductFrm extends JPanel {
         // 创建包含表格和按钮的新面板，并设置边框和间距
         JPanel tablePanel = new JPanel();
         tablePanel.setLayout(new BorderLayout());
-        tablePanel.setBorder(BorderFactory.createEmptyBorder(100, 200, 10, 10)); // 设置边框和间距
+        tablePanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); // 设置边框和间距
 
         // 创建表格并添加到新面板的中间位置
         createProductTable();
@@ -57,7 +59,7 @@ public class MerchantProductFrm extends JPanel {
         JPanel searchPanel = new JPanel();
         searchPanel.setLayout(new BorderLayout());
 
-        TitledBorder innerBorder = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK, 4), "搜索框");
+        TitledBorder innerBorder = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK, 2), "搜索框");
         Border outerBorder = BorderFactory.createEmptyBorder(10, 10, 10, 10);
         innerBorder.setTitleFont(new Font("微软雅黑", Font.BOLD, 20));
         searchPanel.setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
@@ -82,20 +84,44 @@ public class MerchantProductFrm extends JPanel {
         searchPanel1.add(productNameField);
 
         // 单价搜索框
-        priceField = new JTextField(10);
-        priceField.setFont(new Font("微软雅黑", Font.BOLD, 20));
-        JLabel priceLabel = new JLabel("单价:￥");
+        JPanel pricePanel = new JPanel();
+        pricePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        minpriceField = new JTextField(5); // 用于输入最小价格
+        minpriceField.setFont(new Font("微软雅黑", Font.BOLD, 20));
+        JLabel priceLabel = new JLabel("价格范围(￥):");
         priceLabel.setFont(new Font("微软雅黑", Font.BOLD, 20));
-        searchPanel1.add(priceLabel);
-        searchPanel1.add(priceField);
+        pricePanel.add(priceLabel);
+        pricePanel.add(minpriceField);
+
+        maxPriceField = new JTextField(5); // 用于输入最大价格
+        maxPriceField.setFont(new Font("微软雅黑", Font.BOLD, 20));
+        JLabel maxPriceLabel = new JLabel("至");
+        maxPriceLabel.setFont(new Font("微软雅黑", Font.BOLD, 20));
+        pricePanel.add(maxPriceLabel);
+        pricePanel.add(maxPriceField);
+
+        searchPanel1.add(pricePanel);
 
         // 剩余数量搜索框
-        quantityField = new JTextField(6);
-        quantityField.setFont(new Font("微软雅黑", Font.BOLD, 20));
-        JLabel quantityLabel = new JLabel("剩余数量:");
+        JPanel quantityPanel = new JPanel();
+        quantityPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        minquantityField = new JTextField(6); // 用于输入最小数量
+        minquantityField.setFont(new Font("微软雅黑", Font.BOLD, 20));
+        JLabel quantityLabel = new JLabel("数量范围:");
         quantityLabel.setFont(new Font("微软雅黑", Font.BOLD, 20));
-        searchPanel1.add(quantityLabel);
-        searchPanel1.add(quantityField);
+        quantityPanel.add(quantityLabel);
+        quantityPanel.add(minquantityField);
+
+        maxQuantityField = new JTextField(6); // 用于输入最大数量
+        maxQuantityField.setFont(new Font("微软雅黑", Font.BOLD, 20));
+        JLabel maxQuantityLabel = new JLabel("至");
+        maxQuantityLabel.setFont(new Font("微软雅黑", Font.BOLD, 20));
+        quantityPanel.add(maxQuantityLabel);
+        quantityPanel.add(maxQuantityField);
+
+        searchPanel1.add(quantityPanel);
 
         // 商品状态下拉框
         String[] statusOptions = {"全部状态", "上架", "下架"};
@@ -123,6 +149,7 @@ public class MerchantProductFrm extends JPanel {
         JButton searchButton = new JButton("搜索");
         searchButton.setFont(new Font("微软雅黑", Font.BOLD, 20));
         searchButton.addActionListener(e -> {
+            // 搜索处理
             refreshProductTableBySearch();
         });
         // 创建“刷新”按钮
@@ -159,11 +186,17 @@ public class MerchantProductFrm extends JPanel {
         searchPanel2.add(rightButtonsPanel);
 
         // 将分类面板放置在按钮面板的后面
+        // 修改 searchPanel1 和 searchPanel2 的布局管理器为 FlowLayout，并设置水平间距
+        searchPanel1.setLayout(new FlowLayout(FlowLayout.LEFT, 13, 10)); // 20 是水平间距, 10 是垂直间距
+        searchPanel2.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10)); // 20 是水平间距, 10 是垂直间距
         searchPanel.add(searchPanel1, BorderLayout.NORTH);
         searchPanel.add(searchPanel2, BorderLayout.CENTER); // 将搜索面板添加到按钮面板的第一个位置
         buttonPanel.add(searchPanel);
 
         // 将增加商品的按钮添加在buttonPanel的最左边
+        JPanel addProductPanel = new JPanel();
+        addProductPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Left-aligned layout for the '增加商品' button
+
         JButton addProductButton = new JButton("增加商品");
         addProductButton.setFont(new Font("微软雅黑", Font.BOLD, 20));
         addProductButton.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -177,12 +210,12 @@ public class MerchantProductFrm extends JPanel {
             }
             detailsDialog.setVisible(true);
         });
-
+        addProductPanel.add(addProductButton);
         // 将增加商品按钮添加到新的面板中
         buttonPanel.add(new JPanel());
         buttonPanel.add(new JPanel());
         buttonPanel.add(new JPanel());
-        buttonPanel.add(addProductButton);
+        buttonPanel.add(addProductPanel);
 
         // 将包含增加商品按钮的新面板添加到tablePanel的北部位置
         tablePanel.add(buttonPanel, BorderLayout.NORTH);
@@ -195,7 +228,7 @@ public class MerchantProductFrm extends JPanel {
 
 
     private void createProductTable() {
-        String[] columns = {"ID", "图片", "商品名称", "单价￥", "剩余数量", "商品状态", "审核状态", "操作"};
+        String[] columns = {"ID", "图片", "商品名称", "类别", "单价￥", "剩余数量", "商品状态", "审核状态", "操作"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
@@ -208,7 +241,7 @@ public class MerchantProductFrm extends JPanel {
             @Override
             public boolean isCellEditable(int row, int column) {
                 // 带有按钮列的功能这里必须要返回true不然按钮点击时不会触发编辑效果，也就不会触发事件。
-                if (column == 7) {
+                if (column == 8) {
                     return true;
                 } else {
                     return false;
@@ -267,12 +300,13 @@ public class MerchantProductFrm extends JPanel {
         };
         productTable.getColumnModel().getColumn(0).setPreferredWidth(70); // ID
         productTable.getColumnModel().getColumn(1).setPreferredWidth(200); // 图片
-        productTable.getColumnModel().getColumn(2).setPreferredWidth(200); // 商品名称
-        productTable.getColumnModel().getColumn(3).setPreferredWidth(150); // 单价￥
-        productTable.getColumnModel().getColumn(4).setPreferredWidth(130); // 剩余数量
-        productTable.getColumnModel().getColumn(5).setPreferredWidth(120); // 商品状态
-        productTable.getColumnModel().getColumn(6).setPreferredWidth(130); // 审核状态
-        productTable.getColumnModel().getColumn(7).setPreferredWidth(250); // 操作
+        productTable.getColumnModel().getColumn(2).setPreferredWidth(210); // 商品名称
+        productTable.getColumnModel().getColumn(3).setPreferredWidth(160); // 商品类别
+        productTable.getColumnModel().getColumn(4).setPreferredWidth(150); // 单价￥
+        productTable.getColumnModel().getColumn(5).setPreferredWidth(130); // 剩余数量
+        productTable.getColumnModel().getColumn(6).setPreferredWidth(120); // 商品状态
+        productTable.getColumnModel().getColumn(7).setPreferredWidth(136); // 审核状态
+        productTable.getColumnModel().getColumn(8).setPreferredWidth(250); // 操作
         productTable.setDefaultRenderer(Object.class, new ImageCellRenderer());
         productTable.setRowHeight(160); // 设置行高
         // 为表格添加边框
@@ -288,9 +322,9 @@ public class MerchantProductFrm extends JPanel {
         productTable.getTableHeader().setReorderingAllowed(false); // 禁用列重新排序
         productTable.getTableHeader().setResizingAllowed(false); // 禁用列调整大小
 
-        productTable.getColumnModel().getColumn(7).setCellEditor(new ProductFrmButtonEditor(new JCheckBox(), this));
+        productTable.getColumnModel().getColumn(8).setCellEditor(new ProductFrmButtonEditor(new JCheckBox(), this));
 
-        productTable.getColumnModel().getColumn(7).setCellRenderer(new ProductFrmButtonRender());
+        productTable.getColumnModel().getColumn(8).setCellRenderer(new ProductFrmButtonRender());
 
         productTable.setRowSelectionAllowed(false);// 禁止表格的选择功能。不然在点击按钮时表格的整行都会被选中。也可以通过其它方式来实现。
     }
@@ -307,7 +341,7 @@ public class MerchantProductFrm extends JPanel {
 
     public void handleModify(int selectedRow) throws SQLException {
         Object productId = productTable.getValueAt(selectedRow, 0);
-        Object auditstatus = productTable.getValueAt(selectedRow, 6);
+        Object auditstatus = productTable.getValueAt(selectedRow, 7);
         if (auditstatus.equals("待审核")) {
             JOptionPane.showMessageDialog(null, "商品在审核中，不能修改", "提示", JOptionPane.INFORMATION_MESSAGE);
         } else if (productId != null) {
@@ -346,28 +380,53 @@ public class MerchantProductFrm extends JPanel {
         }
     }
 
-
     public void refreshProductTableBySearch() {
         try {
             // 获取搜索框和下拉列表的值
             String productId = productIdField.getText().trim();
             String productName = productNameField.getText().trim();
-            String price = priceField.getText().trim();
-            String quantity = quantityField.getText().trim();
             String selectedStatus = (String) statusComboBox.getSelectedItem();
             String selectedAuditStatus = (String) auditStatusComboBox.getSelectedItem();
             String selectedCategory = (String) categoryComboBox.getSelectedItem();
+            String minPrice = minpriceField.getText().trim();
+            String maxPrice = maxPriceField.getText().trim();
+            String minQuantity = minquantityField.getText().trim();
+            String maxQuantity = maxQuantityField.getText().trim();
+
+            boolean priceInputsProvided = !minPrice.isEmpty() && !maxPrice.isEmpty();
+            boolean quantityInputsProvided = !minQuantity.isEmpty() && !maxQuantity.isEmpty();
+
+            if (priceInputsProvided) {
+                double minPriceValue = Double.parseDouble(minPrice);
+                double maxPriceValue = Double.parseDouble(maxPrice);
+                if (minPriceValue > maxPriceValue) {
+                    JOptionPane.showMessageDialog(null, "价格范围输入错误", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+            }
+
+            if (quantityInputsProvided) {
+                int minQuantityValue = Integer.parseInt(minQuantity);
+                int maxQuantityValue = Integer.parseInt(maxQuantity);
+
+                if (minQuantityValue > maxQuantityValue) {
+                    JOptionPane.showMessageDialog(null, "数量范围输入错误", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+            }
 
             // 调用MerchantProductQueryByCategory函数，传入所有条件，并获取结果
-            List<Product> filteredProducts = dataControlmer.MerchantProductQueryByCategory(merchantInterFrm.getM_id(), selectedCategory, productId, productName, price, quantity, selectedStatus, selectedAuditStatus);
+            List<Product> filteredProducts = dataControlmer.MerchantProductQueryByCategory(merchantInterFrm.getM_id(), selectedCategory, productId, productName, minPrice, maxPrice, minQuantity, maxQuantity, selectedStatus, selectedAuditStatus);
 
             tableModel.setRowCount(0); // 清空表格数据
             for (Product product : filteredProducts) {
-                Object[] rowData = {product.getP_id(), getScaledImageIcon(product, 200, 210), product.getP_name(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus(),
+                Object[] rowData = {product.getP_id(), getScaledImageIcon(product, 200, 210), product.getP_name(), product.getP_class(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus()
                         // 如果之前有第7列的操作按钮信息，这里需要根据列数调整
                 };
                 tableModel.addRow(rowData);
             }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "输入错误，请输入有效数字", "错误", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -379,15 +438,17 @@ public class MerchantProductFrm extends JPanel {
             List<Product> products = dataControlmer.MerchantProductQuery(merchantInterFrm.getM_id());
             tableModel.setRowCount(0); // 清空表格数据
             for (Product product : products) {
-                Object[] rowData = {product.getP_id(), getScaledImageIcon(product, 200, 210), product.getP_name(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus(), // 添加审核状态列的信息
-                        // 如果之前有第7列的操作按钮信息，这里需要根据列数调整
+                Object[] rowData = {product.getP_id(), getScaledImageIcon(product, 200, 210), product.getP_name(), product.getP_class(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus(), // 添加审核状态列的信息
+
                 };
                 tableModel.addRow(rowData);
             }
             productIdField.setText("");
             productNameField.setText("");
-            priceField.setText("");
-            quantityField.setText("");
+            minpriceField.setText("");
+            maxPriceField.setText("");
+            minquantityField.setText("");
+            maxQuantityField.setText("");
             statusComboBox.setSelectedIndex(0);
             auditStatusComboBox.setSelectedIndex(0);
             categoryComboBox.setSelectedIndex(0);
