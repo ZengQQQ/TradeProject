@@ -267,7 +267,7 @@ public class DataControlProduct extends DataControl {
 
         return product;
     }
-    
+
     public List<Product> getProductofNoAudit() throws SQLException {
         List<Product> products = new ArrayList<>();
         Connection con = DataBase.OpenDB();
