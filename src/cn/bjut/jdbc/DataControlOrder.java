@@ -25,8 +25,8 @@ public class DataControlOrder extends DataControl{
         ResultSet rs = null;
         try {
             // 编写SQL查询语句，根据m_id查找订单、用户和商品信息
-            String sql = "SELECT o.p_id, o.u_id, o.buy_time, o.quantity, o.totalprice, " +
-                    "p.p_name, p.p_desc, p.p_class, p.p_price, p.p_quantity, p.p_img, " +
+            String sql = "SELECT o.o_id,o.p_id, o.u_id, o.buy_time, o.quantity, o.totalprice,o.send_time,o.receive_time,o.o_status, " +
+                    "p.p_name, p.p_desc, p.p_class, p.p_price, p.p_quantity, p.p_img,p.p_auditStatus, " +
                     "u.u_name, u.u_sex, u.u_tele " +
                     "FROM orders o " +
                     "INNER JOIN product p ON o.p_id = p.p_id " +
@@ -41,10 +41,14 @@ public class DataControlOrder extends DataControl{
             // 处理查询结果
             while (rs.next()) {
                 Order order = new Order();
+                order.setO_id(rs.getInt("o_id"));
                 order.setP_id(rs.getInt("p_id"));
                 order.setU_id(rs.getInt("u_id"));
                 order.setBuytime(rs.getString("buy_time"));
+                order.setSendtime(rs.getString("send_time"));
+                order.setReceivetime(rs.getString("receive_time"));
                 order.setQuantity(rs.getInt("quantity"));
+                order.setStatus(rs.getString("o_status"));
                 order.setTotalprice(String.valueOf(rs.getDouble("totalprice")));
 
                 Product product = new Product();
@@ -53,6 +57,7 @@ public class DataControlOrder extends DataControl{
                 product.setP_class(rs.getString("p_class"));
                 product.setP_price(rs.getString("p_price"));
                 product.setP_quantity(rs.getInt("p_quantity"));
+                product.setP_audiStatus(rs.getString("p_auditStatus"));
                 product.setP_img(rs.getString("p_img"));
 
                 User user = new User();
@@ -69,19 +74,12 @@ public class DataControlOrder extends DataControl{
             e.printStackTrace();
         } finally {
             // 关闭数据库连接和资源
-            if (rs != null) {
                 rs.close();
-            }
-            if (stmt != null) {
                 stmt.close();
-            }
-            if (con != null) {
                 con.close();
-            }
         }
         return orderInfoList;
     }
-
 
 
     // 根据一定的信息查找订单
@@ -318,5 +316,123 @@ public class DataControlOrder extends DataControl{
         order.setUser(user);
 
         return order;
+    }
+
+    // 根据o_id查找订单有关的用户和商品
+    public Order getOrderInfoByO_id(int o_id) throws SQLException {
+        Order order = new Order();
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            // 编写SQL查询语句，根据o_id查找订单、用户和商品信息
+            String sql = "SELECT o.o_id,o.p_id, o.u_id, o.buy_time, o.quantity, o.totalprice,o.send_time,o.receive_time,o.o_status, " +
+                    "p.p_name, p.p_desc, p.p_class, p.p_price, p.p_quantity, p.p_img,p.p_auditStatus,p.p_status, " +
+                    "u.u_name, u.u_sex, u.u_tele " +
+                    "FROM orders o " +
+                    "INNER JOIN product p ON o.p_id = p.p_id " +
+                    "INNER JOIN user u ON o.u_id = u.u_id " +
+                    "WHERE o.o_id = ?";
+
+            // 创建PreparedStatement对象，设置参数并执行查询
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1, o_id);
+            rs = stmt.executeQuery();
+
+            // 处理查询结果
+            if (rs.next()) {
+                order.setO_id(rs.getInt("o_id"));
+                order.setP_id(rs.getInt("p_id"));
+                order.setU_id(rs.getInt("u_id"));
+                order.setBuytime(rs.getString("buy_time"));
+                order.setSendtime(rs.getString("send_time"));
+                order.setReceivetime(rs.getString("receive_time"));
+                order.setQuantity(rs.getInt("quantity"));
+                order.setStatus(rs.getString("o_status"));
+                order.setTotalprice(String.valueOf(rs.getDouble("totalprice")));
+
+                Product product = new Product();
+                product.setP_name(rs.getString("p_name"));
+                product.setP_desc(rs.getString("p_desc"));
+                product.setP_class(rs.getString("p_class"));
+                product.setP_price(rs.getString("p_price"));
+                product.setP_quantity(rs.getInt("p_quantity"));
+                product.setP_audiStatus(rs.getString("p_auditStatus"));
+                product.setP_status(rs.getString("p_status"));
+                product.setP_img(rs.getString("p_img"));
+
+                User user = new User();
+                user.setU_name(rs.getString("u_name"));
+                user.setU_sex(rs.getString("u_sex"));
+                user.setU_tele(rs.getString("u_tele"));
+
+                order.setProduct(product);
+                order.setUser(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭数据库连接和资源
+                rs.close();
+                stmt.close();
+                con.close();
+        }
+        return order;
+    }
+
+
+    public boolean shippOrder(int o_Id) {
+        boolean isShipped = false; // 默认值表示失败
+
+        try {
+            Connection con = DataBase.OpenDB();
+            PreparedStatement stmt = null;
+            // 获取订单信息
+            Order order = getOrderInfoByO_id(o_Id);
+            // 更新订单状态为“待收货”，并将发送时间设置为当前时间
+            String sql = "UPDATE orders SET o_status = '待收货', send_time = NOW() WHERE o_id = ?";
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1, o_Id);
+            int rowsAffected = stmt.executeUpdate();
+            // 如果更新查询影响到了行数，则视为成功
+            if (rowsAffected > 0) {
+                isShipped = true; // 表示成功发货
+            }
+
+            // 关闭资源
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isShipped;
+    }
+
+
+    public boolean returnOrder(int o_Id) {
+        boolean isReturned = false; // 默认值表示失败
+
+        try {
+            Connection con = DataBase.OpenDB();
+            PreparedStatement stmt = null;
+            // 获取订单信息
+            Order order = getOrderInfoByO_id(o_Id);
+            // 更新订单状态为“已退货”，并将退货时间设置为当前时间
+            String sql = "UPDATE orders SET o_status = '已退货', receive_time = NOW() WHERE o_id = ?";
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1, o_Id);
+            int rowsAffected = stmt.executeUpdate();
+            // 如果更新查询影响到了行数，则视为成功
+            if (rowsAffected > 0) {
+                isReturned = true; // 表示成功发货
+            }
+
+            // 关闭资源
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isReturned;
     }
 }
