@@ -1,6 +1,7 @@
 package cn.bjut.jdbc;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -80,6 +81,9 @@ public class MerchantOrdersFrm extends JPanel {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.getVerticalScrollBar().setUnitIncrement(30);
         scrollPane.setPreferredSize(new Dimension(800, 400));
+
+        // 添加外边距和边框
+        scrollPane.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         add(scrollPane, BorderLayout.CENTER);
     }
