@@ -43,31 +43,228 @@ public class UserFrm extends JFrame {
 
         // 创建一个菜单对象
         JMenu fileMenu = new JMenu("菜单");
-        JMenuItem exitItem = new JMenuItem("退出");
 
+// 添加"查看个人信息"菜单项
+        JMenuItem viewProfileItem = new JMenuItem("查看个人信息");
+        viewProfileItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 构建新的SQL查询语句
+                String query4 = "SELECT u_acc, u_psw, u_name,u_sex,u_tele FROM user WHERE u_id=" + u_id;
+
+                try {
+                    DataBase dataBase=new DataBase();
+                    dataBase.OpenDB();
+                    Statement stmt = null;
+                    try {
+                        stmt = dataBase.getCon().createStatement();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    ResultSet rs = stmt.executeQuery(query4);
+
+                    if (rs.next()) {
+                        String u_acc = rs.getString("u_acc");
+                        String u_psw = rs.getString("u_psw");
+                        String u_name = rs.getString("u_name");
+                        String u_sex = rs.getString("u_sex");
+                        String u_tele = rs.getString("u_tele");
+
+                        // 创建一个面板，用于放置用户信息的标签
+                        JPanel infoPanel = new JPanel();
+                        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+                        JLabel nameLabel = new JLabel("名称：" + u_name);
+                        nameLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+                        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+                        JLabel accLabel = new JLabel("账号：" + u_acc);
+                        accLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+                        accLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+                        JLabel sexLabel = new JLabel("性别：" + u_sex);
+                        sexLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+                        sexLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+                        JLabel teleLabel = new JLabel("电话：" + u_tele);
+                        teleLabel.setFont(new Font("宋体", Font.PLAIN, 18));
+                        teleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+                        Box hBox1 = Box.createHorizontalBox();
+                        hBox1.add(Box.createHorizontalGlue());
+                        hBox1.add(nameLabel);
+                        hBox1.add(Box.createHorizontalGlue());
+                        infoPanel.add(hBox1);
+                        infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // 添加固定大小的垂直空间
+
+                        Box hBox2 = Box.createHorizontalBox();
+                        hBox2.add(Box.createHorizontalGlue());
+                        hBox2.add(accLabel);
+                        hBox2.add(Box.createHorizontalGlue());
+                        infoPanel.add(hBox2);
+                        infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // 添加固定大小的垂直空间
+
+                        Box hBox3 = Box.createHorizontalBox();
+                        hBox3.add(Box.createHorizontalGlue());
+                        hBox3.add(sexLabel);
+                        hBox3.add(Box.createHorizontalGlue());
+                        infoPanel.add(hBox3);
+                        infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // 添加固定大小的垂直空间
+
+                        Box hBox4 = Box.createHorizontalBox();
+                        hBox4.add(Box.createHorizontalGlue());
+                        hBox4.add(teleLabel);
+                        hBox4.add(Box.createHorizontalGlue());
+                        infoPanel.add(hBox4);
+                        infoPanel.add(Box.createVerticalStrut(100));
+
+                        JOptionPane.showMessageDialog(UserFrm.this, infoPanel, "个人信息", JOptionPane.INFORMATION_MESSAGE);
+                    }
+
+                    // 关闭数据库连接
+                    rs.close();
+                    stmt.close();
+                    try {
+                        dataBase.getCon().close();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        fileMenu.add(viewProfileItem);
+
+// 添加"修改个人信息"菜单项
+        JMenuItem editProfileItem = new JMenuItem("修改个人信息");
+        editProfileItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 弹出一个对话框，让用户输入要修改的信息
+                JDialog dialog = new JDialog(UserFrm.this, "修改个人信息", true);
+                dialog.setLayout(new GridLayout(5, 2));
+                dialog.add(new JLabel("姓名："));
+                JTextField nameField = new JTextField();
+                dialog.add(nameField);
+                dialog.add(new JLabel("性别："));
+                JComboBox<String> sexBox = new JComboBox<>(new String[]{"男", "女"});
+                dialog.add(sexBox);
+                dialog.add(new JLabel("电话："));
+                JTextField teleField = new JTextField();
+                dialog.add(teleField);
+                JButton confirmButton = new JButton("确定");
+
+                confirmButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 获取用户输入的要修改的信息
+                        String name = nameField.getText();
+                        String sex = (String) sexBox.getSelectedItem();
+                        String tele = teleField.getText();
+                        // 调用一个方法，将用户信息更新到数据库中
+                        int result = updateInfo(u_id, name, sex, tele);
+                        if (result == 1) {
+                            JOptionPane.showMessageDialog(dialog, "修改成功！");
+                            dialog.dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(dialog, "修改失败！");
+                        }
+                    }
+                });
+                dialog.add(confirmButton);
+                JButton cancelButton = new JButton("取消");
+                cancelButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dialog.dispose(); // 关闭对话框
+                    }
+                });
+                dialog.add(cancelButton);
+                dialog.setSize(new Dimension(400,250));
+                dialog.setLocationRelativeTo(UserFrm.this);
+                dialog.setVisible(true); // 显示对话框
+            }
+        });
+        fileMenu.add(editProfileItem);
+
+// 添加"修改密码"菜单项
+        JMenuItem changePasswordItem = new JMenuItem("修改密码");
+        changePasswordItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 弹出一个对话框，让用户输入旧密码和新密码
+                JDialog dialog = new JDialog(UserFrm.this, "修改密码", true);
+                dialog.setLayout(new GridLayout(3, 2));
+                dialog.setSize(new Dimension(200,150));
+                dialog.add(new JLabel("旧密码："));
+                JPasswordField oldPasswordField = new JPasswordField();
+                dialog.add(oldPasswordField);
+                dialog.add(new JLabel("新密码："));
+                JPasswordField newPasswordField = new JPasswordField();
+                dialog.add(newPasswordField);
+                JButton confirmButton = new JButton("确定");
+                confirmButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 获取用户输入的旧密码和新密码
+                        String oldPassword = new String(oldPasswordField.getPassword());
+                        String newPassword = new String(newPasswordField.getPassword());
+                        // 检查旧密码是否正确
+                        try {
+                            DataControl dataControl=new DataControl();
+                            if (dataControl.getUserPsw(u_id).equals(oldPassword)) {
+                                // 调用UserDao的方法修改用户密码
+                                int result = updatePassword(dataControl.getUserName(u_id), newPassword);
+                                if (result == 1) {
+                                    JOptionPane.showMessageDialog(dialog, "修改成功！");
+                                } else {
+                                    JOptionPane.showMessageDialog(dialog, "修改失败！");
+                                    dialog.dispose();
+                                }
+                            } else { // 如果旧密码不正确，提示用户
+                                JOptionPane.showMessageDialog(dialog, "旧密码不正确！");
+                            }
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+                dialog.add(confirmButton);
+                JButton cancelButton = new JButton("取消");
+                cancelButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dialog.dispose(); // 关闭对话框
+                    }
+                });
+                dialog.add(cancelButton);
+                dialog.setLocationRelativeTo(UserFrm.this);
+                dialog.setSize(400, 250);
+                dialog.setVisible(true); // 显示对话框
+            }
+        });
+        fileMenu.add(changePasswordItem);
+
+// 添加"退出"菜单项
+        JMenuItem exitItem = new JMenuItem("退出");
         exitItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     closeAndOpenLogin();
-                } catch (UnsupportedLookAndFeelException ex) {
-                    ex.printStackTrace();
-                } catch (ClassNotFoundException ex) {
-                    ex.printStackTrace();
-                } catch (InstantiationException ex) {
-                    ex.printStackTrace();
-                } catch (IllegalAccessException ex) {
-                    ex.printStackTrace();
-                } catch (SQLException ex) {
+                } catch (UnsupportedLookAndFeelException | ClassNotFoundException |
+                        InstantiationException | IllegalAccessException | SQLException ex) {
                     throw new RuntimeException(ex);
                 }
             }
         });
-        // 将菜单项添加到菜单中
         fileMenu.add(exitItem);
-        // 将菜单添加到菜单栏中
+
+// 将菜单添加到菜单栏中
         menuBar.add(fileMenu);
-        // 将菜单栏添加到对话框中
+
+// 将菜单栏添加到对话框中
         setJMenuBar(menuBar);
 
 // 创建第一个界面-------------------------------------------------------------------------------------------------------
@@ -718,263 +915,6 @@ public class UserFrm extends JFrame {
         // 创建第四个界面，显示用户信息和功能按钮
         JPanel card4 = new JPanel();
         card4.setLayout(new BorderLayout());
-        DataControl dataControl= null;
-        try {
-            dataControl = new DataControl();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
-// 创建一个按钮，实现修改密码的功能
-        JButton changePasswordButton = new JButton("修改密码");
-        DataControl finalDataControl = dataControl;
-        changePasswordButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // 弹出一个对话框，让用户输入旧密码和新密码
-                JDialog dialog = new JDialog(UserFrm.this, "修改密码", true);
-                dialog.setLayout(new GridLayout(3, 2));
-                dialog.setSize(new Dimension(200,150));
-                dialog.add(new JLabel("旧密码："));
-                JPasswordField oldPasswordField = new JPasswordField();
-                dialog.add(oldPasswordField);
-                dialog.add(new JLabel("新密码："));
-                JPasswordField newPasswordField = new JPasswordField();
-                dialog.add(newPasswordField);
-                JButton confirmButton = new JButton("确定");
-                confirmButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        // 获取用户输入的旧密码和新密码
-                        String oldPassword = new String(oldPasswordField.getPassword());
-                        String newPassword = new String(newPasswordField.getPassword());
-                        // 检查旧密码是否正确
-                        try {
-                            if (finalDataControl.getUserPsw(u_id).equals(oldPassword)) {
-                                // 调用UserDao的方法修改用户密码
-                                int result = updatePassword(finalDataControl.getUserName(u_id), newPassword);
-                                if (result == 1) {
-                                    JOptionPane.showMessageDialog(dialog, "修改失败！");
-                                } else {
-                                    JOptionPane.showMessageDialog(dialog, "修改成功！");
-                                    dialog.dispose();
-                                }
-                            } else { // 如果旧密码不正确，提示用户
-                                JOptionPane.showMessageDialog(dialog, "旧密码不正确！");
-                            }
-                        } catch (SQLException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                });
-                dialog.add(confirmButton);
-                JButton cancelButton = new JButton("取消");
-                cancelButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        dialog.dispose(); // 关闭对话框
-                    }
-                });
-                dialog.add(cancelButton);
-                dialog.setLocationRelativeTo(UserFrm.this);
-                dialog.setSize(400, 250);
-                dialog.setVisible(true); // 显示对话框
-            }
-        });
-
-        // 创建一个按钮，实现修改个人信息的功能
-        JButton modifyInfoButton = new JButton("修改个人信息");
-        modifyInfoButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // 弹出一个对话框，让用户输入要修改的信息
-                JDialog dialog = new JDialog(UserFrm.this, "修改个人信息", true);
-                dialog.setLayout(new GridLayout(5, 2));
-                dialog.add(new JLabel("姓名："));
-                JTextField nameField = new JTextField();
-                dialog.add(nameField);
-                dialog.add(new JLabel("性别："));
-                JComboBox<String> sexBox = new JComboBox<>(new String[]{"男", "女"});
-                dialog.add(sexBox);
-                dialog.add(new JLabel("电话："));
-                JTextField teleField = new JTextField();
-                dialog.add(teleField);
-                JButton confirmButton = new JButton("确定");
-
-                confirmButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        // 获取用户输入的要修改的信息
-                        String name = nameField.getText();
-                        String sex = (String) sexBox.getSelectedItem();
-                        String tele = teleField.getText();
-                        // 调用一个方法，将用户信息更新到数据库中
-                        int result = updateInfo(u_id, name, sex, tele);
-                        if (result == 1) {
-                            JOptionPane.showMessageDialog(dialog, "修改成功！");
-                            dialog.dispose();
-                        } else {
-                            JOptionPane.showMessageDialog(dialog, "修改失败！");
-                        }
-                    }
-                });
-                dialog.add(confirmButton);
-                JButton cancelButton = new JButton("取消");
-                cancelButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        dialog.dispose(); // 关闭对话框
-                    }
-                });
-                dialog.add(cancelButton);
-                dialog.setSize(new Dimension(400,250));
-                dialog.setLocationRelativeTo(UserFrm.this);
-                dialog.setVisible(true); // 显示对话框
-            }
-        });
-
-        JLabel nameLabel = new JLabel("名称：" );
-        nameLabel.setFont(new Font("宋体", Font.PLAIN, 18));
-        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        // 创建一个标签，显示用户账号
-        JLabel accLabel = new JLabel("账号：" );
-        accLabel.setFont(new Font("宋体", Font.PLAIN, 18));
-        accLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        // 创建一个标签，显示用户性别
-        JLabel sexLabel = new JLabel("性别：" );
-        sexLabel.setFont(new Font("宋体", Font.PLAIN, 18));
-        sexLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        // 创建一个标签，显示用户电话
-        JLabel teleLabel = new JLabel("电话：" );
-        teleLabel.setFont(new Font("宋体", Font.PLAIN, 18));
-        teleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        // 创建一个标签，显示用户信息
-        // 连接数据库
-        dataBase.OpenDB();
-        // 构建新的SQL查询语句
-        String query4 = "SELECT u_acc, u_psw, u_name,u_sex,u_tele FROM user WHERE u_id=" + u_id;
-
-        try {
-            try {
-                stmt[0] = dataBase.getCon().createStatement();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            rs[0] = stmt[0].executeQuery(query4);
-            if (rs[0].next()) {
-                String u_acc = rs[0].getString("u_acc");
-                String u_psw = rs[0].getString("u_psw");
-                String u_name = rs[0].getString("u_name");
-                String u_sex = rs[0].getString("u_sex");
-                String u_tele = rs[0].getString("u_tele");
-
-                // 更新标签的文本
-                nameLabel.setText("名称：" + u_name);
-                accLabel.setText("账号：" + u_acc);
-                sexLabel.setText("性别：" + u_sex);
-                teleLabel.setText("电话：" + u_tele);
-
-                // 创建一个面板，用于放置用户信息的标签
-                JPanel infoPanel = new JPanel();
-                infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-
-                Box hBox1 = Box.createHorizontalBox();
-                hBox1.add(Box.createHorizontalGlue());
-                hBox1.add(nameLabel);
-                hBox1.add(Box.createHorizontalGlue());
-                infoPanel.add(hBox1);
-                infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // 添加固定大小的垂直空间
-
-                Box hBox2 = Box.createHorizontalBox();
-                hBox2.add(Box.createHorizontalGlue());
-                hBox2.add(accLabel);
-                hBox2.add(Box.createHorizontalGlue());
-                infoPanel.add(hBox2);
-                infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // 添加固定大小的垂直空间
-
-                Box hBox3 = Box.createHorizontalBox();
-                hBox3.add(Box.createHorizontalGlue());
-                hBox3.add(sexLabel);
-                hBox3.add(Box.createHorizontalGlue());
-                infoPanel.add(hBox3);
-                infoPanel.add(Box.createRigidArea(new Dimension(0, 10))); // 添加固定大小的垂直空间
-
-                Box hBox4 = Box.createHorizontalBox();
-                hBox4.add(Box.createHorizontalGlue());
-                hBox4.add(teleLabel);
-                hBox4.add(Box.createHorizontalGlue());
-                infoPanel.add(hBox4);
-
-                card4.add(infoPanel, BorderLayout.NORTH);
-
-
-            }
-
-            // 关闭数据库连接
-            rs[0].close();
-            stmt[0].close();
-            try {
-                dataBase.getCon().close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
-        // 创建一个按钮，设置文本为“刷新”
-        JButton myrefreshButton = new JButton("刷新");
-        // 为按钮添加监听事件
-        myrefreshButton.addActionListener(new ActionListener() {
-            // 事件处理方法
-            public void actionPerformed(ActionEvent e) {
-                // 重新连接数据库
-                dataBase.OpenDB();
-                // 重新执行SQL查询语句
-                String query4 = "SELECT u_acc, u_psw, u_name,u_sex,u_tele FROM user WHERE u_id=" + u_id;
-                try {
-                    try {
-                        stmt[0] = dataBase.getCon().createStatement();
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                    rs[0] = stmt[0].executeQuery(query4);
-                    if (rs[0].next()) {
-                        // 获取数据库中的用户信息
-                        String u_acc = rs[0].getString("u_acc");
-                        String u_psw = rs[0].getString("u_psw");
-                        String u_name = rs[0].getString("u_name");
-                        String u_sex = rs[0].getString("u_sex");
-                        String u_tele = rs[0].getString("u_tele");
-                        // 更新标签的文本
-                        nameLabel.setText("名称：" + u_name);
-                        accLabel.setText("账号：" + u_acc);
-                        sexLabel.setText("性别：" + u_sex);
-                        teleLabel.setText("电话：" + u_tele);
-                    }
-                    // 关闭数据库连接
-                    rs[0].close();
-                    stmt[0].close();
-                    try {
-                        dataBase.getCon().close();
-                    } catch (Exception e2) {
-                        e2.printStackTrace();
-                    }
-                } catch (SQLException e3) {
-                    e3.printStackTrace();
-                }
-                // 重绘窗口
-                repaint();
-            }
-        });
-
-
-
         JPanel buttonpanel=new JPanel();
 
 
@@ -1073,23 +1013,104 @@ public class UserFrm extends JFrame {
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                card4.add(orderScrollPane, BorderLayout.SOUTH);
+                card4.add(orderScrollPane);
                 card4.revalidate();
                 repaint();
 
             }
         });
+// 为右键功能创建弹出菜单
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem returnItem = new JMenuItem("退货");
+        popupMenu.add(returnItem);
 
+// 为表格添加鼠标监听器
+        cartTable1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    int row = cartTable1.rowAtPoint(e.getPoint());
+                    cartTable1.setRowSelectionInterval(row, row);
 
-        buttonpanel.add(changePasswordButton);
+                    // 获取选定行的商品状态
+                    String status = (String) cartTable1.getValueAt(row, 6);
+
+                    // 只有商品状态不为已退货时，才显示弹出菜单
+                    if (!"已退货".equals(status)) {
+                        // 在右键点击的位置显示弹出菜单
+                        popupMenu.show(cartTable1, e.getX(), e.getY());
+                    }
+                }
+            }
+        });
+
+        returnItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 执行退货的逻辑
+                int selectedRow = cartTable1.getSelectedRow();
+                // 从选定的行获取必要的信息，例如商品 ID
+                int productId = (int) cartTable1.getValueAt(selectedRow, 5);
+
+                // 创建输入框
+                JTextArea textArea = new JTextArea(5, 30);
+                JScrollPane scrollPane = new JScrollPane(textArea);
+
+                // 弹出对话框要求用户输入退货理由
+                int option = JOptionPane.showOptionDialog(
+                        null,
+                        scrollPane,
+                        "填写退货理由",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        null,
+                        null
+                );
+
+                // 用户点击确认按钮
+                if (option == JOptionPane.OK_OPTION) {
+                    String reason = textArea.getText().trim();
+
+                    if (!reason.isEmpty()) {
+                        // 实现退货逻辑，更新数据库等
+                        try {
+                            DataBase dataBase = new DataBase();
+                            dataBase.OpenDB();
+
+                            // 获取订单信息
+                            String orderIdColumnName = "o_id"; // 请替换为实际的列名
+                            int orderId = getOrderIDFromDatabase(dataBase, orderIdColumnName, productId);
+
+                            if (orderId != -1) {
+                                String buyTime = (String) cartTable1.getValueAt(selectedRow, 3);
+                                String orderStatus = "待审核";
+
+                                // 插入退货记录
+                                Statement stmt = dataBase.getCon().createStatement();
+                                String insertQuery = "INSERT INTO return_detail (o_id, request_time, reason, status) " +
+                                        "VALUES (" + orderId + ", '" + buyTime + "', '" + reason + "', '" + orderStatus + "')";
+                                stmt.executeUpdate(insertQuery);
+
+                                stmt.close();
+                                dataBase.getCon().close();
+                                JOptionPane.showMessageDialog(null, "退货申请已提交成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                // 未能获取订单信息，进行适当的错误处理
+                                JOptionPane.showMessageDialog(null, "无法获取订单信息", "错误", JOptionPane.INFORMATION_MESSAGE);
+
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+
         buttonpanel.add(viewOrderButton);
-        buttonpanel.add(modifyInfoButton);
-        buttonpanel.add(myrefreshButton);
-        card4.add(buttonpanel,BorderLayout.CENTER);
+        card4.add(buttonpanel,BorderLayout.NORTH);
         viewOrderButton.doClick();
-
-
-
 
         //-----------------------------------------------------------------------------------------------------------
 
@@ -1123,7 +1144,7 @@ public class UserFrm extends JFrame {
         ImageIcon shop1Icon = new ImageIcon(projectPath + File.separator + "src" + File.separator + "img" + File.separator + "shopafter.jpg");
         shoppingButton.setIcon(shopIcon);
 
-        myButton = new JButton("我的");
+        myButton = new JButton("我的订单");
         myButton.setBorderPainted(false);
         myButton.setContentAreaFilled(false);
         ImageIcon myIcon = new ImageIcon(projectPath + File.separator + "src" + File.separator + "img" + File.separator + "mybefore.jpg");
@@ -1747,4 +1768,28 @@ public class UserFrm extends JFrame {
         };
         return panel;
         }
+    // 从数据库获取订单ID的方法
+    private int getOrderIDFromDatabase(DataBase dataBase, String orderIdColumnName, int productId) throws SQLException {
+        Statement stmt = null;
+        try {
+            stmt = dataBase.getCon().createStatement();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String query = "SELECT " + orderIdColumnName + " FROM orders WHERE p_id = " + productId;
+        ResultSet rs = stmt.executeQuery(query);
+
+        if (rs.next()) {
+            int orderId = rs.getInt(orderIdColumnName);
+            rs.close();
+            stmt.close();
+            return orderId;
+        } else {
+            rs.close();
+            stmt.close();
+            return -1; // 如果未找到订单信息
+        }
+    }
+
+
 }
