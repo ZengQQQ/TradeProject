@@ -22,7 +22,7 @@ public class DataControlProduct extends DataControl {
             // 建立数据库连接
             con = dataBase.OpenDB();
             // 创建SQL更新语句
-            String sql = "UPDATE product SET p_name = ?, p_desc = ?, p_class = ?, p_price = ?, p_status = ?,p_quantity = ?, p_img = ? WHERE p_id = ?";
+            String sql = "UPDATE product SET p_name = ?, p_desc = ?, p_class = ?, p_price = ?, p_status = ?,p_quantity = ?, p_img = ?,p_auditStatus = ? WHERE p_id = ?";
             // 创建 PreparedStatement 对象
             preparedStatement = con.prepareStatement(sql);
             // 设置参数
@@ -30,10 +30,11 @@ public class DataControlProduct extends DataControl {
             preparedStatement.setString(2, newdesc);
             preparedStatement.setString(3, newclass);
             preparedStatement.setDouble(4, newPrice);
-            preparedStatement.setString(5, newsta);
+            preparedStatement.setString(5, "下架");
             preparedStatement.setInt(6, newquantity);
             preparedStatement.setString(7, newimg);
-            preparedStatement.setInt(8, p_id);
+            preparedStatement.setString(8, "待审核");
+            preparedStatement.setInt(9, p_id);
             // 执行更新
             int rowsAffected = preparedStatement.executeUpdate();
             // 如果更新成功，rowsAffected 应该为 1
@@ -72,16 +73,16 @@ public class DataControlProduct extends DataControl {
 
     //添加商品
     public boolean addProduct(int m_id, String productName, String productDesc, String productClass, double productPrice, String productState, int productQuantity, String productImg) throws SQLException {
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
+        Connection con;
+        PreparedStatement preparedStatement;
         boolean added = false;
 
         // 创建连接
         DataBase dataBase = new DataBase();
         con = dataBase.OpenDB();
         // 创建SQL插入语句
-        String insertQuery = "INSERT INTO product (m_id, p_name, p_desc, p_class, p_price, p_status, p_quantity, p_img) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO product (m_id, p_name, p_desc, p_class, p_price, p_status, p_quantity,p_auditStatus, p_img) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
         // 准备并执行SQL语句
         preparedStatement = con.prepareStatement(insertQuery);
         preparedStatement.setInt(1, m_id);
@@ -91,7 +92,8 @@ public class DataControlProduct extends DataControl {
         preparedStatement.setDouble(5, productPrice);
         preparedStatement.setString(6, productState);
         preparedStatement.setInt(7, productQuantity);
-        preparedStatement.setString(8, productImg);
+        preparedStatement.setString(8, "待审核");
+        preparedStatement.setString(9, productImg);
         int rowsAffected = preparedStatement.executeUpdate();
         if (rowsAffected > 0) {
             // 如果成功插入了行，则返回true
@@ -242,9 +244,15 @@ public class DataControlProduct extends DataControl {
                 String productClass = resultSet.getString("p_class");
                 double productPrice = resultSet.getDouble("p_price");
                 String productStatus = resultSet.getString("p_status");
-                String productauditStatus = resultSet.getString("p_auditStatus");
-                String productImage = resultSet.getString("p_img");
                 int productQuantity = resultSet.getInt("p_quantity");
+                String productImage;
+                if(resultSet.getString("p_img")==null){
+                    productImage ="R.jpg";
+                }else {
+                    productImage = resultSet.getString("p_img");
+                }
+
+                String productauditStatus = resultSet.getString("p_auditStatus");
 
                 // Create a Product object
                 product = new Product(productId, productName, productDescription, productClass, productPrice, productStatus,  productQuantity,productauditStatus,productImage);
@@ -259,5 +267,71 @@ public class DataControlProduct extends DataControl {
 
         return product;
     }
+    public List<Product> getProductofNoAudit() throws SQLException {
+        List<Product> products = new ArrayList<>();
+        Connection con = DataBase.OpenDB();
+        String sql = "SELECT p_id, p_name, p_desc, p_class, p_price, p_status,p_quantity, p_img,p_auditStatus " +
+                "FROM product " + "WHERE p_auditStatus = ?";
+        PreparedStatement stmt = null;
+        if (con != null) {
+            stmt = con.prepareStatement(sql);
+        }
+        if (stmt != null) {
+            stmt.setString(1, "待审核");
+        }
+        ResultSet rs = null;
+        if (stmt != null) {
+            rs = stmt.executeQuery();
+        }
+        if (rs != null) {
+            while (rs.next()) {
+                Product product = new Product();
+                product.setP_id(rs.getInt("p_id"));
+                product.setP_name(rs.getString("p_name"));
+                product.setP_desc(rs.getString("p_desc"));
+                product.setP_class(rs.getString("p_class"));
+                product.setP_price(rs.getString("p_price"));
+                product.setP_status(rs.getString("p_status"));
+                product.setP_quantity(rs.getInt("p_quantity"));
+                product.setP_audiStatus(rs.getString("p_auditStatus"));
+                product.setP_img(rs.getString("p_img"));
+                products.add(product);
+                System.out.println(product.toString());
+            }
+        }
+        return products;
+    }
+   public void updateProductStatus(int p_id, String p_auditStatus){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            // Create a connection
+            DataBase dataBase = new DataBase();
+            con = dataBase.OpenDB();
+            // Prepare the SQL statement to update the product status
+            String query = "UPDATE product SET p_auditStatus = ? WHERE p_id = ?";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, p_auditStatus);
+            preparedStatement.setInt(2, p_id);
+
+            // Execute the query
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle exceptions as needed
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                // Handle exceptions as needed
+            }
+        }
+   }
+
 
 }

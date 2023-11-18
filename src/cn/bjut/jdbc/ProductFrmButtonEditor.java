@@ -1,15 +1,12 @@
 package cn.bjut.jdbc;
 
-import cn.bjut.jdbc.MerchantProductFrm;
-
 import javax.swing.*;
-import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
-public class ProductFrmButtonEditor extends AbstractCellEditor implements TableCellEditor {
+public class ProductFrmButtonEditor extends DefaultCellEditor {
 
     private JPanel panel;
     private JButton detailsButton;
@@ -18,9 +15,10 @@ public class ProductFrmButtonEditor extends AbstractCellEditor implements TableC
     private int selectedRow;
     private MerchantProductFrm merchantProductFrm;
 
-    public ProductFrmButtonEditor(MerchantProductFrm merchantProductFrm) {
+    public ProductFrmButtonEditor(JCheckBox checkBox, MerchantProductFrm merchantProductFrm) {
+        super(checkBox);
         this.merchantProductFrm = merchantProductFrm;
-        Font font =new Font("微软雅黑", Font.BOLD, 16);
+        Font font = new Font("微软雅黑", Font.BOLD, 16);
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS)); // Set to horizontal layout
 
@@ -47,6 +45,10 @@ public class ProductFrmButtonEditor extends AbstractCellEditor implements TableC
         panel.add(modifyButton);
         panel.add(deleteButton);
         panel.add(Box.createHorizontalGlue()); // Add horizontal glue for centering
+
+        // Set button as the editor component
+        editorComponent = panel;
+        setClickCountToStart(1); // Set the number of clicks needed to start editing
     }
 
     class ButtonClickListener implements ActionListener {
@@ -62,7 +64,7 @@ public class ProductFrmButtonEditor extends AbstractCellEditor implements TableC
                     throw new RuntimeException(ex);
                 }
             } else if ("MODIFY".equals(command)) {
-                //Code for handling modify button click
+                // Code for handling modify button click
                 try {
                     merchantProductFrm.handleModify(selectedRow);
                 } catch (SQLException ex) {
@@ -78,11 +80,6 @@ public class ProductFrmButtonEditor extends AbstractCellEditor implements TableC
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         selectedRow = row;
-        return panel;
-    }
-
-    @Override
-    public Object getCellEditorValue() {
-        return "";
+        return editorComponent;
     }
 }

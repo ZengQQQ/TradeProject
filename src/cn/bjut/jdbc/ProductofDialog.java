@@ -14,7 +14,8 @@ public class ProductofDialog extends JDialog {
     public DataControlProduct dataControlProduct = new DataControlProduct();
     public Product product;
     public String newImgName;
-    public JLabel imageLabel;
+    public String oldImgName;
+    protected JLabel imageLabel; // 修改这一行
     public JRadioButton onSaleRadioButton;
     public JRadioButton offSaleRadioButton;
     public GridBagConstraints gbc = new GridBagConstraints();
@@ -50,19 +51,19 @@ public class ProductofDialog extends JDialog {
         gbc.gridy++;
 
         // 添加商品类别标签，应用字体
-        JLabel classLabel = new JLabel("商品类别:   ");
+        JLabel classLabel = new JLabel("类别:   ");
         classLabel.setFont(customFont);
         panel.add(classLabel, gbc);
         gbc.gridy++;
 
         // 添加商品价格标签，应用字体
-        JLabel priceLabel = new JLabel("商品价格:   ");
+        JLabel priceLabel = new JLabel("单价:   ");
         priceLabel.setFont(customFont);
         panel.add(priceLabel, gbc);
         gbc.gridy++;
 
         // 添加商品数量标签，应用字体
-        JLabel quantityLabel = new JLabel("商品数量:    ");
+        JLabel quantityLabel = new JLabel("剩余数量:    ");
         quantityLabel.setFont(customFont);
         panel.add(quantityLabel, gbc);
         gbc.gridy++;
@@ -73,10 +74,6 @@ public class ProductofDialog extends JDialog {
         panel.add(statusLabel, gbc);
         gbc.gridy++;
 
-        // 添加商品图片标签
-        JLabel imageLabel = new JLabel("商品图片:    ");
-        imageLabel.setFont(customFont);
-        panel.add(imageLabel, gbc);
 
         gbc.gridx = 1;
         add(panel);
@@ -91,7 +88,7 @@ public class ProductofDialog extends JDialog {
         // 获取图片对象
         Image updatedImage = updatedIcon.getImage();
         // 缩放图片（如果需要）
-        Image scaledImage = updatedImage.getScaledInstance(350, 300, Image.SCALE_SMOOTH);
+        Image scaledImage = updatedImage.getScaledInstance(250, 200, Image.SCALE_SMOOTH);
         // 创建一个新的 ImageIcon
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
         // 更新图片标签
@@ -150,10 +147,10 @@ public class ProductofDialog extends JDialog {
             boolean b = FilephotoCopy(newImgPath, newImgName);
 
             if (b) {
-                // Update the image label with the new image
+
                 ImageIcon updatedIcon = getImageIcon(newImgName);
                 imageLabel.setIcon(updatedIcon);
-                // Revalidate and repaint the container to reflect the changes
+
                 imageLabel.getParent().revalidate();
                 imageLabel.getParent().repaint();
                 return true;

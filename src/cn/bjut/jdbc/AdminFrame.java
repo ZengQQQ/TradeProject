@@ -48,12 +48,18 @@ public class AdminFrame extends JFrame {
         // 创建菜单项
         JMenuItem viewUsersItem = new JMenuItem("查看用户");
         JMenuItem viewMerchantsItem = new JMenuItem("查看商家");
+        JMenuItem auditProduct = new JMenuItem("审核商品");
+        JMenuItem viewOrdersItem = new JMenuItem("查看订单");
+        JMenuItem viewReturnsItem = new JMenuItem("查看退货申请");
         JMenuItem exitItem = new JMenuItem("退出");
         JMenuItem logoutItem = new JMenuItem("注销");
 
     // 添加菜单项到菜单
             viewMenu.add(viewUsersItem);
             viewMenu.add(viewMerchantsItem);
+            viewMenu.add(auditProduct);
+            viewMenu.add(viewOrdersItem);
+            viewMenu.add(viewReturnsItem);
             viewMenu.addSeparator(); // 添加分隔线
             viewMenu.add(logoutItem);
             viewMenu.add(exitItem);
@@ -92,9 +98,47 @@ public class AdminFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        pack();
 
+//审核商品------------------------------------------------------------------
+        AuditProductFrame auditProductFrame = new AuditProductFrame();
+
+        auditProduct.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 添加审核商品的逻辑
+                cardLayout.show(cardPanel,"card2");
+                JOptionPane.showMessageDialog(AdminFrame.this, "审核商品功能");
+            }
+        });
+
+//查看订单------------------------------------------------------------------
+        AdminOrderManage adminOrderManage = new AdminOrderManage();
+
+        viewOrdersItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 添加查看订单的逻辑
+                cardLayout.show(cardPanel,"card4");
+                JOptionPane.showMessageDialog(AdminFrame.this, "查看订单功能");
+            }
+        });
+
+
+        //查看退货申请------------------------------------------------------------------
+        ReturnApplication returnApplication = new ReturnApplication();
+        viewReturnsItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 添加查看退货申请的逻辑
+                cardLayout.show(cardPanel,"card5");
+                JOptionPane.showMessageDialog(AdminFrame.this, "查看退货申请功能");
+            }
+        });
 
         cardPanel.add(adminuser, "card1");
         cardPanel.add(adminMerchantFrame, "card3");
+        cardPanel.add(auditProductFrame, "card2");
+        cardPanel.add(adminOrderManage, "card4");
+        cardPanel.add(returnApplication, "card5");
 
         exitItem.addActionListener(e -> {
             System.exit(0);
@@ -113,6 +157,8 @@ public class AdminFrame extends JFrame {
             });
         });
     }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

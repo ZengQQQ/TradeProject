@@ -77,7 +77,6 @@ public class ProductDetailsDialog extends ProductofDialog {
         panel.add(quantityField, gbc);
 
         gbc.gridy++;
-
         // 创建商品状态
         JLabel status = new JLabel();
         if (product.getP_status().equals("上架")) {
@@ -90,8 +89,33 @@ public class ProductDetailsDialog extends ProductofDialog {
 
         gbc.gridy++;
 
+        gbc.gridx=0;
+        // 添加商品状态标签，应用字体
+        JLabel auditstatusLabel = new JLabel("审核状态:    ");
+        auditstatusLabel.setFont(new Font("微软雅黑", Font.BOLD, 22));
+        panel.add(auditstatusLabel, gbc);
+        // 创建审核商品状态
+        gbc.gridx=1;
+        JLabel auditstatus = new JLabel();
+        if (product.getP_audiStatus().equals("待审核")) {
+            auditstatus.setText("待审核");
+        } else if (product.getP_audiStatus().equals("审核通过")){
+            auditstatus.setText("审核通过");
+        }else {
+            auditstatus.setText("审核不通过");
+        }
+        auditstatus.setFont(customFont); // 设置字体
+        panel.add(auditstatus, gbc);
+
+        gbc.gridy++;
+        // 添加商品图片标签
+        gbc.gridx=0;
+        JLabel imageLabel1 = new JLabel("商品图片:    ");
+        imageLabel1.setFont(new Font("微软雅黑", Font.BOLD, 22));
+        panel.add(imageLabel1, gbc);
         // 商品图片展示
-        imageLabel = merproduct.createImageLabel(product, 350, 300);
+        gbc.gridx=1;
+        imageLabel = merproduct.createImageLabel(product, 250, 200);
         panel.add(imageLabel, gbc);
 
     }

@@ -12,7 +12,7 @@ public class ProductFrmButtonRender extends JPanel implements TableCellRenderer 
 
     public ProductFrmButtonRender() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS)); // Set to horizontal layout
-        Font font =new Font("微软雅黑", Font.BOLD, 16);
+        Font font = new Font("微软雅黑", Font.BOLD, 16);
 
         detailsButton = new JButton("详情");
         detailsButton.setFont(font); // Set font

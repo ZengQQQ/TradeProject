@@ -54,9 +54,12 @@ public class ProductAddDialog extends ProductofDialog {
         panel.add(scrollPane, gbc);
         gbc.gridy++;
 
-        JTextField classField = new JTextField(textFieldColumns);
-        classField.setFont(font);
-        panel.add(classField, gbc);
+        // 修改为 JComboBox 下拉菜单
+        String[] categories = { "食品", "酒水饮料", "电脑办公", "手机", "服装", "书籍", "厨具", "家居日用", "其他"};
+        JComboBox<String> categoryComboBox = new JComboBox<>(categories);
+        categoryComboBox.setSelectedIndex(8); // 默认选择全部类别
+        categoryComboBox.setFont(new Font("微软雅黑", Font.BOLD, 20));
+        panel.add(categoryComboBox, gbc);
         gbc.gridy++;
 
         JTextField priceField = new JTextField(textFieldColumns);
@@ -69,30 +72,24 @@ public class ProductAddDialog extends ProductofDialog {
         panel.add(quantityField, gbc);
         gbc.gridy++;
 
-        // 创建商品状态的单选框
-        ButtonGroup statusGroup = new ButtonGroup();
-        JRadioButton onSaleRadioButton = new JRadioButton("上架");
-        JRadioButton offSaleRadioButton = new JRadioButton("下架");
-        statusGroup.add(onSaleRadioButton);
-        statusGroup.add(offSaleRadioButton);
+        // 创建商品状态
+        JLabel statusLabel = new JLabel("下架(添加商品默认为下架)");
+        statusLabel.setFont(new Font("微软雅黑", Font.BOLD, 22));
+        statusLabel.setForeground(Color.RED);
 
-        JPanel statusPanel = new JPanel();
-        statusPanel.add(onSaleRadioButton);
-        statusPanel.add(offSaleRadioButton);
-
-        // 根据商品状态设置选择
-        onSaleRadioButton.setSelected(true);
-        statusPanel.setFont(font);
-
-        panel.add(statusPanel, gbc);
+        panel.add(statusLabel, gbc);
         gbc.gridy++;
-
+        // 添加商品图片标签
+        gbc.gridx=0;
+        JLabel imageLabel1 = new JLabel("商品图片:    ");
+        imageLabel1.setFont(new Font("微软雅黑", Font.BOLD, 22));
+        panel.add(imageLabel1, gbc);
+        // 商品图片展示
+        gbc.gridx = 1;
         imageLabel = merproduct.createImageLabel(product, 250, 200);
         panel.add(imageLabel, gbc);
-
-        //商品图片展示
         gbc.gridy++;
-        gbc.gridx = 1;
+
         // 创建“Change Image”按钮
         JButton upImgButton = new JButton("上传图片");
         upImgButton.setFont(new Font("微软雅黑", Font.BOLD, 22));
@@ -118,7 +115,7 @@ public class ProductAddDialog extends ProductofDialog {
             // 从文本字段和单选按钮获取值
             String newName = nameField.getText();
             String newDesc = descField.getText();
-            String newClass = classField.getText();
+            String newClass = categoryComboBox.getSelectedItem().toString();
             String priceText = priceField.getText();
             String quantityText = quantityField.getText();
             int newquantity = 0;
@@ -152,7 +149,7 @@ public class ProductAddDialog extends ProductofDialog {
                     } else if (newquantity < 0 || newquantity > 99999) {
                         JOptionPane.showMessageDialog(this, "商品数量范围不正确，不能为负和超过99999", "警告", JOptionPane.WARNING_MESSAGE);
                     } else {
-                        String newStatus = onSaleRadioButton.isSelected() ? "上架" : "下架";
+                        String newStatus ="下架";
                         // 调用父类的方法
                         boolean success;
                         try {
@@ -161,7 +158,7 @@ public class ProductAddDialog extends ProductofDialog {
                             throw new RuntimeException(ex);
                         }
                         if (success) {
-                            JOptionPane.showMessageDialog(this, "创建成功，请等待一会", "提示", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(this, "创建成功，请等待管理员审核", "提示", JOptionPane.INFORMATION_MESSAGE);
                             mer.refreshProducts();
                             dispose(); // 关闭对话框
                         } else {

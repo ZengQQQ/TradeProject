@@ -176,15 +176,30 @@ public class MerchantInterFrm extends JFrame {
             List<Product> products = dataControlmer.MerchantProductQuery(m_id);
             merproduct.tableModel.setRowCount(0); // 清空表格数据
             for (Product product : products) {
-                Object[] rowData = {product.getP_id(), merproduct.getScaledImageIcon(product, 50, 50), product.getP_name(), product.getP_description(), product.getP_price(), product.getP_quantity(), product.getP_status()};
+                Object[] rowData = {product.getP_id(), merproduct.getScaledImageIcon(product, 250, 200), product.getP_name(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus()};
                 merproduct.tableModel.addRow(rowData);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
     public void refreshCard2() {
+        try {
+            List<Product> products = dataControlmer.MerchantProductQuery(m_id);
+            merproduct.tableModel.setRowCount(0); // 清空表格数据
+            for (Product product : products) {
+                Object[] rowData = {product.getP_id(), merproduct.getScaledImageIcon(product, 250, 200), product.getP_name(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus()};
+                merproduct.tableModel.addRow(rowData);
+                merproduct.categoryComboBox.setSelectedItem("全部类别"); // 设置默认选择
+            }
+            JOptionPane.showMessageDialog(this, "刷新成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "刷新失败！", "提示", JOptionPane.INFORMATION_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    public void refreshCard3() {
         merorder.refreshData();
     }
 
@@ -217,14 +232,14 @@ public class MerchantInterFrm extends JFrame {
         refreshButton1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                refreshProducts();
+                refreshCard2();
             }
         });
 
         refreshButton2.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                refreshCard2();
+                refreshCard3();
             }
         });
 
