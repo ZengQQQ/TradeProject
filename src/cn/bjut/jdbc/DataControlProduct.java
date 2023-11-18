@@ -175,7 +175,7 @@ public class DataControlProduct extends DataControl {
             stmt.close();
             if (searchType.equals("价格") && productList.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "商品结果没有找到，给您价格最接近的5个商品", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
-                // Perform a secondary query to find the closest products based on the specified price value
+
                 List<Product> closestProducts = findClosestProducts(searchValue, m_id);
                 return closestProducts;
             }
@@ -223,21 +223,21 @@ public class DataControlProduct extends DataControl {
         Product product = null;
 
         try {
-            // Create a connection
+
             DataBase dataBase = new DataBase();
             con = dataBase.OpenDB();
 
-            // Prepare the SQL statement to retrieve the product details based on p_id
+
             String query = "SELECT * FROM product WHERE p_id = ?";
             preparedStatement = con.prepareStatement(query);
             preparedStatement.setInt(1, p_id);
 
-            // Execute the query
+
             resultSet = preparedStatement.executeQuery();
 
-            // Check if there is a result
+
             if (resultSet.next()) {
-                // Extract data from the result set and create a Product object
+
                 int productId = resultSet.getInt("p_id");
                 String productName = resultSet.getString("p_name");
                 String productDescription = resultSet.getString("p_desc");
@@ -254,12 +254,12 @@ public class DataControlProduct extends DataControl {
 
                 String productauditStatus = resultSet.getString("p_auditStatus");
 
-                // Create a Product object
+
                 product = new Product(productId, productName, productDescription, productClass, productPrice, productStatus, productQuantity, productauditStatus, productImage);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            // Handle exceptions as needed
+
             resultSet.close();
             preparedStatement.close();
             con.close();
