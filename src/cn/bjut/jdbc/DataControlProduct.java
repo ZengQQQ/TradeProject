@@ -246,16 +246,16 @@ public class DataControlProduct extends DataControl {
                 String productStatus = resultSet.getString("p_status");
                 int productQuantity = resultSet.getInt("p_quantity");
                 String productImage;
-                if(resultSet.getString("p_img")==null){
-                    productImage ="R.jpg";
-                }else {
+                if (resultSet.getString("p_img") == null) {
+                    productImage = "R.jpg";
+                } else {
                     productImage = resultSet.getString("p_img");
                 }
 
                 String productauditStatus = resultSet.getString("p_auditStatus");
 
                 // Create a Product object
-                product = new Product(productId, productName, productDescription, productClass, productPrice, productStatus,  productQuantity,productauditStatus,productImage);
+                product = new Product(productId, productName, productDescription, productClass, productPrice, productStatus, productQuantity, productauditStatus, productImage);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -267,6 +267,7 @@ public class DataControlProduct extends DataControl {
 
         return product;
     }
+    
     public List<Product> getProductofNoAudit() throws SQLException {
         List<Product> products = new ArrayList<>();
         Connection con = DataBase.OpenDB();
@@ -301,7 +302,8 @@ public class DataControlProduct extends DataControl {
         }
         return products;
     }
-   public void updateProductStatus(int p_id, String p_auditStatus){
+
+    public void updateProductStatus(int p_id, String p_auditStatus) {
         Connection con = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -331,7 +333,7 @@ public class DataControlProduct extends DataControl {
                 // Handle exceptions as needed
             }
         }
-   }
+    }
 
 
 }
