@@ -362,6 +362,7 @@ public class CommentBar extends JPanel {
                 try {
                     DataControl data = new DataControl();
                     data.insertReplyToforum(ID,commentText,user,merchant);
+                    JOptionPane.showMessageDialog(null,"回复成功");
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }

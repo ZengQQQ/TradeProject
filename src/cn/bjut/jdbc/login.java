@@ -62,7 +62,7 @@ public class login extends JFrame {
                             JOptionPane.showMessageDialog(null, "登录成功", "登录", JOptionPane.INFORMATION_MESSAGE);
                             MerchantInterFrm merchantFrame = new MerchantInterFrm(dataControlmer.getMerchantm_id(logname));
                             merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                            merchantFrame.setSize(1200, 1000);
+                            merchantFrame.setSize(1500, 1000);
                             merchantFrame.setVisible(true);
                             merchantFrame.setLocationRelativeTo(null);
                             dispose();

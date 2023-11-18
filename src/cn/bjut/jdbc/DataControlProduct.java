@@ -267,5 +267,71 @@ public class DataControlProduct extends DataControl {
 
         return product;
     }
+    public List<Product> getProductofNoAudit() throws SQLException {
+        List<Product> products = new ArrayList<>();
+        Connection con = DataBase.OpenDB();
+        String sql = "SELECT p_id, p_name, p_desc, p_class, p_price, p_status,p_quantity, p_img,p_auditStatus " +
+                "FROM product " + "WHERE p_auditStatus = ?";
+        PreparedStatement stmt = null;
+        if (con != null) {
+            stmt = con.prepareStatement(sql);
+        }
+        if (stmt != null) {
+            stmt.setString(1, "待审核");
+        }
+        ResultSet rs = null;
+        if (stmt != null) {
+            rs = stmt.executeQuery();
+        }
+        if (rs != null) {
+            while (rs.next()) {
+                Product product = new Product();
+                product.setP_id(rs.getInt("p_id"));
+                product.setP_name(rs.getString("p_name"));
+                product.setP_desc(rs.getString("p_desc"));
+                product.setP_class(rs.getString("p_class"));
+                product.setP_price(rs.getString("p_price"));
+                product.setP_status(rs.getString("p_status"));
+                product.setP_quantity(rs.getInt("p_quantity"));
+                product.setP_audiStatus(rs.getString("p_auditStatus"));
+                product.setP_img(rs.getString("p_img"));
+                products.add(product);
+                System.out.println(product.toString());
+            }
+        }
+        return products;
+    }
+   public void updateProductStatus(int p_id, String p_auditStatus){
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            // Create a connection
+            DataBase dataBase = new DataBase();
+            con = dataBase.OpenDB();
+            // Prepare the SQL statement to update the product status
+            String query = "UPDATE product SET p_auditStatus = ? WHERE p_id = ?";
+            preparedStatement = con.prepareStatement(query);
+            preparedStatement.setString(1, p_auditStatus);
+            preparedStatement.setInt(2, p_id);
+
+            // Execute the query
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle exceptions as needed
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                // Handle exceptions as needed
+            }
+        }
+   }
+
 
 }
