@@ -310,7 +310,9 @@ public class MerchantProductFrm extends JPanel {
         productTable.setDefaultRenderer(Object.class, new ImageCellRenderer());
         productTable.setRowHeight(160); // 设置行高
         // 为表格添加边框
-        productTable.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // 黑色边框
+        productTable.setBorder(BorderFactory.createLineBorder(Color.black, 2)); // 设置表格边框颜色和粗细
+        productTable.setGridColor(Color.gray);
+
         productTable.setFillsViewportHeight(true); // 填充表格的视口高度
         productTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF); // 禁用表格自动调整列宽
 
@@ -326,7 +328,7 @@ public class MerchantProductFrm extends JPanel {
 
         productTable.getColumnModel().getColumn(8).setCellRenderer(new ProductFrmButtonRender());
 
-        productTable.setRowSelectionAllowed(false);// 禁止表格的选择功能。不然在点击按钮时表格的整行都会被选中。也可以通过其它方式来实现。
+        productTable.setRowSelectionAllowed(false);// 禁止表格的选择功能。
     }
 
     public void handleDetails(int selectedRow) throws SQLException {
