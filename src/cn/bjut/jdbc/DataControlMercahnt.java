@@ -129,7 +129,7 @@ public class DataControlMercahnt extends DataControl {
 
     //使用m_id来修改merchanttable，全部更新,
     public String updateMerchant(int m_id, String new_m_name, String new_m_sex, String new_m_tele, String new_m_psw) throws SQLException {
-        String sql = "UPDATE merchant SET m_name = ?, m_sex = ?, m_tele = ?,m_psw WHERE m_id = ?";
+        String sql = "UPDATE merchant SET m_name = ?, m_sex = ?, m_tele = ?,m_psw = ? WHERE m_id = ?";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
         stmt.setString(1, new_m_name);
