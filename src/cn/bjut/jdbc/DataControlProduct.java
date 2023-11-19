@@ -45,30 +45,65 @@ public class DataControlProduct extends DataControl {
         return false;
     }
 
-    // 删除商品并修改m_id和p_status
     public boolean deleteProduct(int productId) throws SQLException {
-        Connection con;
-        PreparedStatement preparedStatement;
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
         boolean deleted = false;
 
         // 创建连接
         DataBase dataBase = new DataBase();
         con = dataBase.OpenDB();
 
-        // 创建SQL删除语句，并修改m_id和p_status
-        String deleteQuery = "UPDATE product SET m_id = -1, p_status = '下架' WHERE p_id = ?";
-
-        // 准备并执行SQL语句
-        preparedStatement = con.prepareStatement(deleteQuery);
+        // 查询与该商品相关的订单状态
+        String checkOrdersQuery = "SELECT o_status FROM orders WHERE p_id = ?";
+        preparedStatement = con.prepareStatement(checkOrdersQuery);
         preparedStatement.setInt(1, productId);
+        rs = preparedStatement.executeQuery();
 
-        int rowsAffected = preparedStatement.executeUpdate();
-        if (rowsAffected > 0) {
-            // 如果成功删除了行，则返回true
-            deleted = true;
+        boolean orderInProgress = false;
+
+        // 检查是否有未完成的订单
+        while (rs.next()) {
+            String orderStatus = rs.getString("o_status");
+            if (!orderStatus.equals("已完成")) {
+                orderInProgress = true;
+                break;
+            }
         }
+
+        if (orderInProgress) {
+            // 有未完成的订单，不能删除商品
+            JOptionPane.showMessageDialog(null, "有未完成的订单，不能删除商品", "错误", JOptionPane.ERROR_MESSAGE);
+        } else {
+            // 创建SQL删除语句，并修改m_id和p_status
+            String deleteQuery = "UPDATE product SET m_id = -1, p_status = '下架' WHERE p_id = ?";
+
+            // 准备并执行SQL语句
+            preparedStatement = con.prepareStatement(deleteQuery);
+            preparedStatement.setInt(1, productId);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                // 如果成功删除了行，则返回true
+                deleted = true;
+            }
+        }
+
+        // 关闭资源
+        if (rs != null) {
+            rs.close();
+        }
+        if (preparedStatement != null) {
+            preparedStatement.close();
+        }
+        if (con != null) {
+            con.close();
+        }
+
         return deleted;
     }
+
 
 
     //添加商品
