@@ -45,13 +45,12 @@ public class MerchantInterFrm extends JFrame {
         setJMenuBar(combinedMenuBar);
         //----------------------------------------------------------------
         JPanel card1 = new MerchantHomeFrm(this);
+        JScrollPane ScrollPane = new JScrollPane(card1);
+        JScrollBar verticalScrollBar1 = ScrollPane.getVerticalScrollBar();
+        verticalScrollBar1.setUnitIncrement(20); // 设置单位滚动量，这里设置为16，可以根据需要调整速度
+        ScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-//        JLabel homeLabel = new JLabel("这里是首页，您可以放置首页的内容。");
-//        homeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-//        homeLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
-//        card1.add(homeLabel, BorderLayout.CENTER);
-
-        mainPanel.add(card1, "card1");
+        mainPanel.add(ScrollPane, "card1");
         //----------------------------------------------------------------
         JPanel card2 = new JPanel(new BorderLayout());
         merproduct = new MerchantProductFrm(this);
