@@ -121,9 +121,9 @@ public class DataControl {
                 int rowsInserted = insertStmt.executeUpdate();
 
                 if (rowsInserted > 0) {
-                    System.out.println("插入成功！");
+                    System.out.println("加入成功！");
                 } else {
-                    System.out.println("插入失败！");
+                    System.out.println("加入失败！");
                 }
             }
 
@@ -289,9 +289,9 @@ public class DataControl {
                     int rowsInserted = insertStmt.executeUpdate();
 
                     if (rowsInserted > 0) {
-                        JOptionPane.showMessageDialog(null, "插入成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "加入成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
                     } else {
-                        JOptionPane.showMessageDialog(null, "插入失败！", "警告", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "加入失败！", "警告", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "未找到商品价格！", "错误", JOptionPane.ERROR_MESSAGE);
