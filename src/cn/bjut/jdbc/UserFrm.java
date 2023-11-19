@@ -1022,7 +1022,9 @@ public class UserFrm extends JFrame {
 // 为右键功能创建弹出菜单
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem returnItem = new JMenuItem("退货");
+        JMenuItem confirmReceiptItem = new JMenuItem("确认收货"); // 新增确认收货选项
         popupMenu.add(returnItem);
+        popupMenu.add(confirmReceiptItem); // 将确认收货选项添加到弹出菜单
 
 // 为表格添加鼠标监听器
         cartTable1.addMouseListener(new MouseAdapter() {
@@ -1035,11 +1037,48 @@ public class UserFrm extends JFrame {
                     // 获取选定行的商品状态
                     String status = (String) cartTable1.getValueAt(row, 6);
 
-                    // 只有商品状态不为已退货时，才显示弹出菜单
+                    // 只有商品状态不为已退货和申请退货时，才显示弹出菜单
                     if (!"已退货".equals(status) && !"申请退货".equals(status)) {
                         // 在右键点击的位置显示弹出菜单
                         popupMenu.show(cartTable1, e.getX(), e.getY());
                     }
+                }
+            }
+        });
+
+// 为确认收货选项添加事件监听器
+        confirmReceiptItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = cartTable1.getSelectedRow();
+                // 获取选定行的商品状态
+                String status = (String) cartTable1.getValueAt(selectedRow, 6);
+
+                // 只有商品状态为待收货时，才执行确认收货逻辑
+                if ("待收货".equals(status)) {
+                    try {
+                        int productId = (int) cartTable1.getValueAt(selectedRow, 5);
+                        // 获取订单信息
+                        String orderIdColumnName = "o_id"; // 请替换为实际的列名
+                        int orderId = getOrderIDFromDatabase(dataBase, orderIdColumnName, productId);
+                        System.out.println(orderId);
+                        // 执行确认收货逻辑，更新数据库等
+                        DataBase dataBase = new DataBase();
+                        dataBase.OpenDB();
+
+                        Statement stmt = dataBase.getCon().createStatement();
+                        String updateQuery = "UPDATE orders SET o_status = '已完成' WHERE o_id = " + orderId;
+                        stmt.executeUpdate(updateQuery);
+
+                        stmt.close();
+                        dataBase.getCon().close();
+                        JOptionPane.showMessageDialog(null, "确认收货成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "你的商品还没有发货", "提示", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
@@ -1110,7 +1149,6 @@ public class UserFrm extends JFrame {
                 }
             }
         });
-
 
         buttonpanel.add(viewOrderButton);
         card4.add(buttonpanel,BorderLayout.NORTH);
