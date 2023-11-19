@@ -1058,9 +1058,10 @@ public class UserFrm extends JFrame {
                 if ("待收货".equals(status)) {
                     try {
                         int productId = (int) cartTable1.getValueAt(selectedRow, 5);
+                        String buy_time=(String) cartTable1.getValueAt(selectedRow, 3);
                         // 获取订单信息
                         String orderIdColumnName = "o_id"; // 请替换为实际的列名
-                        int orderId = getOrderIDFromDatabase(dataBase, orderIdColumnName, productId);
+                        int orderId = getOrderIDFromDatabase(dataBase, orderIdColumnName, productId,buy_time);
                         System.out.println(orderId);
                         // 执行确认收货逻辑，更新数据库等
                         DataBase dataBase = new DataBase();
@@ -1116,10 +1117,10 @@ public class UserFrm extends JFrame {
                         try {
                             DataBase dataBase = new DataBase();
                             dataBase.OpenDB();
-
+                            String buy_Time = (String) cartTable1.getValueAt(selectedRow, 3);
                             // 获取订单信息
                             String orderIdColumnName = "o_id"; // 请替换为实际的列名
-                            int orderId = getOrderIDFromDatabase(dataBase, orderIdColumnName, productId);
+                            int orderId = getOrderIDFromDatabase(dataBase, orderIdColumnName, productId,buy_Time);
 
                             if (orderId != -1) {
                                 String buyTime = (String) cartTable1.getValueAt(selectedRow, 3);
@@ -1811,14 +1812,14 @@ public class UserFrm extends JFrame {
         return panel;
         }
     // 从数据库获取订单ID的方法
-    private int getOrderIDFromDatabase(DataBase dataBase, String orderIdColumnName, int productId) throws SQLException {
+    private int getOrderIDFromDatabase(DataBase dataBase, String orderIdColumnName, int productId,String buy_time) throws SQLException {
         Statement stmt = null;
         try {
             stmt = dataBase.getCon().createStatement();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String query = "SELECT " + orderIdColumnName + " FROM orders WHERE p_id = " + productId;
+        String query = "SELECT " + orderIdColumnName + " FROM orders WHERE p_id = " + productId + " AND buy_time = '" + buy_time + "'";
         ResultSet rs = stmt.executeQuery(query);
 
         if (rs.next()) {
