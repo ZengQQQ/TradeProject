@@ -1,7 +1,9 @@
 package cn.bjut.jdbc;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -78,6 +80,9 @@ public class MerchantOrdersFrm extends JPanel {
         JTable table = new JTable(tableModel);
 
         JTableHeader header = table.getTableHeader();
+        // 创建边框并设置给表头
+        Border border = new LineBorder(Color.BLACK, 1); // 边框的颜色和粗细
+        header.setBorder(border);
         header.setFont(new Font("微软雅黑", Font.BOLD, 20));
         table.setRowHeight(ORDER_PANEL_HEIGHT);
         // 添加自定义按钮渲染器和编辑器到操作列（第九列）
@@ -120,7 +125,7 @@ public class MerchantOrdersFrm extends JPanel {
         scrollPane.setPreferredSize(new Dimension(800, 400));
 
         // 添加外边距和边框
-        scrollPane.setBorder(new EmptyBorder(100, 30, 30, 30));
+        scrollPane.setBorder(new EmptyBorder(20, 30, 30, 30));
 
         add(scrollPane, BorderLayout.CENTER);
     }
