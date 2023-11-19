@@ -103,7 +103,6 @@ public class DataControlProduct extends DataControl {
     }
 
 
-
     //添加商品
     public boolean addProduct(int m_id, String productName, String productDesc, String productClass, double productPrice, String productState, int productQuantity, String productImg) throws SQLException {
         Connection con;
@@ -352,44 +351,46 @@ public class DataControlProduct extends DataControl {
 
     }
 
-    public List<Product> findProductsByHighestQuantity(int merchantId) {
+    public List<Product> findProductsByHighestQuantity(int merchantId) throws SQLException {
         List<Product> productList = new ArrayList<>();
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt;
         ResultSet rs;
 
         try {
+            String query = "SELECT p.*, SUM(quantity) as totalQuantity " + "FROM product p " + "INNER JOIN orders o ON p.p_id = o.p_id " + "WHERE p.m_id = ? " + "GROUP BY p.p_id " + "ORDER BY totalQuantity DESC";
 
-            // 获取商家的所有商品 p_id
-            String getProductsQuery = "SELECT p_id FROM product WHERE m_id = ?";
-            stmt = con.prepareStatement(getProductsQuery);
+            stmt = con.prepareStatement(query);
             stmt.setInt(1, merchantId);
-            ResultSet productResult = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
-            while (productResult.next()) {
-                int productId = productResult.getInt("p_id");
+            // 获取总销量最高的商品销量
+            int maxSales = 0;
+            while (rs.next()) {
+                int sales = rs.getInt("totalQuantity");
+                if (sales >= maxSales) {
+                    Product product = new Product();
+                    product.setP_id(rs.getInt("p_id"));
+                    product.setP_name(rs.getString("p_name"));
+                    product.setP_desc(rs.getString("p_desc"));
+                    product.setP_class(rs.getString("p_class"));
+                    product.setP_price(rs.getString("p_price"));
+                    product.setP_status(rs.getString("p_status"));
+                    product.setP_quantity(rs.getInt("p_quantity"));
+                    product.setP_audiStatus(rs.getString("p_auditStatus"));
+                    product.setP_img(rs.getString("p_img"));
+                    product.setSales(sales); // 设置销量属性
 
-                // 查询每个商品的销售数量 quantity
-                String getProductQuantityQuery = "SELECT SUM(quantity) as totalQuantity FROM orders WHERE p_id = ?";
-                PreparedStatement getProductQuantityStmt = con.prepareStatement(getProductQuantityQuery);
-                getProductQuantityStmt.setInt(1, productId);
-                rs = getProductQuantityStmt.executeQuery();
-
-                if (rs.next()) {
-                    int totalQuantity = rs.getInt("totalQuantity");
-
-                    //找到销售数量最高的商品或商品集
-                    if (totalQuantity > 0) {
-                        if (productList.isEmpty() || totalQuantity > Integer.parseInt(productList.get(0).getP_quantity())) {
-                            productList.clear();
-                            productList.add(getProductById(productId,totalQuantity, con));
-                        } else if (totalQuantity == Integer.parseInt(productList.get(0).getP_quantity())) {
-                            productList.add(getProductById(productId,totalQuantity, con));
-                        }
+                    if (sales > maxSales) {
+                        maxSales = sales;
+                        productList.clear(); // 清空之前的列表
                     }
+
+                    productList.add(product);
                 }
             }
-            if (productResult != null) productResult.close();
+
+            if (rs != null) rs.close();
             if (stmt != null) stmt.close();
             con.close();
 
@@ -398,6 +399,7 @@ public class DataControlProduct extends DataControl {
         }
         return productList;
     }
+
     public List<Product> findProductsByHighestQuantityToday(int merchantId) {
         List<Product> productList = new ArrayList<>();
         Connection con = DataBase.OpenDB();
@@ -405,44 +407,39 @@ public class DataControlProduct extends DataControl {
         ResultSet rs;
 
         try {
-            // 获取当天日期
             LocalDate today = LocalDate.now();
 
-            // 获取商家的所有商品 p_id
-            String getProductsQuery = "SELECT p_id FROM product WHERE m_id = ?";
-            stmt = con.prepareStatement(getProductsQuery);
-            stmt.setInt(1, merchantId);
-            ResultSet productResult = stmt.executeQuery();
+            String query = "SELECT p.*, SUM(quantity) as totalQuantity " + "FROM product p " + "INNER JOIN orders o ON p.p_id = o.p_id " + "WHERE DATE(buy_time) = ? " + "AND p.m_id = ? " + "GROUP BY p.p_id " + "ORDER BY totalQuantity DESC";
 
-            int maxQuantity = 0;
+            stmt = con.prepareStatement(query);
+            stmt.setDate(1, Date.valueOf(today));
+            stmt.setInt(2, merchantId);
+            rs = stmt.executeQuery();
 
-            while (productResult.next()) {
-                int productId = productResult.getInt("p_id");
+            int maxSales = 0;
+            while (rs.next()) {
+                int sales = rs.getInt("totalQuantity");
+                if (sales >= maxSales) {
+                    Product product = new Product();
+                    product.setP_id(rs.getInt("p_id"));
+                    product.setP_name(rs.getString("p_name"));
+                    product.setP_desc(rs.getString("p_desc"));
+                    product.setP_class(rs.getString("p_class"));
+                    product.setP_price(rs.getString("p_price"));
+                    product.setP_status(rs.getString("p_status"));
+                    product.setP_quantity(rs.getInt("p_quantity"));
+                    product.setP_audiStatus(rs.getString("p_auditStatus"));
+                    product.setP_img(rs.getString("p_img"));
+                    product.setSales(sales); // 设置销量属性
 
-                // 查询当天每个商品的销售数量 quantity
-                String getProductQuantityQuery = "SELECT SUM(quantity) as totalQuantity " +
-                        "FROM orders " +
-                        "WHERE p_id = ? AND DATE(buy_time) = ?";
-
-                PreparedStatement getProductQuantityStmt = con.prepareStatement(getProductQuantityQuery);
-                getProductQuantityStmt.setInt(1, productId);
-                getProductQuantityStmt.setDate(2, Date.valueOf(today));
-
-                rs = getProductQuantityStmt.executeQuery();
-
-                if (rs.next()) {
-                    int totalQuantity = rs.getInt("totalQuantity");
-
-                    if (totalQuantity > maxQuantity) {
-                        maxQuantity = totalQuantity;
-                        productList.clear();
-                        productList.add(getProductById(productId,maxQuantity, con));
-                    } else if (totalQuantity == maxQuantity) {
-                        productList.add(getProductById(productId,maxQuantity, con));
+                    if (sales > maxSales) {
+                        maxSales = sales;
+                        productList.clear(); // 清空之前的列表
                     }
+                    productList.add(product);
                 }
             }
-            if (productResult != null) productResult.close();
+            if (rs != null) rs.close();
             if (stmt != null) stmt.close();
             con.close();
 
@@ -451,36 +448,5 @@ public class DataControlProduct extends DataControl {
         }
         return productList;
     }
-
-    // 辅助方法 - 通过 p_id 获取商品信息
-    private Product getProductById(int productId,int totalquantity, Connection con) throws SQLException {
-        String getProductQuery = "SELECT * FROM product WHERE p_id = ?";
-        PreparedStatement getProductStmt = con.prepareStatement(getProductQuery);
-        getProductStmt.setInt(1, productId);
-        ResultSet productResult = getProductStmt.executeQuery();
-
-        Product product = null;
-        if (productResult.next()) {
-            product = new Product();
-            // 设置 Product 对象的属性值
-            product.setP_id(productResult.getInt("p_id"));
-            product.setP_name(productResult.getString("p_name"));
-            product.setP_desc(productResult.getString("p_desc"));
-            product.setP_class(productResult.getString("p_class"));
-            product.setP_price(productResult.getString("p_price"));
-            product.setP_status(productResult.getString("p_status"));
-            product.setP_quantity(productResult.getInt("p_quantity"));
-            product.setP_audiStatus(productResult.getString("p_auditStatus"));
-            product.setSales(totalquantity);
-            product.setP_img(productResult.getString("p_img"));
-
-        }
-
-        // Close resources
-        if (productResult != null) productResult.close();
-        if (getProductStmt != null) getProductStmt.close();
-
-        return product;
-    }
-
+    
 }
