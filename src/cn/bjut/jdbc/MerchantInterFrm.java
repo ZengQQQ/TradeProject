@@ -44,12 +44,12 @@ public class MerchantInterFrm extends JFrame {
         combinedMenuBar.add(myInfoMenu);
         setJMenuBar(combinedMenuBar);
         //----------------------------------------------------------------
-        JPanel card1 = new JPanel(new BorderLayout());
+        JPanel card1 = new MerchantHomeFrm(this);
 
-        JLabel homeLabel = new JLabel("这里是首页，您可以放置首页的内容。");
-        homeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        homeLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
-        card1.add(homeLabel, BorderLayout.CENTER);
+//        JLabel homeLabel = new JLabel("这里是首页，您可以放置首页的内容。");
+//        homeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+//        homeLabel.setFont(new Font("微软雅黑", Font.BOLD, 18));
+//        card1.add(homeLabel, BorderLayout.CENTER);
 
         mainPanel.add(card1, "card1");
         //----------------------------------------------------------------
@@ -114,6 +114,7 @@ public class MerchantInterFrm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card2");
+                refreshProducts();
             }
         });
 
@@ -121,6 +122,7 @@ public class MerchantInterFrm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card3");
+                merorder.refreshData();
             }
         });
 
@@ -162,6 +164,7 @@ public class MerchantInterFrm extends JFrame {
             for (Product product : products) {
                 Object[] rowData = {product.getP_id(), merproduct.getScaledImageIcon(product, 250, 200), product.getP_name(),product.getP_class(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus()};
                 merproduct.tableModel.addRow(rowData);
+                merproduct.categoryComboBox.setSelectedItem("全部类别"); // 设置默认选择
             }
         } catch (SQLException e) {
             e.printStackTrace();
