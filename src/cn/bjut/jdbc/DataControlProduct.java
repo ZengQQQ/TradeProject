@@ -81,8 +81,7 @@ public class DataControlProduct extends DataControl {
         DataBase dataBase = new DataBase();
         con = dataBase.OpenDB();
         // 创建SQL插入语句
-        String insertQuery = "INSERT INTO product (m_id, p_name, p_desc, p_class, p_price, p_status, p_quantity,p_auditStatus, p_img) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
+        String insertQuery = "INSERT INTO product (m_id, p_name, p_desc, p_class, p_price, p_status, p_quantity,p_auditStatus, p_img) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
         // 准备并执行SQL语句
         preparedStatement = con.prepareStatement(insertQuery);
         preparedStatement.setInt(1, m_id);
@@ -271,8 +270,7 @@ public class DataControlProduct extends DataControl {
     public List<Product> getProductofNoAudit() throws SQLException {
         List<Product> products = new ArrayList<>();
         Connection con = DataBase.OpenDB();
-        String sql = "SELECT p_id, p_name, p_desc, p_class, p_price, p_status,p_quantity, p_img,p_auditStatus " +
-                "FROM product " + "WHERE p_auditStatus = ?";
+        String sql = "SELECT p_id, p_name, p_desc, p_class, p_price, p_status,p_quantity, p_img,p_auditStatus " + "FROM product " + "WHERE p_auditStatus = ?";
         PreparedStatement stmt = null;
         if (con != null) {
             stmt = con.prepareStatement(sql);
@@ -303,36 +301,22 @@ public class DataControlProduct extends DataControl {
         return products;
     }
 
-    public void updateProductStatus(int p_id, String p_auditStatus) {
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
-        try {
-            // Create a connection
-            DataBase dataBase = new DataBase();
-            con = dataBase.OpenDB();
-            // Prepare the SQL statement to update the product status
-            String query = "UPDATE product SET p_auditStatus = ? WHERE p_id = ?";
-            preparedStatement = con.prepareStatement(query);
-            preparedStatement.setString(1, p_auditStatus);
-            preparedStatement.setInt(2, p_id);
+    public void updateProductStatus(int p_id, String p_auditStatus) throws SQLException {
+        Connection con;
+        PreparedStatement preparedStatement;
 
-            // Execute the query
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle exceptions as needed
-        } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                // Handle exceptions as needed
-            }
-        }
+        DataBase dataBase = new DataBase();
+        con = dataBase.OpenDB();
+
+        String query = "UPDATE product SET p_auditStatus = ? WHERE p_id = ?";
+        preparedStatement = con.prepareStatement(query);
+        preparedStatement.setString(1, p_auditStatus);
+        preparedStatement.setInt(2, p_id);
+
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        con.close();
+
     }
 
 
