@@ -1036,7 +1036,7 @@ public class UserFrm extends JFrame {
                     String status = (String) cartTable1.getValueAt(row, 6);
 
                     // 只有商品状态不为已退货时，才显示弹出菜单
-                    if (!"已退货".equals(status)) {
+                    if (!"已退货".equals(status) && !"申请退货".equals(status)) {
                         // 在右键点击的位置显示弹出菜单
                         popupMenu.show(cartTable1, e.getX(), e.getY());
                     }
@@ -1092,13 +1092,16 @@ public class UserFrm extends JFrame {
                                         "VALUES (" + orderId + ", '" + buyTime + "', '" + reason + "', '" + orderStatus + "')";
                                 stmt.executeUpdate(insertQuery);
 
+                                // 更新orders表的o_status状态为"申请退货"
+                                String updateOrderStatusQuery = "UPDATE orders SET o_status = '申请退货' WHERE o_id = " + orderId;
+                                stmt.executeUpdate(updateOrderStatusQuery);
+
                                 stmt.close();
                                 dataBase.getCon().close();
                                 JOptionPane.showMessageDialog(null, "退货申请已提交成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
                             } else {
                                 // 未能获取订单信息，进行适当的错误处理
                                 JOptionPane.showMessageDialog(null, "无法获取订单信息", "错误", JOptionPane.INFORMATION_MESSAGE);
-
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -1107,6 +1110,7 @@ public class UserFrm extends JFrame {
                 }
             }
         });
+
 
         buttonpanel.add(viewOrderButton);
         card4.add(buttonpanel,BorderLayout.NORTH);
