@@ -375,6 +375,7 @@ public class DataControlOrder extends DataControl {
                 order.setTotalprice(String.valueOf(rs.getDouble("totalprice")));
 
                 Product product = new Product();
+                product.setP_id(rs.getInt("p_id"));
                 product.setP_name(rs.getString("p_name"));
                 product.setP_desc(rs.getString("p_desc"));
                 product.setP_class(rs.getString("p_class"));
