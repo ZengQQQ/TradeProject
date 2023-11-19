@@ -92,8 +92,20 @@ public class OrderDetailsDialog extends JDialog {
         String quantityInfo = "购买数量: " + order.getQuantity() + "\n";
         String totalPriceInfo = "订单总价格: " + order.getTotalprice() + "￥\n";
         String buyTimeInfo = "购买时间: " + order.getBuytime() + "\n";
+        String sentTimeInfo;
+        String receiveTimeInfo;
+        if (order.getSendtime() == null) {
+            sentTimeInfo = "发货时间: " + "无" + "\n";
+        } else {
+            sentTimeInfo = "发货时间: " + order.getSendtime() + "\n";
+        }
+        if (order.getReceivetime() == null) {
+            receiveTimeInfo = "退货时间: " + "无" + "\n";
+        } else {
+            receiveTimeInfo = "退货时间: " + order.getReceivetime() + "\n";
+        }
         String orderStatus = "订单状态: " + order.getStatus();
-        return orderId + quantityInfo + totalPriceInfo + buyTimeInfo + orderStatus;
+        return orderId + quantityInfo + totalPriceInfo + buyTimeInfo + sentTimeInfo + receiveTimeInfo + orderStatus;
     }
 
     private String getUserInfo(User user) {
