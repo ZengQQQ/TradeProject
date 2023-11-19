@@ -1,9 +1,6 @@
 package cn.bjut.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -217,6 +214,88 @@ public class DataControlMercahnt extends DataControl {
         con.close();
         return products;
     }
+
+    public  List<Integer> getMerchantStats(int merchantId) {
+        Connection con =  DataBase.OpenDB();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Integer> stats = new ArrayList<>();
+
+        try {
+            String totalIncomeQuery = "SELECT IFNULL(SUM(totalprice), 0) FROM orders o " +
+                    "INNER JOIN product p ON o.p_id = p.p_id WHERE p.m_id = ?";
+            stmt = con.prepareStatement(totalIncomeQuery);
+            stmt.setInt(1, merchantId);
+            rs = stmt.executeQuery();
+            double totalIncome = 0;
+            if (rs.next()) {
+                totalIncome = rs.getDouble(1);
+            }
+
+            String todayIncomeQuery = "SELECT IFNULL(SUM(totalprice), 0) FROM orders o " +
+                    "INNER JOIN product p ON o.p_id = p.p_id WHERE p.m_id = ? AND DATE(buy_time) = CURDATE()";
+            stmt = con.prepareStatement(todayIncomeQuery);
+            stmt.setInt(1, merchantId);
+            rs = stmt.executeQuery();
+            double todayIncome = 0;
+            if (rs.next()) {
+                todayIncome = rs.getDouble(1);
+            }
+
+            String totalProductsQuery = "SELECT COUNT(*) FROM product WHERE m_id = ?";
+            stmt = con.prepareStatement(totalProductsQuery);
+            stmt.setInt(1, merchantId);
+            rs = stmt.executeQuery();
+            int totalProducts = 0;
+            if (rs.next()) {
+                totalProducts = rs.getInt(1);
+            }
+
+            String totalOrdersQuery = "SELECT COUNT(*) FROM orders o INNER JOIN product p ON o.p_id = p.p_id WHERE p.m_id = ?";
+            stmt = con.prepareStatement(totalOrdersQuery);
+            stmt.setInt(1, merchantId);
+            rs = stmt.executeQuery();
+            int totalOrders = 0;
+            if (rs.next()) {
+                totalOrders = rs.getInt(1);
+            }
+
+            String todayOrdersQuery = "SELECT COUNT(*) FROM orders o INNER JOIN product p ON o.p_id = p.p_id WHERE p.m_id = ? AND DATE(buy_time) = CURDATE()";
+            stmt = con.prepareStatement(todayOrdersQuery);
+            stmt.setInt(1, merchantId);
+            rs = stmt.executeQuery();
+            int todayOrders = 0;
+            if (rs.next()) {
+                todayOrders = rs.getInt(1);
+            }
+
+            // Add all stats to the list
+            stats.add((int) totalIncome);
+            stats.add((int) todayIncome);
+            stats.add(totalProducts);
+            stats.add(totalOrders);
+            stats.add(todayOrders);
+
+            // Close resources
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (con != null) con.close();
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } finally {
+            // Ensure to close resources in case of exceptions
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return stats;
+    }
+
 
 
 }
