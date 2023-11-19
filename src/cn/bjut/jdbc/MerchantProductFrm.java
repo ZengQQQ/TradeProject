@@ -44,7 +44,7 @@ public class MerchantProductFrm extends JPanel {
         // 创建包含表格和按钮的新面板，并设置边框和间距
         JPanel tablePanel = new JPanel();
         tablePanel.setLayout(new BorderLayout());
-        tablePanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); // 设置边框和间距
+        tablePanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 15, 15)); // 设置边框和间距
 
         // 创建表格并添加到新面板的中间位置
         createProductTable();
@@ -394,36 +394,77 @@ public class MerchantProductFrm extends JPanel {
             String maxPrice = maxPriceField.getText().trim();
             String minQuantity = minquantityField.getText().trim();
             String maxQuantity = maxQuantityField.getText().trim();
+            List<Product> filteredProducts;
+            boolean isValid = true;
+            StringBuilder errorMessage = new StringBuilder("输入错误:\n");
 
-            boolean priceInputsProvided = !minPrice.isEmpty() && !maxPrice.isEmpty();
-            boolean quantityInputsProvided = !minQuantity.isEmpty() && !maxQuantity.isEmpty();
-
-            if (priceInputsProvided) {
-                double minPriceValue = Double.parseDouble(minPrice);
-                double maxPriceValue = Double.parseDouble(maxPrice);
-                if (minPriceValue > maxPriceValue) {
-                    JOptionPane.showMessageDialog(null, "价格范围输入错误", "提示", JOptionPane.INFORMATION_MESSAGE);
-                    return;
+            if (!productId.isEmpty()) {
+                if (!isPositiveInteger(productId) || Integer.parseInt(productId) <= 0) {
+                    errorMessage.append("- 商品ID必须为大于0的整数\n");
+                    isValid = false;
                 }
             }
 
-            if (quantityInputsProvided) {
+            if (!productName.isEmpty()) {
+                if (productName.length() > 50) {
+                    errorMessage.append("- 商品名称长度不能超过50\n");
+                    isValid = false;
+                }
+            }
+
+            if (!minPrice.isEmpty() || !maxPrice.isEmpty()) {
+                double minPriceValue = Double.parseDouble(minPrice);
+                double maxPriceValue = Double.parseDouble(maxPrice);
+
+                if (minPriceValue <= 0 || maxPriceValue <= 0 || minPriceValue > maxPriceValue || minPrice.length() > 6 || maxPrice.length() > 6) {
+                    errorMessage.append("- 价格范围输入错误\n");
+                    isValid = false;
+                }
+            }
+
+            if (!minQuantity.isEmpty() || !maxQuantity.isEmpty()) {
                 int minQuantityValue = Integer.parseInt(minQuantity);
                 int maxQuantityValue = Integer.parseInt(maxQuantity);
 
-                if (minQuantityValue > maxQuantityValue) {
-                    JOptionPane.showMessageDialog(null, "数量范围输入错误", "提示", JOptionPane.INFORMATION_MESSAGE);
-                    return;
+                if (minQuantityValue <= 0 || maxQuantityValue <= 0 || minQuantityValue > maxQuantityValue || minQuantity.length() > 6 || maxQuantity.length() > 6) {
+                    errorMessage.append("- 数量范围输入错误\n");
+                    isValid = false;
                 }
             }
 
-            // 调用MerchantProductQueryByCategory函数，传入所有条件，并获取结果
-            List<Product> filteredProducts = dataControlmer.MerchantProductQueryByCategory(merchantInterFrm.getM_id(), selectedCategory, productId, productName, minPrice, maxPrice, minQuantity, maxQuantity, selectedStatus, selectedAuditStatus);
+
+            if (!isValid) {
+                JOptionPane.showMessageDialog(null, errorMessage.toString(), "输入错误", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            // 传入所有条件，并获取结果
+            filteredProducts = dataControlmer.MerchantProductQueryByCategory(
+                    merchantInterFrm.getM_id(),
+                    selectedCategory,
+                    productId,
+                    productName,
+                    minPrice,
+                    maxPrice,
+                    minQuantity,
+                    maxQuantity,
+                    selectedStatus,
+                    selectedAuditStatus
+            );
 
             tableModel.setRowCount(0); // 清空表格数据
+            if (filteredProducts.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "没有搜索到商品", "搜索结果", JOptionPane.INFORMATION_MESSAGE);
+            }
             for (Product product : filteredProducts) {
-                Object[] rowData = {product.getP_id(), getScaledImageIcon(product, 200, 210), product.getP_name(), product.getP_class(), product.getP_price(), product.getP_quantity(), product.getP_status(), product.getP_audiStatus()
-                        // 如果之前有第7列的操作按钮信息，这里需要根据列数调整
+                Object[] rowData = {
+                        product.getP_id(),
+                        getScaledImageIcon(product, 200, 210),
+                        product.getP_name(),
+                        product.getP_class(),
+                        product.getP_price(),
+                        product.getP_quantity(),
+                        product.getP_status(),
+                        product.getP_audiStatus()
                 };
                 tableModel.addRow(rowData);
             }
@@ -433,7 +474,23 @@ public class MerchantProductFrm extends JPanel {
             e.printStackTrace();
         }
     }
+    private boolean isPositiveInteger(String value) {
+        try {
+            int intValue = Integer.parseInt(value);
+            return intValue > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
+    private boolean isPositiveDouble(String value) {
+        try {
+            double doubleValue = Double.parseDouble(value);
+            return doubleValue > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
     public void refreshProductTable() {
         try {
