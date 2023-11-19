@@ -55,7 +55,7 @@ public class ProductAddDialog extends ProductofDialog {
         gbc.gridy++;
 
         // 修改为 JComboBox 下拉菜单
-        String[] categories = { "食品", "酒水饮料", "电脑办公", "手机", "服装", "书籍", "厨具", "家居日用", "其他"};
+        String[] categories = {"食品", "酒水饮料", "电脑办公", "手机", "服装", "书籍", "厨具", "家居日用", "其他"};
         JComboBox<String> categoryComboBox = new JComboBox<>(categories);
         categoryComboBox.setSelectedIndex(8); // 默认选择全部类别
         categoryComboBox.setFont(new Font("微软雅黑", Font.BOLD, 20));
@@ -80,7 +80,7 @@ public class ProductAddDialog extends ProductofDialog {
         panel.add(statusLabel, gbc);
         gbc.gridy++;
         // 添加商品图片标签
-        gbc.gridx=0;
+        gbc.gridx = 0;
         JLabel imageLabel1 = new JLabel("商品图片:    ");
         imageLabel1.setFont(new Font("微软雅黑", Font.BOLD, 22));
         panel.add(imageLabel1, gbc);
@@ -125,9 +125,7 @@ public class ProductAddDialog extends ProductofDialog {
             String classRegex = "^.{1,20}$";
             String priceRegex = "^\\d+(\\.\\d+)?$"; // 只能为数字，可以有小数点
             String quantityRegex = "^\\d+$"; // 只能为数字，不能有小数点
-            if (!quantityText.isEmpty()) {
-                newquantity = Integer.parseInt(quantityText);
-            }
+
             if (newName.isEmpty() || newDesc.isEmpty() || newClass.isEmpty() || priceText.isEmpty() || quantityText.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "所有字段都必须填写", "警告", JOptionPane.WARNING_MESSAGE);
             } else {
@@ -143,16 +141,20 @@ public class ProductAddDialog extends ProductofDialog {
                 } else if (!quantityField.getText().matches(quantityRegex)) {
                     JOptionPane.showMessageDialog(this, "商品数量格式不正确，只能为数字，不能有小数点", "警告", JOptionPane.WARNING_MESSAGE);
                 } else {
+                    newquantity = Integer.parseInt(quantityText);
                     double newPrice = Double.parseDouble(priceText);
                     if (newPrice < 0 || newPrice > 99999) {
                         JOptionPane.showMessageDialog(this, "商品价格范围不正确，不能为负和超过99999", "警告", JOptionPane.WARNING_MESSAGE);
                     } else if (newquantity < 0 || newquantity > 99999) {
                         JOptionPane.showMessageDialog(this, "商品数量范围不正确，不能为负和超过99999", "警告", JOptionPane.WARNING_MESSAGE);
                     } else {
-                        String newStatus ="下架";
+                        String newStatus = "下架";
                         // 调用父类的方法
                         boolean success;
                         try {
+                            if (newImgName.isEmpty()) {
+                                newImgName = "R.jpg";
+                            }
                             success = dataControlProduct.addProduct(m_id, newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);

@@ -13,8 +13,7 @@ import java.sql.SQLException;
 public class ProductofDialog extends JDialog {
     public DataControlProduct dataControlProduct = new DataControlProduct();
     public Product product;
-    public String newImgName;
-    public String oldImgName;
+    public String newImgName ;
     protected JLabel imageLabel; // 修改这一行
     public JRadioButton onSaleRadioButton;
     public JRadioButton offSaleRadioButton;
@@ -23,14 +22,13 @@ public class ProductofDialog extends JDialog {
 
     public ProductofDialog(Product product) throws SQLException {
         this.product = product;
-        this.newImgName = product.getP_img();
         initComponents();
     }
 
     private void initComponents() {
         // 创建微软雅黑16号字体
         Font customFont = new Font("微软雅黑", Font.BOLD, 22);
-
+        this.newImgName=product.getP_img();
         setSize(900, 700);
         setLocationRelativeTo(null); // 居中显示
 

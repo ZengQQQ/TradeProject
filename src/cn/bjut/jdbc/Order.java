@@ -2,14 +2,51 @@ package cn.bjut.jdbc;
 
 public class Order {
 
-    private  User user;
-    private  Product product;
+    private User user;
+    private Product product;
 
     private int p_id;
+    private int o_id;
     private int u_id;
     private String buytime;
+    private String sendtime;
+    private String receivetime;
+    private String status;
     private int quantity;
     private String totalprice;
+
+    public int getO_id() {
+        return o_id;
+    }
+
+    public void setO_id(int o_id) {
+        this.o_id = o_id;
+    }
+
+    public String getSendtime() {
+        return sendtime;
+    }
+
+    public void setSendtime(String sendtime) {
+        this.sendtime = sendtime;
+    }
+
+    public String getReceivetime() {
+        return receivetime;
+    }
+
+    public void setReceivetime(String receivetime) {
+        this.receivetime = receivetime;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 
     public String getTotalprice() {
         return totalprice;
@@ -19,9 +56,9 @@ public class Order {
         this.totalprice = totalptice;
     }
 
-    public  Order(User user, Product product) {
-        this.product=product;
-        this.user=user;
+    public Order(User user, Product product) {
+        this.product = product;
+        this.user = user;
     }
 
     public Order() {
