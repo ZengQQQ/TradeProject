@@ -234,22 +234,34 @@ public class MerchantOrdersFrm extends JPanel {
     }
 
 
-    // 自定义单元格渲染器，用于显示大字体和居中文本
     private static class CustomCellRenderer extends DefaultTableCellRenderer {
         private final Font largerFont;
 
         public CustomCellRenderer(int fontSize) {
-            largerFont = new Font("微软雅黑", Font.PLAIN, fontSize); // 设置字体为微软雅黑，大小为指定的fontSize
+            largerFont = new Font("微软雅黑", Font.PLAIN, fontSize);
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JTextArea textArea = new JTextArea();
             textArea.setWrapStyleWord(true);
             textArea.setLineWrap(true);
-            textArea.setFont(largerFont); // 使用自定义的字体
+            textArea.setFont(largerFont);
             textArea.setText((String) value);
             textArea.setOpaque(true);
 
+            // 根据订单状态设置文本颜色
+            if (column == 7) { // 第 8 列是订单状态
+                String status = (String) value;
+                if (status.equals("待发货") || status.equals("待退货")) {
+                    textArea.setForeground(Color.RED);
+                } else if (status.equals("已退货") || status.equals("待收货")) {
+                    textArea.setForeground(Color.green);
+                } else if (status.equals("已完成")) {
+                    textArea.setForeground(Color.BLACK);
+                }
+            } else {
+                textArea.setForeground(Color.BLACK); // 其他列默认黑色
+            }
 
             // 设置居中对齐的列索引
             int[] centeredColumns = {0, 4, 5, 6, 7};
@@ -265,6 +277,7 @@ public class MerchantOrdersFrm extends JPanel {
             return textArea;
         }
     }
+
 
     // 自定义单元格渲染器用于在表格中显示图片
     private static class ImageCellRenderer extends DefaultTableCellRenderer {
