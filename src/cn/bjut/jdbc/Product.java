@@ -12,6 +12,23 @@ public class Product {
     private String p_img;
     private String p_auditStatus;
 
+    private int sales;
+
+    public int getM_id() {
+        return m_id;
+    }
+
+    public void setM_id(int m_id) {
+        this.m_id = m_id;
+    }
+
+    public int getSales() {
+        return sales;
+    }
+
+    public void setSales(int sales) {
+        this.sales = sales;
+    }
 
     public Product() {
     }
