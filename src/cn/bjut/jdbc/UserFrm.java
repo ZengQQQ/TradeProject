@@ -1114,6 +1114,7 @@ public class UserFrm extends JFrame {
                 // 从选定的行获取必要的信息，例如商品 ID
                 int productId = (int) cartTable1.getValueAt(selectedRow, 5);
 
+
                 // 创建输入框
                 JTextArea textArea = new JTextArea(5, 30);
                 JScrollPane scrollPane = new JScrollPane(textArea);
@@ -1142,15 +1143,17 @@ public class UserFrm extends JFrame {
                             // 获取当前日期
                             java.util.Date currentDate = new java.util.Date();
                             java.sql.Date currentSqlDate = new java.sql.Date(currentDate.getTime());
-
-                            // 获取购买日期
-                            String buy_Time = (String) cartTable1.getValueAt(selectedRow, 3);
+                            String buy_time=(String) cartTable1.getValueAt(selectedRow, 3);
+                            String orderIdColumnName = "o_id"; // 请替换为实际的列名
+                            int oId=getOrderIDFromDatabase(dataBase, orderIdColumnName, productId,buy_time);
+                            // 获取收货日期
+                            String receive_Time = getReceiveTimeFromDatabase(dataBase, oId);
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                            java.util.Date buyDate = sdf.parse(buy_Time);
-                            java.sql.Date buySqlDate = new java.sql.Date(buyDate.getTime());
+                            java.util.Date receiveDate = sdf.parse(receive_Time);
+                            java.sql.Date receiveSqlDate = new java.sql.Date(receiveDate.getTime());
 
                             // 计算日期差
-                            long diff = currentSqlDate.getTime() - buySqlDate.getTime();
+                            long diff = currentSqlDate.getTime() - receiveSqlDate.getTime();
                             long diffDays = diff / (24 * 60 * 60 * 1000);
 
                             if (diffDays > 7) {
@@ -1159,17 +1162,16 @@ public class UserFrm extends JFrame {
                             }
 
                             // 获取订单信息
-                            String orderIdColumnName = "o_id"; // 请替换为实际的列名
-                            int orderId = getOrderIDFromDatabase(dataBase, orderIdColumnName, productId,buy_Time);
+
+                            int orderId = getOrderIDFromDatabase(dataBase, orderIdColumnName, productId,buy_time);
 
                             if (orderId != -1) {
-                                String buyTime = (String) cartTable1.getValueAt(selectedRow, 3);
                                 String orderStatus = "待审核";
 
                                 // 插入退货记录
                                 Statement stmt = dataBase.getCon().createStatement();
                                 String insertQuery = "INSERT INTO return_detail (o_id, request_time, reason, status) " +
-                                        "VALUES (" + orderId + ", '" + buyTime + "', '" + reason + "', '" + orderStatus + "')";
+                                        "VALUES (" + orderId + ", '" + receive_Time + "', '" + reason + "', '" + orderStatus + "')";
                                 stmt.executeUpdate(insertQuery);
 
                                 // 更新orders表的o_status状态为"申请退货"
@@ -1187,6 +1189,7 @@ public class UserFrm extends JFrame {
                             ex.printStackTrace();
                         }
                     }
+
                 }
             }
         });
@@ -1942,6 +1945,23 @@ public class UserFrm extends JFrame {
         }
     }
 
+    public String getReceiveTimeFromDatabase(DataBase dataBase, int oId) {
+        String receiveTime = "";
+        try {
+            Statement stmt = dataBase.getCon().createStatement();
+            String query = "SELECT receive_time FROM orders WHERE o_id=" + oId;
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                receiveTime = rs.getString("receive_time");
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return receiveTime;
+    }
+
 
 
     // 从数据库获取订单ID的方法
@@ -1974,22 +1994,22 @@ public class UserFrm extends JFrame {
 
             // 查询数据库中的orders表格中的所有订单
             Statement stmt = dataBase.getCon().createStatement();
-            String query = "SELECT o_id, buy_time, o_status FROM orders WHERE u_id=" + u_id;
+            String query = "SELECT o_id, send_time, o_status FROM orders WHERE u_id=" + u_id;
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 // 获取订单的id，购买时间和状态
                 int o_id = rs.getInt("o_id");
-                String buy_time = rs.getString("buy_time");
+                String send_time = rs.getString("send_time");
                 String o_status = rs.getString("o_status");
-
+                if (send_time != null && !send_time.isEmpty()){
                 // 如果订单状态是"待收货"
                 if (o_status.equals("待收货")) {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    java.util.Date buyDate = sdf.parse(buy_time);
-                    java.sql.Date buySqlDate = new java.sql.Date(buyDate.getTime());
+                    java.util.Date sendDate = sdf.parse(send_time);
+                    java.sql.Date sendSqlDate = new java.sql.Date(sendDate.getTime());
 
                     // 计算日期差
-                    long diff = currentSqlDate.getTime() - buySqlDate.getTime();
+                    long diff = currentSqlDate.getTime() - sendSqlDate.getTime();
                     long diffDays = diff / (24 * 60 * 60 * 1000);
 
                     // 如果已经过了20天
@@ -2000,7 +2020,7 @@ public class UserFrm extends JFrame {
                         updateStmt.executeUpdate(updateOrderStatusQuery);
                         updateStmt.close();
                     }
-                }
+                }}
             }
             rs.close();
             stmt.close();
