@@ -303,6 +303,8 @@ public class UserFrm extends JFrame {
         topPanel2.add(comButton);
         JButton phoneButton=new JButton("手机");
         topPanel2.add(phoneButton);
+        JButton shumaButton=new JButton("数码");
+        topPanel2.add(shumaButton);
         JButton clothButton=new JButton("服装");
         topPanel2.add(clothButton);
         JButton bookButton=new JButton("书籍");
@@ -383,6 +385,13 @@ public class UserFrm extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 refreshProduct(bottomPanel,u_id,"服装");
+            }
+        });
+        //
+        shumaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                refreshProduct(bottomPanel,u_id,"数码");
             }
         });
         //
