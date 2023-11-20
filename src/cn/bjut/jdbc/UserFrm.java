@@ -1450,6 +1450,49 @@ public class UserFrm extends JFrame {
 
         // 创建一个表格对象，用于显示表格模型中的数据
         JTable table = new JTable(tableModel);
+        // 添加鼠标右键点击事件
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                int r = table.rowAtPoint(e.getPoint());
+                if (r >= 0 && r < table.getRowCount()) {
+                    table.setRowSelectionInterval(r, r);
+                } else {
+                    table.clearSelection();
+                }
+
+                int rowindex = table.getSelectedRow();
+                if (rowindex < 0)
+                    return;
+
+                if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
+                    JPopupMenu popup = new JPopupMenu();
+
+                    // 添加取消关注的选项
+                    JMenuItem cancelFollowItem = new JMenuItem("取消关注");
+                    cancelFollowItem.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent arg0) {
+                            int selectedRow = table.getSelectedRow();
+                            String m_name = (String) table.getValueAt(selectedRow, 0);
+
+                            // 获取商家ID（m_id）的代码
+                            int m_id = getMerchantIdByName(m_name);
+
+                            // 执行取消关注的操作，删除concern表的记录
+                            cancelFollow(u_id, m_id);
+                            followFrame.dispose();
+                            concerProdict(u_id);
+
+                        }
+                    });
+
+                    popup.add(cancelFollowItem);
+
+                    popup.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        });
         // 创建一个滚动面板，并将表格放入其中
         JScrollPane scrollPane = new JScrollPane(table);
         // 创建一个面板对象，用于容纳滚动面板
@@ -1811,6 +1854,51 @@ public class UserFrm extends JFrame {
         };
         return panel;
         }
+
+    // 获取商家ID（m_id）的方法
+    private int getMerchantIdByName(String m_name) {
+        int m_id = -1; // 初始化为-1，表示未找到
+        try {
+            DataBase dataBase=new DataBase();
+            String query = "SELECT m_id FROM merchant WHERE m_name='" + m_name + "'";
+            Statement stmt = null;
+            try {
+                stmt = dataBase.getCon().createStatement();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                m_id = rs.getInt("m_id");
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return m_id;
+    }
+
+    // 取消关注的方法
+    private void cancelFollow(int u_id, int m_id) {
+        try {
+            DataBase dataBase=new DataBase();
+            String deleteQuery = "DELETE FROM concern WHERE u_id=" + u_id + " AND m_id=" + m_id;
+            Statement stmt = null;
+            try {
+                stmt = dataBase.getCon().createStatement();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            stmt.executeUpdate(deleteQuery);
+            stmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+
     // 从数据库获取订单ID的方法
     private int getOrderIDFromDatabase(DataBase dataBase, String orderIdColumnName, int productId,String buy_time) throws SQLException {
         Statement stmt = null;
