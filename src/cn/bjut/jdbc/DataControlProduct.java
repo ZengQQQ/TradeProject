@@ -43,6 +43,30 @@ public class DataControlProduct extends DataControl {
         return false;
     }
 
+    public boolean updateProduct2(int p_id, String newsta) {
+        // 创建连接
+        Connection con;
+        PreparedStatement preparedStatement;
+        DataBase dataBase = new DataBase();
+        try {
+            // 建立数据库连接
+            con = dataBase.OpenDB();
+            // 创建SQL更新语句
+            String sql = "UPDATE product SET p_status = ? WHERE p_id = ?";
+            // 创建 PreparedStatement 对象
+            preparedStatement = con.prepareStatement(sql);
+            // 设置参数
+            preparedStatement.setString(1, newsta);
+            preparedStatement.setInt(2, p_id);
+            // 执行更新
+            int rowsAffected = preparedStatement.executeUpdate();
+            // 如果更新成功，rowsAffected 应该为 1
+            return rowsAffected == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     public boolean deleteProduct(int productId) throws SQLException {
         Connection con = null;
         PreparedStatement preparedStatement = null;
