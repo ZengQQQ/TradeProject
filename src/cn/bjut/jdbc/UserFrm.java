@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 /**
@@ -1018,7 +1019,7 @@ public class UserFrm extends JFrame {
                                         // 将这些信息添加到表格模型中的一行
                                         tableModel.addRow(new Object[]{image, p_name, p_price, buy_time, quantity,p_id,o_status});
                                     }
-
+                                    checkAndUpdateOrderStatus(dataBase,u_id);
                                 }
                                 rs1.close();
                                 stmt1.close();
@@ -1035,6 +1036,8 @@ public class UserFrm extends JFrame {
 
             }
         });
+
+
 // 为右键功能创建弹出菜单
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem returnItem = new JMenuItem("退货");
@@ -1136,7 +1139,25 @@ public class UserFrm extends JFrame {
                         try {
                             DataBase dataBase = new DataBase();
                             dataBase.OpenDB();
+                            // 获取当前日期
+                            java.util.Date currentDate = new java.util.Date();
+                            java.sql.Date currentSqlDate = new java.sql.Date(currentDate.getTime());
+
+                            // 获取购买日期
                             String buy_Time = (String) cartTable1.getValueAt(selectedRow, 3);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            java.util.Date buyDate = sdf.parse(buy_Time);
+                            java.sql.Date buySqlDate = new java.sql.Date(buyDate.getTime());
+
+                            // 计算日期差
+                            long diff = currentSqlDate.getTime() - buySqlDate.getTime();
+                            long diffDays = diff / (24 * 60 * 60 * 1000);
+
+                            if (diffDays > 7) {
+                                JOptionPane.showMessageDialog(null, "已经超过7天，不能退货", "错误", JOptionPane.INFORMATION_MESSAGE);
+                                return;
+                            }
+
                             // 获取订单信息
                             String orderIdColumnName = "o_id"; // 请替换为实际的列名
                             int orderId = getOrderIDFromDatabase(dataBase, orderIdColumnName, productId,buy_Time);
@@ -1169,6 +1190,7 @@ public class UserFrm extends JFrame {
                 }
             }
         });
+
 
         buttonpanel.add(viewOrderButton);
         card4.add(buttonpanel,BorderLayout.NORTH);
@@ -1942,6 +1964,48 @@ public class UserFrm extends JFrame {
             rs.close();
             stmt.close();
             return -1; // 如果未找到订单信息
+        }
+    }
+    public void checkAndUpdateOrderStatus(DataBase dataBase,int u_id) {
+        try {
+            // 获取当前日期
+            java.util.Date currentDate = new java.util.Date();
+            java.sql.Date currentSqlDate = new java.sql.Date(currentDate.getTime());
+
+            // 查询数据库中的orders表格中的所有订单
+            Statement stmt = dataBase.getCon().createStatement();
+            String query = "SELECT o_id, buy_time, o_status FROM orders WHERE u_id=" + u_id;
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                // 获取订单的id，购买时间和状态
+                int o_id = rs.getInt("o_id");
+                String buy_time = rs.getString("buy_time");
+                String o_status = rs.getString("o_status");
+
+                // 如果订单状态是"待收货"
+                if (o_status.equals("待收货")) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    java.util.Date buyDate = sdf.parse(buy_time);
+                    java.sql.Date buySqlDate = new java.sql.Date(buyDate.getTime());
+
+                    // 计算日期差
+                    long diff = currentSqlDate.getTime() - buySqlDate.getTime();
+                    long diffDays = diff / (24 * 60 * 60 * 1000);
+
+                    // 如果已经过了20天
+                    if (diffDays > 20) {
+                        // 更新订单状态为"已完成"
+                        Statement updateStmt = dataBase.getCon().createStatement();
+                        String updateOrderStatusQuery = "UPDATE orders SET o_status = '已完成' WHERE o_id = " + o_id;
+                        updateStmt.executeUpdate(updateOrderStatusQuery);
+                        updateStmt.close();
+                    }
+                }
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
