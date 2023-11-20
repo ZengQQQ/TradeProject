@@ -50,8 +50,8 @@ public class ReturnApplication extends JPanel {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        JButton approveButton = new JButton("Approve");
-        JButton rejectButton = new JButton("Reject");
+        JButton approveButton = new JButton("同意");
+        JButton rejectButton = new JButton("驳回");
 
         setButtonAction(approveButton, e -> {
             try {
@@ -76,7 +76,7 @@ public class ReturnApplication extends JPanel {
     }
 
     private void createReturnTable() {
-        String[] columns = {"ID", "Order ID", "Request Time", "Reason", "Status"};
+        String[] columns = {"ID", "用户","商品名", "Request Time", "Reason", "Status"};
         tableModel = new DefaultTableModel(columns, 0);
         returnTable = new JTable(tableModel);
         // Customize the cell renderer if needed
@@ -92,7 +92,8 @@ public class ReturnApplication extends JPanel {
             for (ReturnRequest returnRequest : returnRequests) {
                 Object[] rowData = {
                         returnRequest.getR_id(),
-                        returnRequest.getO_id(),
+                        returnRequest.getU_name(),
+                        returnRequest.getP_name(),
                         returnRequest.getRequest_time(),
                         returnRequest.getReason(),
                         returnRequest.getStatus()
@@ -127,7 +128,7 @@ public class ReturnApplication extends JPanel {
 
             refreshReturnTable(); // Refresh the table after processing
         } else {
-            JOptionPane.showMessageDialog(this, "Please select a return request to process.", "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "请选择一个申请再操作", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 

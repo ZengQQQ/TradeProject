@@ -1,6 +1,7 @@
 package cn.bjut.jdbc;
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommentBar extends JPanel {
-    //评论人的id
+    //该条评论的id
     private String ID;
 
     private User user;
@@ -126,9 +127,41 @@ public class CommentBar extends JPanel {
         // 创建按钮面板，并添加查看回复按钮和回复按钮
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // 使用流式布局，将按钮放在右边
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0)); // 添加边距
+
+        JButton deleteButton = new JButton("删除评论");
+        deleteButton.setPreferredSize(new Dimension(100, 30)); // 设置按钮大小
+        deleteButton.addActionListener(e -> {
+            try {
+                if(user!=null) {
+                    if (userName.equals(user.getU_name())) {
+                        int confirm = JOptionPane.showConfirmDialog(null, "确定删除该评论吗？", "确认删除", JOptionPane.YES_NO_OPTION);
+                        if (confirm == JOptionPane.YES_OPTION) {
+                            // 执行删除评论的操作
+                            new DataControl().deleteComment(ID);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "只有评论者才能删除评论！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+                else if(merchant!=null){
+                if(userName.equals(merchant.getM_name())){
+                    int confirm = JOptionPane.showConfirmDialog(null, "确定删除该评论吗？", "确认删除", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        // 执行删除评论的操作
+                        new DataControl().deleteComment(ID);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "只有评论者才能删除评论！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                }
+                }
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
+        });
+
         buttonPanel.add(viewRepliesButton);
         buttonPanel.add(replyButton);
-
+        buttonPanel.add(deleteButton);
         bottomPanel.add(buttonPanel, BorderLayout.CENTER);
 
         // 添加底部面板到主面板
@@ -290,7 +323,27 @@ public class CommentBar extends JPanel {
             bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
 
             JLabel label = new JLabel( flag);
+
+            JButton deletereplyButton = new JButton("删除回复");
+            deletereplyButton.setPreferredSize(new Dimension(30, 15)); // 设置按钮大小
+            deletereplyButton.addActionListener(e -> {
+                // 在这里添加删除回复评论的逻辑
+                System.out.println(name);
+                System.out.println(userName);
+                if(flag.equals("用户") && userName.equals(name)||flag.equals("商家") && userName.equals(name)) {
+                    try {
+                        new DataControl().deleteReply(ID);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }else {
+                    JOptionPane.showMessageDialog(null, "只有评论者才能删除评论！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                }
+        });
+
             bottomPanel.add(label,Component.RIGHT_ALIGNMENT);
+            bottomPanel.add(Box.createHorizontalGlue());
+            bottomPanel.add(deletereplyButton);
             this.add(bottomPanel);
 
             this.setBorder(BorderFactory.createLineBorder(Color.BLACK));

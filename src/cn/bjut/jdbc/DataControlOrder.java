@@ -459,4 +459,76 @@ public class DataControlOrder extends DataControl {
         }
         return isReturned;
     }
+
+    public List<Order> getOrders(){
+        List<Order> list = new ArrayList<Order>();
+        Connection con = DataBase.OpenDB();
+        String sql = "SELECT o.o_id as o_id, p.p_name as p_name, u.u_name as u_name, o.o_id, o.u_id, o.p_id, buy_time,o.send_time, quantity, totalprice, receive_time, o_status " +
+                "FROM orders o " +
+                "JOIN product p ON o.p_id = p.p_id " +
+                "JOIN user u ON o.u_id = u.u_id";
+
+        try {
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()) {
+                Order order = new Order();
+                order.setO_id(rs.getInt("o_id"));
+                order.setP_id(rs.getInt("p_id"));
+                order.setU_id(rs.getInt("u_id"));
+                order.setP_name(rs.getString("p_name"));
+                order.setU_name(rs.getString("u_name"));
+                order.setBuytime(rs.getString("buy_time"));
+                order.setQuantity(rs.getInt("quantity"));
+                order.setTotalprice(rs.getString("totalprice"));
+                order.setSend_time(rs.getString("send_time"));
+                order.setReceive_time(rs.getString("receive_time"));
+                order.setO_status(rs.getString("o_status"));
+                list.add(order);
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public void updateOrderStatus(int o_id, String status) throws SQLException {
+        Connection con = DataBase.OpenDB();
+        String sql = "UPDATE orders SET o_status = ? WHERE o_id = ?";
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setString(1, status);
+        stmt.setInt(2, o_id);
+        stmt.executeUpdate();
+        if(con!= null) {
+            con.close();
+        }
+    }
+
+    public void deleteOrder(int o_id) throws SQLException{
+        Connection con = DataBase.OpenDB();
+        String sql = "DELETE FROM orders WHERE o_id = ?";
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, o_id);
+        stmt.executeUpdate();
+        if(con!= null) {
+            con.close();
+        }
+
+    }
+
+    public Boolean hasReturnRecord(int orderId) throws SQLException {
+        Connection con = DataBase.OpenDB();
+        String sql = "select * from return_detail where o_id = ?";
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1,orderId);
+        ResultSet rs = stmt.executeQuery();
+        if(rs.next()){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

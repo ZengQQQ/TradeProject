@@ -517,6 +517,35 @@ public class DataControl {
         }
     }
 
+    public int searchFromOrders(int u_id) throws SQLException {
+        String sql = "select * from orders where u_id = ? and o_status='待收货'or'待发货'";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, u_id);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    public int merchantcondition(int m_id) throws SQLException {
+        String sql = "select * from product where m_id= ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        try {
+            stmt.setInt(1, m_id);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
     //插入一条新的用户信息，输入用户的所有信息，成功返回相应的字符串
     public String insertUserTable(String new_u_acc, String new_u_psw, String new_u_name, String new_u_sex, String new_u_tele) throws SQLException {
         String sql = "INSERT INTO user (u_id, u_acc, u_psw, u_name, u_sex,  u_tele) VALUES (null, ?, ?, ?, ?, ?)";
@@ -861,6 +890,27 @@ public class DataControl {
             return rs.getInt(1);
         }
         else return 0;
+    }
+
+    public void deleteComment(String ID) throws SQLException {
+        String sql = "delete from forum where f_id = ? or reply_to= ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        stmt.setInt(1, Integer.parseInt(ID));
+        stmt.setInt(2, Integer.parseInt(ID));
+        stmt.executeUpdate();
+    }
+
+    public  void deleteReply(String ID) throws SQLException {
+        String sql ="delete from forum where reply_to = ?";
+        Connection con = DataBase.OpenDB();
+        PreparedStatement stmt = con.prepareStatement(sql);
+        try {
+            stmt.setInt(1, Integer.parseInt(ID));
+            stmt.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 }
 

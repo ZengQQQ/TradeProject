@@ -1350,8 +1350,12 @@ public class UserFrm extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 finalDataControl.insertOrUpdateCart(u_id,id);
+                // 添加成功提示框
+                JOptionPane.showMessageDialog((Component) e.getSource(),
+                        "已成功添加到购物车！", "成功", JOptionPane.INFORMATION_MESSAGE);
             }
         });
+
 
         // 创建一个按钮，实现关注商家的功能
         JButton followButton = new JButton("关注商家");

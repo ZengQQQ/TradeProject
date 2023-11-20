@@ -148,7 +148,6 @@ public class AdminMerchantFrame extends JPanel {
                         String database_name = null;
                         if (selectedColumn != null && !selectedColumn.isEmpty() && newValue != null && !newValue.isEmpty()) {
                             int columnIndex = Arrays.asList(options).indexOf(selectedColumn) + 1;
-                            merchantTable.setValueAt(newValue, selectedRow, columnIndex);
 
                             switch (selectedColumn) {
                                 case "账户":
@@ -169,14 +168,26 @@ public class AdminMerchantFrame extends JPanel {
                             }
 
                             try {
-                                data.updateMerTable(Integer.parseInt((String) merchantTable.getValueAt(selectedRow, 0)), database_name, newValue);
-                                //顺便更新usertable的数据
-                                merchantTable.setValueAt(newValue, selectedRow, columnIndex);
+                                // 添加验证逻辑
+                                if (("m_acc".equals(database_name) && newValue.matches("\\w{8}")) ||
+                                        ("m_sex".equals(database_name) && newValue.matches("(男|女)")) ||
+                                        ("m_psw".equals(database_name) && newValue.length() >= 6) ||
+                                        ("m_tele".equals(database_name) && newValue.matches("\\d{11}"))) {
+                                    data.updateMerTable(Integer.parseInt((String) merchantTable.getValueAt(selectedRow, 0)), database_name, newValue);
+                                    //顺便更新merchantTable的数据
+                                    merchantTable.setValueAt(newValue, selectedRow, columnIndex);
 
-                                JOptionPane.showMessageDialog(adminFrame, "修改成功");
+                                    JOptionPane.showMessageDialog(adminFrame, "修改成功");
+                                } else {
+                                    JOptionPane.showMessageDialog(adminFrame, "输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
+                                    // 还原修改前的值
+                                    merchantTable.setValueAt(merchantTable.getValueAt(selectedRow, columnIndex), selectedRow, columnIndex);
+                                }
                             } catch (SQLException e1) {
                                 e1.printStackTrace();
                                 JOptionPane.showMessageDialog(adminFrame, "修改失败");
+                                // 还原修改前的值
+                                merchantTable.setValueAt(merchantTable.getValueAt(selectedRow, columnIndex), selectedRow, columnIndex);
                             }
                         }
                     }
@@ -218,20 +229,25 @@ public class AdminMerchantFrame extends JPanel {
                         String newSex = sexField.getText();
                         String newTele = teleField.getText();
 
-                        // 更新表格
-                        merchantTable.setValueAt(newAcc, selectedRow, 1);
-                        merchantTable.setValueAt(newPsw, selectedRow, 2);
-                        merchantTable.setValueAt(newName, selectedRow, 3);
-                        merchantTable.setValueAt(newSex, selectedRow, 4);
-                        merchantTable.setValueAt(newTele, selectedRow, 5);
+                        // 添加验证逻辑
+                        if (newAcc.matches("\\w{8}") && newSex.matches("(男|女)") && newPsw.length() >= 6 && newTele.matches("\\d{11}")) {
+                            // 更新表格
+                            merchantTable.setValueAt(newAcc, selectedRow, 1);
+                            merchantTable.setValueAt(newPsw, selectedRow, 2);
+                            merchantTable.setValueAt(newName, selectedRow, 3);
+                            merchantTable.setValueAt(newSex, selectedRow, 4);
+                            merchantTable.setValueAt(newTele, selectedRow, 5);
 
-                        // 更新数据库
-                        int m_id = Integer.parseInt((String) merchantTable.getValueAt(selectedRow, 0)); // 获取 m_id
-                        try {
-                            String updateResult = data.updateMerTable(m_id, newAcc, newPsw, newName, newSex, newTele);
-                            JOptionPane.showMessageDialog(adminFrame, updateResult, "结果", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(adminFrame, "更新失败：" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                            // 更新数据库
+                            int m_id = Integer.parseInt((String) merchantTable.getValueAt(selectedRow, 0)); // 获取 m_id
+                            try {
+                                String updateResult = data.updateMerTable(m_id, newAcc, newPsw, newName, newSex, newTele);
+                                JOptionPane.showMessageDialog(adminFrame, updateResult, "结果", JOptionPane.INFORMATION_MESSAGE);
+                            } catch (SQLException ex) {
+                                JOptionPane.showMessageDialog(adminFrame, "更新失败：" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(adminFrame, "输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 }
@@ -250,6 +266,15 @@ public class AdminMerchantFrame extends JPanel {
                     if (confirmResult == JOptionPane.YES_OPTION) {
                         int m_id = Integer.parseInt((String) merchantTable.getValueAt(selectedRow, 0)); // 获取 u_id
                         try {
+                            if(data.merchantcondition(m_id)==1){
+                                JOptionPane.showMessageDialog(adminFrame, "该商家有商品在售，无法删除");
+                                return;
+                            }
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                        try {
                             String deleteResult = data.deleteMerTable(m_id);
                             if (deleteResult.equals("删除成功") ) {
                                 DefaultTableModel model = (DefaultTableModel) merchantTable.getModel();
@@ -267,8 +292,8 @@ public class AdminMerchantFrame extends JPanel {
         });
     }
 
-    public void insertMerButtonAction(JButton inserMrtButton, DataControl data, JTable merchantTable) throws SQLException {
-        inserMrtButton.addActionListener(new ActionListener() {
+    public void insertMerButtonAction(JButton insertMerButton, DataControl data, JTable merchantTable) throws SQLException {
+        insertMerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JPanel panel = new JPanel(new GridLayout(6, 2));
 
@@ -297,19 +322,24 @@ public class AdminMerchantFrame extends JPanel {
                     String newSex = sexField.getText();
                     String newTele = teleField.getText();
 
-                    // 在数据库中插入新数据
-                    try {
-                        String insertResult = data.insertMerTable(newAcc, newPsw, newName, newSex, newTele);
-                        JOptionPane.showMessageDialog(adminFrame, insertResult, "结果", JOptionPane.INFORMATION_MESSAGE);
+                    // 添加验证逻辑
+                    if (newAcc.matches("\\w{8}") && newSex.matches("(男|女)") && newPsw.length() >= 6 && newTele.matches("\\d{11}")) {
+                        // 在数据库中插入新数据
+                        try {
+                            String insertResult = data.insertMerTable(newAcc, newPsw, newName, newSex, newTele);
+                            JOptionPane.showMessageDialog(adminFrame, insertResult, "结果", JOptionPane.INFORMATION_MESSAGE);
 
-                        if (insertResult.equals("添加成功")) {
-                            // 更新表格
-                            DefaultTableModel model = getMerchantMessageTable(data.selectMerchantTable());
-                            merchantTable.setModel(model);
+                            if (insertResult.equals("添加成功")) {
+                                // 更新表格
+                                DefaultTableModel model = getMerchantMessageTable(data.selectMerchantTable());
+                                merchantTable.setModel(model);
+                            }
+
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(adminFrame, "添加失败：" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
                         }
-
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(adminFrame, "添加失败：" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(adminFrame, "输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }

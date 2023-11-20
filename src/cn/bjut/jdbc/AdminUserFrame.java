@@ -123,7 +123,7 @@ public class AdminUserFrame extends JPanel {
 
 
     //四个时间监听事件
-    public void updateButtonAction(JButton editButton,DataControl data,JTable userTable) throws SQLException {
+    public void updateButtonAction(JButton editButton, DataControl data, JTable userTable) throws SQLException {
         // TODO add your code here
         editButton.addActionListener(new ActionListener() {
             @Override
@@ -144,15 +144,15 @@ public class AdminUserFrame extends JPanel {
                         String newValue = valueField.getText();
                         String database_name = null;
                         if (selectedColumn != null && !selectedColumn.isEmpty() && newValue != null && !newValue.isEmpty()) {
-                            int columnIndex = Arrays.asList(options).indexOf(selectedColumn)+1;
-                            userTable.setValueAt(newValue, selectedRow, columnIndex);
+                            int columnIndex = Arrays.asList(options).indexOf(selectedColumn) + 1;
 
-                            switch(selectedColumn){
+
+                            switch (selectedColumn) {
                                 case "账户":
                                     database_name = "u_acc";
                                     break;
                                 case "密码":
-                                    database_name= "u_psw";
+                                    database_name = "u_psw";
                                     break;
                                 case "姓名":
                                     database_name = "u_name";
@@ -166,14 +166,26 @@ public class AdminUserFrame extends JPanel {
                             }
 
                             try {
-                                data.updateUserTable(Integer.parseInt((String) userTable.getValueAt(selectedRow, 0)), database_name, newValue);
-                                //顺便更新usertable的数据
-                                userTable.setValueAt(newValue, selectedRow, columnIndex);
+                                // 添加验证逻辑
+                                if (("u_acc".equals(database_name) && newValue.matches("\\w{8}")) ||
+                                        ("u_sex".equals(database_name) && newValue.matches("(男|女)")) ||
+                                        ("u_psw".equals(database_name) && newValue.length() >= 6) ||
+                                        ("u_tele".equals(database_name) && newValue.matches("\\d{11}"))) {
+                                    data.updateUserTable(Integer.parseInt((String) userTable.getValueAt(selectedRow, 0)), database_name, newValue);
+                                    // 顺便更新usertable的数据
+                                    userTable.setValueAt(newValue, selectedRow, columnIndex);
 
-                                JOptionPane.showMessageDialog(adminFrame, "修改成功");
+                                    JOptionPane.showMessageDialog(adminFrame, "修改成功");
+                                } else {
+                                    JOptionPane.showMessageDialog(adminFrame, "输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
+                                    // 还原修改前的值
+                                    userTable.setValueAt(userTable.getValueAt(selectedRow, columnIndex), selectedRow, columnIndex);
+                                }
                             } catch (SQLException e1) {
                                 e1.printStackTrace();
                                 JOptionPane.showMessageDialog(adminFrame, "修改失败");
+                                // 还原修改前的值
+                                userTable.setValueAt(userTable.getValueAt(selectedRow, columnIndex), selectedRow, columnIndex);
                             }
                         }
                     }
@@ -182,7 +194,8 @@ public class AdminUserFrame extends JPanel {
         });
     }
 
-    public void setNewButtonAction( JButton editButton,DataControl data,JTable userTable) throws SQLException {
+
+    public void setNewButtonAction(JButton editButton, DataControl data, JTable userTable) throws SQLException {
         editButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
@@ -215,20 +228,25 @@ public class AdminUserFrame extends JPanel {
                         String newSex = sexField.getText();
                         String newTele = teleField.getText();
 
-                        // 更新表格
-                        userTable.setValueAt(newAcc, selectedRow, 1);
-                        userTable.setValueAt(newPsw, selectedRow, 2);
-                        userTable.setValueAt(newName, selectedRow, 3);
-                        userTable.setValueAt(newSex, selectedRow, 4);
-                        userTable.setValueAt(newTele, selectedRow, 5);
+                        // 添加验证逻辑
+                        if (newAcc.matches("\\w{8}") && newSex.matches("(男|女)") && newPsw.length() >= 6 && newTele.matches("\\d{11}")) {
+                            // 更新表格
+                            userTable.setValueAt(newAcc, selectedRow, 1);
+                            userTable.setValueAt(newPsw, selectedRow, 2);
+                            userTable.setValueAt(newName, selectedRow, 3);
+                            userTable.setValueAt(newSex, selectedRow, 4);
+                            userTable.setValueAt(newTele, selectedRow, 5);
 
-                        // 更新数据库
-                        int u_id = Integer.parseInt((String) userTable.getValueAt(selectedRow, 0)) ; // 获取 u_id
-                        try {
-                            String updateResult = data.updateUserTable(u_id, newAcc, newPsw, newName, newSex, newTele);
-                            JOptionPane.showMessageDialog(adminFrame, updateResult, "结果", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(adminFrame, "更新失败：" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                            // 更新数据库
+                            int u_id = Integer.parseInt((String) userTable.getValueAt(selectedRow, 0)); // 获取 u_id
+                            try {
+                                String updateResult = data.updateUserTable(u_id, newAcc, newPsw, newName, newSex, newTele);
+                                JOptionPane.showMessageDialog(adminFrame, updateResult, "结果", JOptionPane.INFORMATION_MESSAGE);
+                            } catch (SQLException ex) {
+                                JOptionPane.showMessageDialog(adminFrame, "更新失败：" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(adminFrame, "输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 }
@@ -238,6 +256,10 @@ public class AdminUserFrame extends JPanel {
         });
     }
 
+
+
+
+
     public void deleteButtonAction(JButton deleteButton,DataControl data,JTable userTable) throws SQLException{
         deleteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -245,7 +267,16 @@ public class AdminUserFrame extends JPanel {
                 if (selectedRow != -1) {
                     int confirmResult = JOptionPane.showConfirmDialog(adminFrame, "确认删除该用户吗？", "确认删除", JOptionPane.YES_NO_OPTION);
                     if (confirmResult == JOptionPane.YES_OPTION) {
+                        // 如果有还未完成的订单，则不能删除
                         int u_id = Integer.parseInt((String) userTable.getValueAt(selectedRow, 0)); // 获取 u_id
+                        try {
+                            if(data.searchFromOrders(u_id)==1){
+                                JOptionPane.showMessageDialog(adminFrame, "该用户有未完成的订单，不能删除", "错误", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         try {
                             String deleteResult = data.deleteUserTable(u_id);
                             if (deleteResult.equals("删除成功")) {
@@ -294,24 +325,29 @@ public class AdminUserFrame extends JPanel {
                     String newSex = sexField.getText();
                     String newTele = teleField.getText();
 
-                    // 在数据库中插入新数据
-                    try {
-                        String insertResult = data.insertUserTable(newAcc, newPsw, newName, newSex, newTele);
-                        JOptionPane.showMessageDialog(adminFrame, insertResult, "结果", JOptionPane.INFORMATION_MESSAGE);
+                    // 添加验证逻辑
+                    if (newAcc.matches("\\w{8}") && newSex.matches("(男|女)") && newPsw.length() >= 6 && newTele.matches("\\d{11}")) {
+                        // 在数据库中插入新数据
+                        try {
+                            String insertResult = data.insertUserTable(newAcc, newPsw, newName, newSex, newTele);
+                            JOptionPane.showMessageDialog(adminFrame, insertResult, "结果", JOptionPane.INFORMATION_MESSAGE);
 
-                        if (insertResult.equals("添加成功")) {
-                            // 更新表格
-                            DefaultTableModel  model = getUserMessageTable(data.selectUserTable());
-                            userTable.setModel(model);
+                            if ("添加成功".equals(insertResult)) {
+                                // 更新表格
+                                DefaultTableModel model = getUserMessageTable(data.selectUserTable());
+                                userTable.setModel(model);
+                            }
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(adminFrame, "添加失败：" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
                         }
-
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(adminFrame, "添加失败：" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(adminFrame, "输入格式不正确", "错误", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
         });
     }
+
 
     public void searchButtonAction(JButton searchButton,DataControl data,JTable userTable,JTextField searchField,JComboBox<String> columnSelector,JPanel card1) throws SQLException {
         searchButton.addActionListener(new ActionListener() {

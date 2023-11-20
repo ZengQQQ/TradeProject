@@ -9,6 +9,27 @@ public class ReturnRequest {
     private String reason;
     private String status;
 
+    public String getU_name() {
+        return u_name;
+    }
+
+    public void setU_name(String u_name) {
+        this.u_name = u_name;
+    }
+
+    public String getP_name() {
+        return p_name;
+    }
+
+    public void setP_name(String p_name) {
+        this.p_name = p_name;
+    }
+
+    private String u_name;
+
+    private String p_name;
+
+
     // Constructors
     public ReturnRequest(int r_id, int o_id, String request_time, String reason, String status) {
         this.r_id = r_id;

@@ -52,15 +52,15 @@ public class AuditProductFrame extends JPanel {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        JButton approveButton = new JButton("Approve");
-        JButton rejectButton = new JButton("Reject");
-        JButton deleteButton = new JButton("Delete");
-        JButton oneClickApproveButton = new JButton("One-click Approve");
-        JButton oneClickRejectButton = new JButton("One-click Reject");
+        JButton approveButton = new JButton("通过");
+        JButton rejectButton = new JButton("驳回");
+        JButton deleteButton = new JButton("删除");
+        JButton oneClickApproveButton = new JButton("一键通过");
+        JButton oneClickRejectButton = new JButton("一键驳回");
 
         setButtonAction(approveButton, e -> {
             try {
-                if(JOptionPane.showConfirmDialog(this, "Are you sure to approve this product?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                if(JOptionPane.showConfirmDialog(this, "确定通过这个商品吗?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
                 {
                     approveSelectedProduct();
                 }
@@ -71,7 +71,7 @@ public class AuditProductFrame extends JPanel {
 
         setButtonAction(rejectButton, e -> {
             try {
-                if(JOptionPane.showConfirmDialog(this, "Are you sure to reject this product?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                if(JOptionPane.showConfirmDialog(this, "确定驳回这个商品吗?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
                 {rejectSelectedProduct();}
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
@@ -80,7 +80,7 @@ public class AuditProductFrame extends JPanel {
 
         setButtonAction(deleteButton, e -> {
             try {
-                if(JOptionPane.showConfirmDialog(this, "Are you sure to delete this product?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                if(JOptionPane.showConfirmDialog(this, "确定删除这个商品吗?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
                 {
                     deleteSelectedProduct();
                 }
@@ -91,7 +91,7 @@ public class AuditProductFrame extends JPanel {
 
         setButtonAction(oneClickApproveButton, e -> {
             try {
-                int result = JOptionPane.showConfirmDialog(this, "Are you sure to approve all products?", "Confirm", JOptionPane.YES_NO_OPTION);
+                int result = JOptionPane.showConfirmDialog(this, "确定要通过全部商品吗？", "Confirm", JOptionPane.YES_NO_OPTION);
                 if(result == JOptionPane.YES_OPTION){
                     oneClickApprove();
                 }
@@ -104,7 +104,7 @@ public class AuditProductFrame extends JPanel {
         setButtonAction(oneClickRejectButton, e -> {
 
             try {
-                int result = JOptionPane.showConfirmDialog(this, "Are you sure to reject all products?", "Confirm", JOptionPane.YES_NO_OPTION);
+                int result = JOptionPane.showConfirmDialog(this, "确定要全部驳回吗？", "Confirm", JOptionPane.YES_NO_OPTION);
                 if(result == JOptionPane.YES_OPTION) {
                     oneClickReject();
                 }
@@ -161,15 +161,15 @@ public class AuditProductFrame extends JPanel {
     }
 
     private void approveSelectedProduct() throws SQLException {
-        handleProductAction("审核通过", "Please select a product to approve.");
+        handleProductAction("审核通过", "请选择一个要通过的商品");
     }
 
     private void rejectSelectedProduct() throws SQLException {
-        handleProductAction("审核不通过", "Please select a product to reject.");
+        handleProductAction("审核不通过", "请选择一个要驳回的商品");
     }
 
     private void deleteSelectedProduct() throws SQLException {
-        handleProductAction("delete", "Please select a product to delete.");
+        handleProductAction("删除", "请选择要删除的商品");
     }
 
     private void handleProductAction(String action, String errorMessage) throws SQLException {
@@ -182,7 +182,7 @@ public class AuditProductFrame extends JPanel {
                 case "审核不通过":
                     new DataControlProduct().updateProductStatus(productId, action);
                     break;
-                case "delete":
+                case "删除":
                     new DataControlProduct().deleteProduct(productId);
                     break;
             }
