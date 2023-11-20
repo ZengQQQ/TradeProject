@@ -38,7 +38,12 @@ public class MerchantHomeFrm extends JPanel {
 
         JPanel productPanel = createProductPanel();
 
-        JButton refreshButton = new JButton("刷新首页");
+        ClassLoader classLoader = getClass().getClassLoader();
+        Image refreshImage = new ImageIcon(classLoader.getResource("Img/refresh.png")).getImage();
+        Image scaledRefreshImage = refreshImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+
+        Icon refreshIcon = new ImageIcon(scaledRefreshImage);
+        JButton refreshButton = new JButton("刷新首页",refreshIcon);
         refreshButton.setFont(new Font("微软雅黑", Font.BOLD, 30));
         refreshButton.addActionListener(e -> {
             try {
