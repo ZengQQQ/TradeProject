@@ -152,8 +152,8 @@ public class ProductAddDialog extends ProductofDialog {
                         // 调用父类的方法
                         boolean success;
                         try {
-                            if (newImgName.isEmpty()) {
-                                newImgName = "R.jpg";
+                            if (newImgName == null || newImgName.isEmpty()) {
+                                newImgName= "R.jpg";
                             }
                             success = dataControlProduct.addProduct(m_id, newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName);
                         } catch (SQLException ex) {
