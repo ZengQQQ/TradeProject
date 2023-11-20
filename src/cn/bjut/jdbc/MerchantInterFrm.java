@@ -140,11 +140,6 @@ public class MerchantInterFrm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card1");
-                try {
-                    refreshCard1();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
             }
         });
         productButton.addMouseListener(new MouseAdapter() {
