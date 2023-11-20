@@ -1054,7 +1054,7 @@ public class UserFrm extends JFrame {
                     String status = (String) cartTable1.getValueAt(row, 6);
 
                     // 只有商品状态不为已退货和申请退货时，才显示弹出菜单
-                    if (!"已退货".equals(status) && !"申请退货".equals(status)) {
+                    if (!"已退货".equals(status) && !"申请退货".equals(status)&&!"待退货".equals(status)) {
                         // 在右键点击的位置显示弹出菜单
                         popupMenu.show(cartTable1, e.getX(), e.getY());
                     }
