@@ -34,7 +34,7 @@ public class MerchantOrdersFrm extends JPanel {
     private void initComponents() throws SQLException {
         setLayout(new BorderLayout());
 
-        String[] columnNames = {"ID", "商品图片", "商品基本信息", "用户信息", "购买数量", "订单总价格", "购买时间", "订单状态", "操作"};
+        String[] columnNames = {"订单ID", "商品图片", "商品基本信息", "用户信息", "购买数量", "订单总价格", "购买时间", "订单状态", "操作"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -109,7 +109,7 @@ public class MerchantOrdersFrm extends JPanel {
         // 获取表格的列模型
         TableColumnModel columnModel = table.getColumnModel();
         // 设置每一列的宽度
-        columnModel.getColumn(0).setPreferredWidth(60); // 第一列宽度为 100 像素
+        columnModel.getColumn(0).setPreferredWidth(65);
         columnModel.getColumn(1).setPreferredWidth(200);
         columnModel.getColumn(2).setPreferredWidth(200);
         columnModel.getColumn(3).setPreferredWidth(150);
