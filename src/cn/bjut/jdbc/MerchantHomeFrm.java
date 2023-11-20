@@ -28,7 +28,7 @@ public class MerchantHomeFrm extends JPanel {
     public void initComponents() throws SQLException {
         setLayout(new BorderLayout());
 
-        Image backgroundImage = loadImageForPanel("Img/inner2.jpg"); // 背景图片
+        Image backgroundImage = loadImageForPanel("Img/innerphoto.jpg"); // 背景图片
         ImagePanel mainPanel = new ImagePanel(backgroundImage); // 带有背景图片的主面板
         mainPanel.setLayout(new BorderLayout());
 
@@ -72,12 +72,12 @@ public class MerchantHomeFrm extends JPanel {
 
         List<Integer> merchantStats = dataControlmercahnt.getMerchantStats(mer.getM_id());
 
-        Image bgImage1 = loadImageForPanel("Img/inner2.jpg");
-        Image bgImage2 = loadImageForPanel("Img/inner2.jpg");
-        Image bgImage3 = loadImageForPanel("Img/inner2.jpg");
-        Image bgImage4 = loadImageForPanel("Img/inner2.jpg");
-        Image bgImage5 = loadImageForPanel("Img/inner2.jpg");
-        Image bgImage6 = loadImageForPanel("Img/inner2.jpg");
+        Image bgImage1 = loadImageForPanel("Img/innerphoto.jpg");
+        Image bgImage2 = loadImageForPanel("Img/innerphoto.jpg");
+        Image bgImage3 = loadImageForPanel("Img/innerphoto.jpg");
+        Image bgImage4 = loadImageForPanel("Img/innerphoto.jpg");
+        Image bgImage5 = loadImageForPanel("Img/innerphoto.jpg");
+        Image bgImage6 = loadImageForPanel("Img/innerphoto.jpg");
 
         mainPanel.add(createInnerPanel("总收入（￥）", String.valueOf(merchantStats.get(0)), bgImage1));
         mainPanel.add(createInnerPanel("今日收入（￥）",String.valueOf(merchantStats.get(1)), bgImage2));
