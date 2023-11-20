@@ -136,7 +136,6 @@ public class UserFrm extends JFrame {
         });
         fileMenu.add(viewProfileItem);
 
-// 添加"修改个人信息"菜单项
         JMenuItem editProfileItem = new JMenuItem("修改个人信息");
         editProfileItem.addActionListener(new ActionListener() {
             @Override
@@ -162,6 +161,13 @@ public class UserFrm extends JFrame {
                         String name = nameField.getText();
                         String sex = (String) sexBox.getSelectedItem();
                         String tele = teleField.getText();
+
+                        // 添加输入验证
+                        if (name.isEmpty() || tele.isEmpty()) {
+                            JOptionPane.showMessageDialog(dialog, "姓名和电话不能为空！", "输入错误", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
                         // 调用一个方法，将用户信息更新到数据库中
                         int result = updateInfo(u_id, name, sex, tele);
                         if (result == 1) {
@@ -181,12 +187,13 @@ public class UserFrm extends JFrame {
                     }
                 });
                 dialog.add(cancelButton);
-                dialog.setSize(new Dimension(400,250));
+                dialog.setSize(new Dimension(400, 250));
                 dialog.setLocationRelativeTo(UserFrm.this);
                 dialog.setVisible(true); // 显示对话框
             }
         });
         fileMenu.add(editProfileItem);
+
 
 // 添加"修改密码"菜单项
         JMenuItem changePasswordItem = new JMenuItem("修改密码");
@@ -303,6 +310,8 @@ public class UserFrm extends JFrame {
         topPanel2.add(comButton);
         JButton phoneButton=new JButton("手机");
         topPanel2.add(phoneButton);
+        JButton shumaButton=new JButton("数码");
+        topPanel2.add(shumaButton);
         JButton clothButton=new JButton("服装");
         topPanel2.add(clothButton);
         JButton bookButton=new JButton("书籍");
@@ -383,6 +392,13 @@ public class UserFrm extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 refreshProduct(bottomPanel,u_id,"服装");
+            }
+        });
+        //
+        shumaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                refreshProduct(bottomPanel,u_id,"数码");
             }
         });
         //
@@ -1038,7 +1054,7 @@ public class UserFrm extends JFrame {
                     String status = (String) cartTable1.getValueAt(row, 6);
 
                     // 只有商品状态不为已退货和申请退货时，才显示弹出菜单
-                    if (!"已退货".equals(status) && !"申请退货".equals(status)) {
+                    if (!"已退货".equals(status) && !"申请退货".equals(status)&&!"待退货".equals(status)) {
                         // 在右键点击的位置显示弹出菜单
                         popupMenu.show(cartTable1, e.getX(), e.getY());
                     }
@@ -1078,8 +1094,11 @@ public class UserFrm extends JFrame {
                         ex.printStackTrace();
                     }
                 }
-                else{
+                else if("待发货".equals(status)){
                     JOptionPane.showMessageDialog(null, "你的商品还没有发货", "提示", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else if("已完成".equals(status)){
+                    JOptionPane.showMessageDialog(null, "你已完成收货", "提示", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });

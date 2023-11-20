@@ -145,15 +145,25 @@ public class MerchantProductFrm extends JPanel {
         categoryComboBox.setSelectedIndex(0); // 默认选择全部类别
         categoryComboBox.setFont(new Font("微软雅黑", Font.BOLD, 20));
 
-        // 创建“搜索”按钮
-        JButton searchButton = new JButton("搜索");
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        Image searchImage = new ImageIcon(classLoader.getResource("Img/th.jpg")).getImage();
+        Image refreshImage = new ImageIcon(classLoader.getResource("Img/refresh.png")).getImage();
+
+        Image scaledSearchImage = searchImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        Image scaledRefreshImage = refreshImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+
+        Icon searchIcon = new ImageIcon(scaledSearchImage);
+        Icon refreshIcon = new ImageIcon(scaledRefreshImage);
+
+        JButton searchButton = new JButton("搜索", searchIcon);
         searchButton.setFont(new Font("微软雅黑", Font.BOLD, 20));
         searchButton.addActionListener(e -> {
             // 搜索处理
             refreshProductTableBySearch();
         });
-        // 创建“刷新”按钮
-        JButton refreshButton = new JButton("刷新");
+
+        JButton refreshButton = new JButton("刷新", refreshIcon);
         refreshButton.setFont(new Font("微软雅黑", Font.BOLD, 20));
         refreshButton.addActionListener(e -> {
             refreshProductTable();
@@ -197,7 +207,13 @@ public class MerchantProductFrm extends JPanel {
         JPanel addProductPanel = new JPanel();
         addProductPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Left-aligned layout for the '增加商品' button
 
-        JButton addProductButton = new JButton("增加商品");
+        Image addImage = new ImageIcon(classLoader.getResource("Img/productaddicon.jpg")).getImage();
+
+        Image scaledaddImage = addImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+
+        Icon addIcon = new ImageIcon(scaledaddImage);
+
+        JButton addProductButton = new JButton("增加商品",addIcon);
         addProductButton.setFont(new Font("微软雅黑", Font.BOLD, 20));
         addProductButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         addProductButton.addActionListener(e -> {

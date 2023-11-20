@@ -11,26 +11,26 @@ public class OrdersFrmButtonRender extends JPanel implements TableCellRenderer {
     private JButton deleteButton;
 
     public  OrdersFrmButtonRender() {
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS)); // Set to horizontal layout
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         Font font = new Font("微软雅黑", Font.BOLD, 16);
 
         detailsButton = new JButton("详情");
-        detailsButton.setFont(font); // Set font
+        detailsButton.setFont(font);
         detailsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         modifyButton = new JButton("发货");
-        modifyButton.setFont(font); // Set font
+        modifyButton.setFont(font);
         modifyButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         deleteButton = new JButton("确认退货");
-        deleteButton.setFont(font); // Set font
+        deleteButton.setFont(font);
         deleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        add(Box.createHorizontalGlue()); // Add horizontal glue for centering
+        add(Box.createHorizontalGlue());
         add(detailsButton);
         add(modifyButton);
         add(deleteButton);
-        add(Box.createHorizontalGlue()); // Add horizontal glue for centering
+        add(Box.createHorizontalGlue());
     }
 
     @Override

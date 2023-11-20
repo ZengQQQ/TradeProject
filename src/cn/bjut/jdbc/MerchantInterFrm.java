@@ -18,6 +18,37 @@ public class MerchantInterFrm extends JFrame {
     private MerchantProductFrm merproduct;
     private MerchantOrdersFrm merorder;
     private final Timer initialInfoTimer;
+
+    private JButton currentClickedButton = null;
+    private Icon currentButtonIcon = null;
+    private Icon currentButtonClickedIcon = null;
+    ClassLoader classLoader = getClass().getClassLoader();
+    Image homeImage = new ImageIcon(classLoader.getResource("Img/homebefore.jpg")).getImage();
+    Image homeImageAfter = new ImageIcon(classLoader.getResource("Img/homeafter.jpg")).getImage();
+    Image productImage = new ImageIcon(classLoader.getResource("Img/productbefore.png")).getImage();
+    Image productImageAfter = new ImageIcon(classLoader.getResource("Img/productafter.jpg")).getImage();
+    Image orderImage = new ImageIcon(classLoader.getResource("Img/orderbefore.jpg")).getImage();
+    Image orderImageAfter = new ImageIcon(classLoader.getResource("Img/orderafter.jpg")).getImage();
+    Image forumImage = new ImageIcon(classLoader.getResource("Img/dybefore.jpg")).getImage();
+    Image forumImageAfter = new ImageIcon(classLoader.getResource("Img/dyafter.jpg")).getImage();
+    int iconWidth = 50;
+    int iconHeight = 50;
+    Icon homeIcon = new ImageIcon(homeImage.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+    Icon homeIconAfter = new ImageIcon(homeImageAfter.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+    Icon productIcon = new ImageIcon(productImage.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+    Icon productIconAfter = new ImageIcon(productImageAfter.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+    Icon orderIcon = new ImageIcon(orderImage.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+    Icon orderIconAfter = new ImageIcon(orderImageAfter.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+    Icon forumIcon = new ImageIcon(forumImage.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+    Icon forumIconAfter = new ImageIcon(forumImageAfter.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH));
+
+    // Use these resized icons for your buttons
+    JButton homeButton = new JButton("首页", homeIcon);
+    JButton productButton = new JButton("商品管理", productIcon);
+    JButton orderButton = new JButton("订单", orderIcon);
+    JButton forumButton = new JButton("论坛", forumIcon);
+
+
     private final Font fontall = new Font("微软雅黑", Font.BOLD, 18);
 
     public MerchantInterFrm(int mid) throws SQLException {
@@ -54,15 +85,8 @@ public class MerchantInterFrm extends JFrame {
         //----------------------------------------------------------------
         JPanel card2 = new JPanel(new BorderLayout());
         merproduct = new MerchantProductFrm(this);
-
         card2.add(merproduct, BorderLayout.CENTER);
-
-        JScrollPane scrollPane = new JScrollPane(card2);
-        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
-        verticalScrollBar.setUnitIncrement(30);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-        mainPanel.add(scrollPane, "card2");
+        mainPanel.add(card2, "card2");
         //----------------------------------------------------------------
         JPanel card3 = new JPanel(new BorderLayout());
 
@@ -87,14 +111,16 @@ public class MerchantInterFrm extends JFrame {
         MerchantOrdersSearch searchorder = new MerchantOrdersSearch(merorder);
         mainPanel.add(searchorder, "card6");
         //----------------------------------------------------------------
-        JButton homeButton = new JButton("首页");
+
         homeButton.setFont(fontall);
-        JButton productButton = new JButton("商品管理");
         productButton.setFont(fontall);
-        JButton orderButton = new JButton("订单");
         orderButton.setFont(fontall);
-        JButton forumButton = new JButton("论坛");
         forumButton.setFont(fontall);
+
+        homeButton.addActionListener(e -> setButtonIconAndAction(homeButton, homeIcon, homeIconAfter, "card1"));
+        productButton.addActionListener(e -> setButtonIconAndAction(productButton, productIcon, productIconAfter, "card2"));
+        orderButton.addActionListener(e -> setButtonIconAndAction(orderButton, orderIcon, orderIconAfter, "card3"));
+        forumButton.addActionListener(e -> setButtonIconAndAction(forumButton, forumIcon, forumIconAfter, "card4"));
 
         int buttonHeight = 60;
         homeButton.setPreferredSize(new Dimension(homeButton.getPreferredSize().width, buttonHeight));
@@ -107,11 +133,6 @@ public class MerchantInterFrm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card1");
-                try {
-                    refreshCard1();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
             }
         });
         productButton.addMouseListener(new MouseAdapter() {
@@ -160,7 +181,29 @@ public class MerchantInterFrm extends JFrame {
         pack();
         setLocationRelativeTo(getOwner());
     }
+    private void setButtonIconAndAction(JButton button, Icon icon, Icon clickedIcon, String cardToShow) {
+        if (currentClickedButton != null && currentClickedButton != button) {
+            currentClickedButton.setIcon(currentButtonIcon);
+        }
 
+        currentClickedButton = button;
+        currentButtonIcon = icon;
+        currentButtonClickedIcon = clickedIcon;
+
+        button.setIcon(clickedIcon);
+        cardLayout.show(mainPanel, cardToShow);
+
+        if (button == homeButton) {
+            //refreshCard1();
+        } else if (button == productButton) {
+            //refreshProducts();
+        } else if (button == orderButton) {
+            //merorder.refreshData();
+        }else if (button == forumButton) {
+
+        }
+
+    }
     public void refreshProducts() {
         try {
             List<Product> products = dataControlmer.MerchantProductQuery(m_id);
@@ -193,39 +236,16 @@ public class MerchantInterFrm extends JFrame {
     public void refreshCard3() {
         merorder.refreshData();
     }
-    public void refreshCard1() throws SQLException {
-        // 清除 card1
-        Component[] components = mainPanel.getComponents();
-        for (Component component : components) {
-            if (component.getName() != null && component.getName().equals("card1")) {
-                mainPanel.remove(component);
-                break; // 找到并删除第一个名为 "card1" 的组件后停止循环
-            }
-        }
-
-        // 创建并添加新的 card1
-        JPanel newCard1 = new MerchantHomeFrm(this);
-        JScrollPane newScrollPane = new JScrollPane(newCard1);
-        JScrollBar verticalScrollBar = newScrollPane.getVerticalScrollBar();
-        verticalScrollBar.setUnitIncrement(20);
-        newScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        newCard1.setName("card1"); // 设置新组件的名称为 "card1"，方便后续识别和操作
-        mainPanel.add(newScrollPane, "card1");
-
-        // 刷新界面
-        mainPanel.revalidate();
-        mainPanel.repaint();
-    }
 
 
     private JMenuBar createMenuBar() {
-        Font font = new Font("微软雅黑", Font.BOLD, 18);
+        Font font = new Font("微软雅黑", Font.BOLD, 23);
 
         int buttonHeight = 40;
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("菜单");
-        menu.setFont(font);
+        menu.setFont(new Font("微软雅黑", Font.BOLD, 30));
 
         JButton refreshButton1 = new JButton("刷新商品");
         refreshButton1.setFont(font);
@@ -303,7 +323,7 @@ public class MerchantInterFrm extends JFrame {
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("我的");
-        menu.setFont(font);
+        menu.setFont(new Font("微软雅黑", Font.BOLD, 30));
 
         JButton refreshButton1 = new JButton("我的信息");
         refreshButton1.setFont(font);

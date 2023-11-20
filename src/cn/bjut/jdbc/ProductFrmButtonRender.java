@@ -11,26 +11,41 @@ public class ProductFrmButtonRender extends JPanel implements TableCellRenderer 
     private JButton deleteButton;
 
     public ProductFrmButtonRender() {
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS)); // Set to horizontal layout
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         Font font = new Font("微软雅黑", Font.BOLD, 16);
 
-        detailsButton = new JButton("详情");
-        detailsButton.setFont(font); // Set font
+        // 加载图标并设置大小
+        ImageIcon detailsIcon = new ImageIcon(getClass().getClassLoader().getResource("Img/information.jpg"));
+        ImageIcon modifyIcon = new ImageIcon(getClass().getClassLoader().getResource("Img/updateicon.png"));
+        ImageIcon deleteIcon = new ImageIcon(getClass().getClassLoader().getResource("Img/delete.jpg"));
+
+        int width = 45;
+        int height =45;
+        // 调整图标大小
+        Image detailsImg = detailsIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        Image modifyImg = modifyIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        Image deleteImg = deleteIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+
+        // 创建按钮并设置图标
+        detailsButton = new JButton(new ImageIcon(detailsImg));
+        modifyButton = new JButton( new ImageIcon(modifyImg));
+        deleteButton = new JButton(new ImageIcon(deleteImg));
+
+
+        detailsButton.setFont(font);
         detailsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        modifyButton = new JButton("修改");
-        modifyButton.setFont(font); // Set font
+        modifyButton.setFont(font);
         modifyButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        deleteButton = new JButton("删除");
-        deleteButton.setFont(font); // Set font
+        deleteButton.setFont(font);
         deleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        add(Box.createHorizontalGlue()); // Add horizontal glue for centering
+        add(Box.createHorizontalGlue());
         add(detailsButton);
         add(modifyButton);
         add(deleteButton);
-        add(Box.createHorizontalGlue()); // Add horizontal glue for centering
+        add(Box.createHorizontalGlue());
     }
 
     @Override

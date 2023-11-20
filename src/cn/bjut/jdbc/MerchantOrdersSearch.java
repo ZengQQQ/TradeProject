@@ -71,10 +71,20 @@ public class MerchantOrdersSearch extends JPanel {
         searchPanel.add(orderSearchPanel);
 
         // 添加搜索按钮和显示全部按钮
+        ClassLoader classLoader = getClass().getClassLoader();
+        Image searchImage = new ImageIcon(classLoader.getResource("Img/th.jpg")).getImage();
+        Image refreshImage = new ImageIcon(classLoader.getResource("Img/refresh.png")).getImage();
+
+        Image scaledSearchImage = searchImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        Image scaledRefreshImage = refreshImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+
+        Icon searchIcon = new ImageIcon(scaledSearchImage);
+        Icon refreshIcon = new ImageIcon(scaledRefreshImage);
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton searchButton = new JButton("查找");
+        JButton searchButton = new JButton("查找",searchIcon);
         searchButton.setFont(font);
-        JButton allButton = new JButton("刷新全部");
+        JButton allButton = new JButton("刷新全部",refreshIcon);
         allButton.setFont(font);
 
         searchButton.addActionListener(e -> {
@@ -422,8 +432,8 @@ public class MerchantOrdersSearch extends JPanel {
         String orderStatus = (String) orderStatusComboBox.getSelectedItem();
         // 正则表达式定义
         String intRegex = "^\\d+$"; // 大于0的整数
-        String positiveDoubleRegex = "^[1-9]\\d{0,5}(\\.\\d+)?$"; // 大于0的六位以下数字
-        String eightDigitsRegex = "^[1-9]\\d{0,7}$"; // 大于0的8位以下数字
+        String positiveDoubleRegex = "^[0-9]\\d{0,5}(\\.\\d+)?$"; // 大于0的六位以下数字
+        String eightDigitsRegex = "^[0-9]\\d{0,7}$"; // 大于0的8位以下数字
         String fiftyCharactersRegex = "^.{0,50}$"; // 长度限制为50的字符串
 
         // 校验输入格式
@@ -472,9 +482,25 @@ public class MerchantOrdersSearch extends JPanel {
         if (!maxTotalPrice.isEmpty() && !maxTotalPrice.matches(eightDigitsRegex)) {
             errorMessage.append("- 最大订单总价格应为大于0的8位以下数字\n");
         }
+        // 订单数量范围校验
+        if (!minOrderQuantity.isEmpty() && !maxOrderQuantity.isEmpty()) {
+            int minQuantity = Integer.parseInt(minOrderQuantity);
+            int maxQuantity = Integer.parseInt(maxOrderQuantity);
+            if (minQuantity > maxQuantity) {
+                errorMessage.append("- 最小购买数量不能大于最大购买数量\n");
+            }
+        }
+        // 订单总价格范围校验
+        if (!minTotalPrice.isEmpty() && !maxTotalPrice.isEmpty()) {
+            int minorderPrice = Integer.parseInt(minTotalPrice);
+            int maxorderPrice = Integer.parseInt(maxTotalPrice);
+            if (minorderPrice > maxorderPrice) {
+                errorMessage.append("- 最小订单总价格不能大于最大订单总价格\n");
+            }
+        }
         // 执行日期输入的验证
         if (!date.isEmpty() && !validateDateInput(dateType, date)) {
-            errorMessage.append("- 购买时间输入不合法\n");
+            errorMessage.append("- 购买时间输入不合法（日期格式：xxxx.x.x）\n");
         }
 
         // 如果有错误，则显示错误消息

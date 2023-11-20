@@ -20,58 +20,74 @@ public class ProductFrmButtonEditor extends DefaultCellEditor {
         this.merchantProductFrm = merchantProductFrm;
         Font font = new Font("微软雅黑", Font.BOLD, 16);
         panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS)); // Set to horizontal layout
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
-        detailsButton = new JButton("详情");
-        detailsButton.setFont(font); // Set font
+        // 加载图标并设置大小
+        ImageIcon detailsIcon = new ImageIcon(getClass().getClassLoader().getResource("Img/information.jpg"));
+        ImageIcon modifyIcon = new ImageIcon(getClass().getClassLoader().getResource("Img/updateicon.png"));
+        ImageIcon deleteIcon = new ImageIcon(getClass().getClassLoader().getResource("Img/delete.jpg"));
+
+        int width = 45;
+        int height =45;
+        // 调整图标大小
+        Image detailsImg = detailsIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        Image modifyImg = modifyIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        Image deleteImg = deleteIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+
+        // 创建按钮并设置图标
+        detailsButton = new JButton(new ImageIcon(detailsImg));
+        modifyButton = new JButton( new ImageIcon(modifyImg));
+        deleteButton = new JButton(new ImageIcon(deleteImg));
+
+        detailsButton.setFont(font);
         detailsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         detailsButton.setActionCommand("DETAILS");
         detailsButton.addActionListener(new ButtonClickListener());
 
-        modifyButton = new JButton("修改");
-        modifyButton.setFont(font); // Set font
+
+        modifyButton.setFont(font);
         modifyButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         modifyButton.setActionCommand("MODIFY");
         modifyButton.addActionListener(new ButtonClickListener());
 
-        deleteButton = new JButton("删除");
-        deleteButton.setFont(font); // Set font
+
+        deleteButton.setFont(font);
         deleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         deleteButton.setActionCommand("DELETE");
         deleteButton.addActionListener(new ButtonClickListener());
 
-        panel.add(Box.createHorizontalGlue()); // Add horizontal glue for centering
+        panel.add(Box.createHorizontalGlue());
         panel.add(detailsButton);
         panel.add(modifyButton);
         panel.add(deleteButton);
-        panel.add(Box.createHorizontalGlue()); // Add horizontal glue for centering
+        panel.add(Box.createHorizontalGlue());
 
-        // Set button as the editor component
+
         editorComponent = panel;
-        setClickCountToStart(1); // Set the number of clicks needed to start editing
+        setClickCountToStart(1);
     }
 
     class ButtonClickListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
-            fireEditingStopped(); // Make the editor stop editing immediately and accept the current value.
+            fireEditingStopped();
 
             if ("DETAILS".equals(command)) {
-                // Code for handling details button click
+
                 try {
                     merchantProductFrm.handleDetails(selectedRow);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
             } else if ("MODIFY".equals(command)) {
-                // Code for handling modify button click
+
                 try {
                     merchantProductFrm.handleModify(selectedRow);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
             } else if ("DELETE".equals(command)) {
-                // Code for handling delete button click
+
                 merchantProductFrm.handleDelete(selectedRow);
             }
         }
