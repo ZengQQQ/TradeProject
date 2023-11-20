@@ -134,6 +134,11 @@ public class ProductofDialog extends JDialog {
         success = dataControlProduct.updateProduct(product.getP_id(), newName, newDesc, newClass, newPrice, newStatus, newquantity, newImgName);
         return success;
     }
+    protected boolean handleUpdateButton2(String newStatus) {
+        boolean success;
+        success = dataControlProduct.updateProduct2(product.getP_id(),newStatus);
+        return success;
+    }
 
     // 用于处理“Change Image”按钮功能的方法
     protected boolean handleChangeImageButton() {
