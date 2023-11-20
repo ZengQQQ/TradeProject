@@ -1094,8 +1094,11 @@ public class UserFrm extends JFrame {
                         ex.printStackTrace();
                     }
                 }
-                else{
+                else if("待发货".equals(status)){
                     JOptionPane.showMessageDialog(null, "你的商品还没有发货", "提示", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else if("已完成".equals(status)){
+                    JOptionPane.showMessageDialog(null, "你已完成收货", "提示", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
