@@ -71,10 +71,20 @@ public class MerchantOrdersSearch extends JPanel {
         searchPanel.add(orderSearchPanel);
 
         // 添加搜索按钮和显示全部按钮
+        ClassLoader classLoader = getClass().getClassLoader();
+        Image searchImage = new ImageIcon(classLoader.getResource("Img/th.jpg")).getImage();
+        Image refreshImage = new ImageIcon(classLoader.getResource("Img/refresh.png")).getImage();
+
+        Image scaledSearchImage = searchImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        Image scaledRefreshImage = refreshImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+
+        Icon searchIcon = new ImageIcon(scaledSearchImage);
+        Icon refreshIcon = new ImageIcon(scaledRefreshImage);
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton searchButton = new JButton("查找");
+        JButton searchButton = new JButton("查找",searchIcon);
         searchButton.setFont(font);
-        JButton allButton = new JButton("刷新全部");
+        JButton allButton = new JButton("刷新全部",refreshIcon);
         allButton.setFont(font);
 
         searchButton.addActionListener(e -> {
