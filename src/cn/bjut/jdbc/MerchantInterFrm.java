@@ -85,15 +85,8 @@ public class MerchantInterFrm extends JFrame {
         //----------------------------------------------------------------
         JPanel card2 = new JPanel(new BorderLayout());
         merproduct = new MerchantProductFrm(this);
-
         card2.add(merproduct, BorderLayout.CENTER);
-
-        JScrollPane scrollPane = new JScrollPane(card2);
-        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
-        verticalScrollBar.setUnitIncrement(30);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-        mainPanel.add(scrollPane, "card2");
+        mainPanel.add(card2, "card2");
         //----------------------------------------------------------------
         JPanel card3 = new JPanel(new BorderLayout());
 
@@ -243,39 +236,16 @@ public class MerchantInterFrm extends JFrame {
     public void refreshCard3() {
         merorder.refreshData();
     }
-    public void refreshCard1() throws SQLException {
-        // 清除 card1
-        Component[] components = mainPanel.getComponents();
-        for (Component component : components) {
-            if (component.getName() != null && component.getName().equals("card1")) {
-                mainPanel.remove(component);
-                break; // 找到并删除第一个名为 "card1" 的组件后停止循环
-            }
-        }
-
-        // 创建并添加新的 card1
-        JPanel newCard1 = new MerchantHomeFrm(this);
-        JScrollPane newScrollPane = new JScrollPane(newCard1);
-        JScrollBar verticalScrollBar = newScrollPane.getVerticalScrollBar();
-        verticalScrollBar.setUnitIncrement(20);
-        newScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        newCard1.setName("card1"); // 设置新组件的名称为 "card1"，方便后续识别和操作
-        mainPanel.add(newScrollPane, "card1");
-
-        // 刷新界面
-        mainPanel.revalidate();
-        mainPanel.repaint();
-    }
 
 
     private JMenuBar createMenuBar() {
-        Font font = new Font("微软雅黑", Font.BOLD, 18);
+        Font font = new Font("微软雅黑", Font.BOLD, 23);
 
         int buttonHeight = 40;
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("菜单");
-        menu.setFont(font);
+        menu.setFont(new Font("微软雅黑", Font.BOLD, 30));
 
         JButton refreshButton1 = new JButton("刷新商品");
         refreshButton1.setFont(font);
@@ -353,7 +323,7 @@ public class MerchantInterFrm extends JFrame {
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("我的");
-        menu.setFont(font);
+        menu.setFont(new Font("微软雅黑", Font.BOLD, 30));
 
         JButton refreshButton1 = new JButton("我的信息");
         refreshButton1.setFont(font);
