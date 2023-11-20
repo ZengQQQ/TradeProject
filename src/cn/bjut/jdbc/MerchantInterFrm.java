@@ -107,6 +107,11 @@ public class MerchantInterFrm extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainPanel, "card1");
+                try {
+                    refreshCard1();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         productButton.addMouseListener(new MouseAdapter() {
@@ -188,6 +193,30 @@ public class MerchantInterFrm extends JFrame {
     public void refreshCard3() {
         merorder.refreshData();
     }
+    public void refreshCard1() throws SQLException {
+        // 清除 card1
+        Component[] components = mainPanel.getComponents();
+        for (Component component : components) {
+            if (component.getName() != null && component.getName().equals("card1")) {
+                mainPanel.remove(component);
+                break; // 找到并删除第一个名为 "card1" 的组件后停止循环
+            }
+        }
+
+        // 创建并添加新的 card1
+        JPanel newCard1 = new MerchantHomeFrm(this);
+        JScrollPane newScrollPane = new JScrollPane(newCard1);
+        JScrollBar verticalScrollBar = newScrollPane.getVerticalScrollBar();
+        verticalScrollBar.setUnitIncrement(20);
+        newScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        newCard1.setName("card1"); // 设置新组件的名称为 "card1"，方便后续识别和操作
+        mainPanel.add(newScrollPane, "card1");
+
+        // 刷新界面
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
 
     private JMenuBar createMenuBar() {
         Font font = new Font("微软雅黑", Font.BOLD, 18);
@@ -326,7 +355,7 @@ public class MerchantInterFrm extends JFrame {
     }
 
     private void showInitialInfoPopup() {
-        JOptionPane.showMessageDialog(this, "点击图片查看更多", "提示", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "欢迎来到商家管理系统", "提示", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public static void main(String[] args) {

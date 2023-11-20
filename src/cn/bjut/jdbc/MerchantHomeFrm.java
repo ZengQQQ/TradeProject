@@ -1,20 +1,21 @@
 package cn.bjut.jdbc;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
 
 
 public class MerchantHomeFrm extends JPanel {
     private MerchantInterFrm mer;
-    private int weight = 150;
-    private int height = 100;
+    private int weight = 200;
+    private int height = 200;
     private int borderWidth = 2; // 增加边框宽度
     private DataControlMercahnt dataControlmercahnt = new DataControlMercahnt();
     private DataControlProduct dataControlproduct = new DataControlProduct();
@@ -25,92 +26,121 @@ public class MerchantHomeFrm extends JPanel {
     }
 
     public void initComponents() throws SQLException {
-        setLayout(new GridLayout(2, 1, 40, 40));
+        setLayout(new BorderLayout());
 
-        JPanel mainPanel = new JPanel(new GridLayout(2, 3, 30, 30)); // 创建主面板，使用2行3列的GridLayout，设置行列间距为30
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 30, 50)); // 添加主面板的外边距
-        mainPanel.setPreferredSize(new Dimension(300, 200));
-        Border border = new LineBorder(Color.BLACK, borderWidth, true); // 创建带有圆角的边框
+        Image backgroundImage = loadImageForPanel("Img/innerphoto.jpg"); // 背景图片
+        ImagePanel mainPanel = new ImagePanel(backgroundImage); // 带有背景图片的主面板
+        mainPanel.setLayout(new BorderLayout());
 
-        Font font1 = new Font("微软雅黑", Font.ROMAN_BASELINE, 30);
-        Font font2 = new Font("微软雅黑", Font.CENTER_BASELINE, 40);
+        JPanel containerPanel = new JPanel();
+        containerPanel.setLayout(new BorderLayout());
+
+
+        JPanel productPanel = createProductPanel();
+
+        JButton refreshButton = new JButton("刷新首页");
+        refreshButton.setFont(new Font("微软雅黑", Font.BOLD, 30));
+        refreshButton.addActionListener(e -> {
+            try {
+                refreshHomePage();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        });
+
+        JPanel refreshPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        refreshPanel.add(refreshButton);
+
+        mainPanel.add(containerPanel, BorderLayout.NORTH);
+        containerPanel.add(createMainPanel(), BorderLayout.NORTH);
+        containerPanel.add(productPanel, BorderLayout.CENTER);
+        containerPanel.add(refreshPanel, BorderLayout.SOUTH);
+
+        add(mainPanel, BorderLayout.CENTER);
+    }
+    // 刷新首页的方法
+    private void refreshHomePage() throws SQLException {
+        removeAll();
+        initComponents(); // 重新初始化组件
+        revalidate(); // 重新验证布局
+        repaint(); // 重新绘制组件
+    }
+    private JPanel createMainPanel() {
+        JPanel mainPanel = new JPanel(new GridLayout(2, 3, 30, 30));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 30, 50));
+        mainPanel.setPreferredSize(new Dimension(300, 300));
 
         List<Integer> merchantStats = dataControlmercahnt.getMerchantStats(mer.getM_id());
-        JPanel innerPanel1 = new JPanel(new BorderLayout()); // 创建每个内部面板1
-        innerPanel1.setPreferredSize(new Dimension(weight, height)); // 设置内部面板1的大小
-        innerPanel1.setBorder(border); // 设置内部面板1的边框为带有圆角的边框
 
-        JLabel topLeftLabel1 = new JLabel("   总收入（￥）", SwingConstants.LEFT); // 创建左上角的标签
-        topLeftLabel1.setFont(font1); // 设置左上角标签的字体为20号
-        innerPanel1.add(topLeftLabel1, BorderLayout.NORTH); // 在左上角添加文字
+        Image bgImage1 = loadImageForPanel("Img/innerphoto.jpg");
+        Image bgImage2 = loadImageForPanel("Img/innerphoto.jpg");
+        Image bgImage3 = loadImageForPanel("Img/innerphoto.jpg");
+        Image bgImage4 = loadImageForPanel("Img/innerphoto.jpg");
+        Image bgImage5 = loadImageForPanel("Img/innerphoto.jpg");
+        Image bgImage6 = loadImageForPanel("Img/innerphoto.jpg");
 
-        JLabel bottomCenterLabel1 = new JLabel(String.valueOf(merchantStats.get(0)), SwingConstants.CENTER); // 创建底部中间的标签
-        bottomCenterLabel1.setFont(font2); // 设置底部中间标签的字体为30号
-        innerPanel1.add(bottomCenterLabel1, BorderLayout.SOUTH); // 在底部中间添加文字
+        mainPanel.add(createInnerPanel("总收入（￥）", String.valueOf(merchantStats.get(0)), bgImage1));
+        mainPanel.add(createInnerPanel("今日收入（￥）",String.valueOf(merchantStats.get(1)), bgImage2));
+        mainPanel.add(createInnerPanel("总商品数", String.valueOf(merchantStats.get(2)), bgImage3));
+        mainPanel.add(createInnerPanel("总订单数", String.valueOf(merchantStats.get(3)), bgImage4));
+        mainPanel.add(createInnerPanel("今日订单数", String.valueOf(merchantStats.get(4)), bgImage5));
+        mainPanel.add(createInnerPanel("待退货、已退货订单数", String.valueOf(merchantStats.get(5)), bgImage6));
 
-        mainPanel.add(innerPanel1); // 将内部面板1添加到主面板
+        return mainPanel;
+    }
 
-        JPanel innerPanel2 = new JPanel(new BorderLayout());
-        innerPanel2.setPreferredSize(new Dimension(weight, height));
-        innerPanel2.setBorder(border);
+    private JPanel createInnerPanel(String topLeftLabelText, String bottomCenterLabelText, Image backgroundImage) {
+        JPanel innerPanel = new ImagePanel(backgroundImage);
+        innerPanel.setLayout(new BorderLayout());
+        innerPanel.setPreferredSize(new Dimension(weight, height));
+        innerPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, borderWidth, true));
 
-        JLabel topLeftLabel2 = new JLabel("   今日收入（￥）", SwingConstants.LEFT);
-        topLeftLabel2.setFont(font1);
-        innerPanel2.add(topLeftLabel2, BorderLayout.NORTH);
+        JLabel topLeftLabel = new JLabel("   " + topLeftLabelText, SwingConstants.LEFT);
+        topLeftLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 30));
+        innerPanel.add(topLeftLabel, BorderLayout.NORTH);
 
-        JLabel bottomCenterLabel2 = new JLabel(String.valueOf(merchantStats.get(1)), SwingConstants.CENTER);
-        bottomCenterLabel2.setFont(font2);
-        innerPanel2.add(bottomCenterLabel2, BorderLayout.SOUTH);
+        JLabel bottomCenterLabel = new JLabel("   " + bottomCenterLabelText, SwingConstants.CENTER);
+        bottomCenterLabel.setFont(new Font("微软雅黑", Font.CENTER_BASELINE, 40));
+        innerPanel.add(bottomCenterLabel, BorderLayout.SOUTH);
 
-        mainPanel.add(innerPanel2);
+        return innerPanel;
+    }
+    private Image loadImageForPanel(String imagePath) {
+        Image bgImage = null;
+        try {
+            // 使用类加载器加载图片资源
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(imagePath);
+            if (inputStream != null) {
+                bgImage = ImageIO.read(inputStream);
+            } else {
+                // 图片资源未找到
+                System.out.println("Image not found: " + imagePath);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            // 处理图片加载异常
+        }
+        return bgImage;
+    }
 
-        JPanel innerPanel3 = new JPanel(new BorderLayout());
-        innerPanel3.setPreferredSize(new Dimension(weight, height));
-        innerPanel3.setBorder(border);
+    class ImagePanel extends JPanel {
+        private Image backgroundImage;
 
-        JLabel topLeftLabel3 = new JLabel("   总商品数", SwingConstants.LEFT);
-        topLeftLabel3.setFont(font1);
-        innerPanel3.add(topLeftLabel3, BorderLayout.NORTH);
+        public ImagePanel(Image backgroundImage) {
+            this.backgroundImage = backgroundImage;
+        }
 
-        JLabel bottomCenterLabel3 = new JLabel(String.valueOf(merchantStats.get(2)), SwingConstants.CENTER);
-        bottomCenterLabel3.setFont(font2);
-        innerPanel3.add(bottomCenterLabel3, BorderLayout.SOUTH);
-
-        mainPanel.add(innerPanel3);
-        JPanel innerPanel4 = new JPanel(new BorderLayout());
-        innerPanel4.setPreferredSize(new Dimension(weight, height));
-        innerPanel4.setBorder(border);
-
-        JLabel topLeftLabel4 = new JLabel("   总订单数", SwingConstants.LEFT);
-        topLeftLabel4.setFont(font1);
-        innerPanel4.add(topLeftLabel4, BorderLayout.NORTH);
-
-        JLabel bottomCenterLabel4 = new JLabel(String.valueOf(merchantStats.get(4)), SwingConstants.CENTER);
-        bottomCenterLabel4.setFont(font2);
-        innerPanel4.add(bottomCenterLabel4, BorderLayout.SOUTH);
-
-        mainPanel.add(innerPanel4);
-
-        JPanel innerPanel5 = new JPanel(new BorderLayout());
-        innerPanel5.setPreferredSize(new Dimension(weight, height));
-        innerPanel5.setBorder(border);
-
-        JLabel topLeftLabel5 = new JLabel("   今日订单数", SwingConstants.LEFT);
-        topLeftLabel5.setFont(font1);
-        innerPanel5.add(topLeftLabel5, BorderLayout.NORTH);
-
-        JLabel bottomCenterLabel5 = new JLabel(String.valueOf(merchantStats.get(4)), SwingConstants.CENTER);
-        bottomCenterLabel5.setFont(font2);
-        innerPanel5.add(bottomCenterLabel5, BorderLayout.SOUTH);
-
-        mainPanel.add(innerPanel5);
-
-        // 获取商家的商品信息（假设该函数可以获取商品信息列表）
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
+    }
+    private JPanel createProductPanel() throws SQLException {
+        JPanel productPanel = new JPanel();
+        productPanel.setLayout(new GridLayout(0, 2, 30, 40));
         List<Product> productList = dataControlproduct.findProductsByHighestQuantity(mer.getM_id());
         List<Product> productList2 = dataControlproduct.findProductsByHighestQuantityToday(mer.getM_id());
-
-        JPanel productPanel = new JPanel(); // 商品信息面板
-        productPanel.setLayout(new GridLayout(0, 2, 30, 40)); // 垂直布局
 
         // 添加每个商品信息面板到主面板
         for (Product product : productList) {
@@ -124,20 +154,9 @@ public class MerchantHomeFrm extends JPanel {
             JPanel highproductPanel2 = createProductPanel2(product); // 创建每个商品信息面板
             highproductPanel2.setSize(300, 450);
             productPanel.add(highproductPanel2); // 将商品信息面板添加到主面板
-
         }
-        // 将商品信息面板放置在带有垂直滚动条的 JScrollPane 中
-//        JScrollPane productScrollPane = new JScrollPane(productPanel);
-//        JScrollBar verticalScrollBar = productScrollPane.getVerticalScrollBar();
-//        verticalScrollBar.setUnitIncrement(20);
-//        productScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-////        productScrollPane.setPreferredSize(new Dimension(300, 350));
-
-        add(mainPanel); // 将主面板添加到北部
-        add(productPanel);
-
+        return productPanel;
     }
-
     // 创建单个商品信息面板
     private JPanel createProductPanel(Product product) {
         JPanel mainPanel = new JPanel(); // 主面板
