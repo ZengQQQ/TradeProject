@@ -201,14 +201,31 @@ public class ProductUpdateDialog extends ProductofDialog {
                             JOptionPane.showMessageDialog(this, "商品数量范围不正确，不能为负和超过99999", "警告", JOptionPane.WARNING_MESSAGE);
                         } else {
                             // 调用父类的方法
-                            boolean success;
-                            success = handleUpdateButton(newName, newDesc, newClass, newPrice, newStatus, newquantity);
-                            if (success) {
-                                JOptionPane.showMessageDialog(this, "修改成功，请等待管理员审核", "提示", JOptionPane.INFORMATION_MESSAGE);
-                                mer.refreshProducts();
-                                dispose(); // 关闭对话框
-                            } else {
-                                JOptionPane.showMessageDialog(this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
+                            boolean success = false;
+
+                            boolean hasChanged2 = newName.equals(oldName) && newDesc.equals(oldDesc) && newClass.equals(oldClass)
+                                    && priceText.equals(String.valueOf(oldPrice)) && !newStatus.equals(oldStatus)
+                                    && quantityText.equals(String.valueOf(oldQuantity)) && product.getP_audiStatus()
+                                    .equals("审核通过");
+
+                            if (hasChanged2) {
+                                success = handleUpdateButton2(newStatus);
+                                if (success) {
+                                    JOptionPane.showMessageDialog(this, "修改成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                                    mer.refreshProducts();
+                                    dispose(); // 关闭对话框
+                                } else {
+                                    JOptionPane.showMessageDialog(this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }else {
+                                success = handleUpdateButton(newName, newDesc, newClass, newPrice, newStatus, newquantity); if (success) {
+                                    JOptionPane.showMessageDialog(this, "修改成功，请等待管理员审核", "提示", JOptionPane.INFORMATION_MESSAGE);
+                                    mer.refreshProducts();
+                                    dispose(); // 关闭对话框
+                                } else {
+                                    JOptionPane.showMessageDialog(this, "修改失败", "错误", JOptionPane.ERROR_MESSAGE);
+                                }
+
                             }
                         }
                     }
