@@ -20,7 +20,7 @@ public class OrdersFrmButtonEditor extends DefaultCellEditor {
         this.merchantOrdersFrm = merchantOrdersFrm;
         Font font = new Font("微软雅黑", Font.BOLD, 16);
         panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS)); // Set to horizontal layout
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
         detailsButton = new JButton("详情");
         detailsButton.setFont(font);
@@ -42,13 +42,13 @@ public class OrdersFrmButtonEditor extends DefaultCellEditor {
 
         modifyButton.setVisible(false);
         deleteButton.setVisible(false);
-        panel.add(Box.createHorizontalGlue()); // Add horizontal glue for centering
+        panel.add(Box.createHorizontalGlue());
         panel.add(detailsButton);
         panel.add(modifyButton);
         panel.add(deleteButton);
-        panel.add(Box.createHorizontalGlue()); // Add horizontal glue for centering
+        panel.add(Box.createHorizontalGlue());
 
-        // Set button as the editor component
+
         editorComponent = panel;
         this.setClickCountToStart(1);
     }
@@ -79,7 +79,7 @@ public class OrdersFrmButtonEditor extends DefaultCellEditor {
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        String orderStatus = table.getValueAt(row, 7).toString(); // Assuming the order status is at column index 7
+        String orderStatus = table.getValueAt(row, 7).toString();
 
         if ("待发货".equals(orderStatus)) {
             modifyButton.setVisible(true);
