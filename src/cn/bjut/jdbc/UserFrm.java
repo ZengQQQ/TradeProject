@@ -1148,6 +1148,7 @@ public class UserFrm extends JFrame {
                             int oId=getOrderIDFromDatabase(dataBase, orderIdColumnName, productId,buy_time);
                             // 获取收货日期
                             String receive_Time = getReceiveTimeFromDatabase(dataBase, oId);
+                            if (receive_Time != null && !receive_Time.isEmpty()){
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                             java.util.Date receiveDate = sdf.parse(receive_Time);
                             java.sql.Date receiveSqlDate = new java.sql.Date(receiveDate.getTime());
@@ -1159,7 +1160,7 @@ public class UserFrm extends JFrame {
                             if (diffDays > 7) {
                                 JOptionPane.showMessageDialog(null, "已经超过7天，不能退货", "错误", JOptionPane.INFORMATION_MESSAGE);
                                 return;
-                            }
+                            }}
 
                             // 获取订单信息
 
@@ -1167,11 +1168,11 @@ public class UserFrm extends JFrame {
 
                             if (orderId != -1) {
                                 String orderStatus = "待审核";
-
+                                java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(currentDate.getTime());
                                 // 插入退货记录
                                 Statement stmt = dataBase.getCon().createStatement();
                                 String insertQuery = "INSERT INTO return_detail (o_id, request_time, reason, status) " +
-                                        "VALUES (" + orderId + ", '" + receive_Time + "', '" + reason + "', '" + orderStatus + "')";
+                                        "VALUES (" + orderId + ", '" + currentTimestamp + "', '" + reason + "', '" + orderStatus + "')";
                                 stmt.executeUpdate(insertQuery);
 
                                 // 更新orders表的o_status状态为"申请退货"
