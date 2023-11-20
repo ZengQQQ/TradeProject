@@ -53,26 +53,36 @@ public class DataControlProduct extends DataControl {
         DataBase dataBase = new DataBase();
         con = dataBase.OpenDB();
 
-        // 查询与该商品相关的订单状态
-        String checkOrdersQuery = "SELECT o_status FROM orders WHERE p_id = ?";
+        // 查询与该商品相关的订单状态和接收时间
+        String checkOrdersQuery = "SELECT o_status, receive_time FROM orders WHERE p_id = ?";
         preparedStatement = con.prepareStatement(checkOrdersQuery);
         preparedStatement.setInt(1, productId);
         rs = preparedStatement.executeQuery();
 
         boolean orderInProgress = false;
 
-        // 检查是否有未完成的订单
+        // 获取当前日期时间并计算7天后的日期时间
+        java.util.Date currentDate = new java.util.Date();
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTime(currentDate);
+        cal.add(java.util.Calendar.DATE, -7); // 减去7天
+        java.util.Date sevenDaysBefore = cal.getTime();
+
+        // 检查是否有未完成的订单或订单在7天内
         while (rs.next()) {
+
             String orderStatus = rs.getString("o_status");
-            if (!orderStatus.equals("已完成")) {
+            java.sql.Timestamp receiveTime = rs.getTimestamp("receive_time");
+            if ((!orderStatus.equals("已完成") && !orderStatus.equals("已退货")) &&
+                    (receiveTime == null || receiveTime.after(sevenDaysBefore))) {
                 orderInProgress = true;
                 break;
             }
         }
 
         if (orderInProgress) {
-            // 有未完成的订单，不能删除商品
-            JOptionPane.showMessageDialog(null, "有未完成的订单，不能删除商品", "错误", JOptionPane.ERROR_MESSAGE);
+            // 有未完成的订单或订单在7天内，不能删除商品
+            JOptionPane.showMessageDialog(null, "您的商品7天内还有订单，不能删除！", "错误", JOptionPane.ERROR_MESSAGE);
         } else {
             // 创建SQL删除语句，并修改m_id和p_status
             String deleteQuery = "UPDATE product SET m_id = -1, p_status = '下架' WHERE p_id = ?";
@@ -448,5 +458,5 @@ public class DataControlProduct extends DataControl {
         }
         return productList;
     }
-    
+
 }
