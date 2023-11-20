@@ -223,7 +223,7 @@ public class DataControlMercahnt extends DataControl {
 
         try {
             String totalIncomeQuery = "SELECT IFNULL(SUM(totalprice), 0) FROM orders o " +
-                    "INNER JOIN product p ON o.p_id = p.p_id WHERE p.m_id = ?";
+                    "INNER JOIN product p ON o.p_id = p.p_id WHERE p.m_id = ? AND o.o_status = '已完成' ";
             stmt = con.prepareStatement(totalIncomeQuery);
             stmt.setInt(1, merchantId);
             rs = stmt.executeQuery();
@@ -233,7 +233,7 @@ public class DataControlMercahnt extends DataControl {
             }
 
             String todayIncomeQuery = "SELECT IFNULL(SUM(totalprice), 0) FROM orders o " +
-                    "INNER JOIN product p ON o.p_id = p.p_id WHERE p.m_id = ? AND DATE(buy_time) = CURDATE()";
+                    "INNER JOIN product p ON o.p_id = p.p_id WHERE p.m_id = ? AND DATE(buy_time) = CURDATE() AND o.o_status = '已完成'";
             stmt = con.prepareStatement(todayIncomeQuery);
             stmt.setInt(1, merchantId);
             rs = stmt.executeQuery();
@@ -269,14 +269,22 @@ public class DataControlMercahnt extends DataControl {
                 todayOrders = rs.getInt(1);
             }
 
-            // Add all stats to the list
+            String totalReceiveOrdersQuery = "SELECT COUNT(*) FROM orders o INNER JOIN product p ON o.p_id = p.p_id WHERE p.m_id = ? AND (o.o_status = '已退货' OR o.o_status = '待退货')";
+            stmt = con.prepareStatement(totalReceiveOrdersQuery);
+            stmt.setInt(1, merchantId);
+            rs = stmt.executeQuery();
+            int totalReceiveOrders = 0;
+            if (rs.next()) {
+                totalReceiveOrders = rs.getInt(1);
+            }
+
             stats.add((int) totalIncome);
             stats.add((int) todayIncome);
             stats.add(totalProducts);
             stats.add(totalOrders);
             stats.add(todayOrders);
+            stats.add(totalReceiveOrders);
 
-            // Close resources
             if (rs != null) rs.close();
             if (stmt != null) stmt.close();
             if (con != null) con.close();
@@ -284,7 +292,7 @@ public class DataControlMercahnt extends DataControl {
         } catch (SQLException se) {
             se.printStackTrace();
         } finally {
-            // Ensure to close resources in case of exceptions
+
             try {
                 if (rs != null) rs.close();
                 if (stmt != null) stmt.close();
