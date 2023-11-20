@@ -25,6 +25,7 @@ public class CommentBar extends JPanel {
     //private int replyCount;//回复的id有多少个
     private List<Comment> replies;
 
+    private  CommentBarListener listener;
     public CommentBar(String ID,String userName, String time, String content, String flag,User user,Merchant merchant) {
         this.ID = ID;
         this.userName = userName;
@@ -37,6 +38,12 @@ public class CommentBar extends JPanel {
         setDefaultFont();
     }
 
+    public interface CommentBarListener {
+        void onDeleteButtonClick(CommentBar commentBar) throws SQLException;
+    }
+    public void setCommentBarListener(CommentBarListener listener) {
+        this.listener = listener;
+    }
     private void setDefaultFont() {
         Font font = new Font("微软雅黑", Font.PLAIN, 18);
 
@@ -138,6 +145,9 @@ public class CommentBar extends JPanel {
                         if (confirm == JOptionPane.YES_OPTION) {
                             // 执行删除评论的操作
                             new DataControl().deleteComment(ID);
+                            if (listener != null) {
+                                listener.onDeleteButtonClick(CommentBar.this);
+                            }
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "只有评论者才能删除评论！", "提示", JOptionPane.INFORMATION_MESSAGE);
@@ -149,6 +159,9 @@ public class CommentBar extends JPanel {
                     if (confirm == JOptionPane.YES_OPTION) {
                         // 执行删除评论的操作
                         new DataControl().deleteComment(ID);
+                        if (listener != null) {
+                            listener.onDeleteButtonClick(CommentBar.this);
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "只有评论者才能删除评论！", "提示", JOptionPane.INFORMATION_MESSAGE);
@@ -328,16 +341,31 @@ public class CommentBar extends JPanel {
             deletereplyButton.setPreferredSize(new Dimension(30, 15)); // 设置按钮大小
             deletereplyButton.addActionListener(e -> {
                 // 在这里添加删除回复评论的逻辑
-                System.out.println(name);
-                System.out.println(userName);
-                if(flag.equals("用户") && userName.equals(name)||flag.equals("商家") && userName.equals(name)) {
-                    try {
-                        new DataControl().deleteReply(ID);
-                } catch (SQLException ex) {
+                try {
+                    if(user!=null) {
+                        if (name.equals(user.getU_name())) {
+                            int confirm = JOptionPane.showConfirmDialog(null, "确定删除该评论吗？", "确认删除", JOptionPane.YES_NO_OPTION);
+                            if (confirm == JOptionPane.YES_OPTION) {
+                                // 执行删除评论的操作
+                                new DataControl().deleteReply(ID);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "只有评论者才能删除评论！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
+                    else if(merchant!=null){
+                        if(name.equals(merchant.getM_name())){
+                            int confirm = JOptionPane.showConfirmDialog(null, "确定删除该评论吗？", "确认删除", JOptionPane.YES_NO_OPTION);
+                            if (confirm == JOptionPane.YES_OPTION) {
+                                // 执行删除评论的操作
+                                new DataControl().deleteReply(ID);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "只有评论者才能删除评论！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
+                }catch (SQLException ex){
                     ex.printStackTrace();
-                }
-            }else {
-                    JOptionPane.showMessageDialog(null, "只有评论者才能删除评论！", "提示", JOptionPane.INFORMATION_MESSAGE);
                 }
         });
 

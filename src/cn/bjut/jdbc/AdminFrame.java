@@ -117,6 +117,7 @@ public class AdminFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 添加查看订单的逻辑
+                adminOrderManage.refreshOrderTable();
                 cardLayout.show(cardPanel,"card4");
                 JOptionPane.showMessageDialog(AdminFrame.this, "查看订单功能");
             }

@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ForumPage extends JPanel {
+public class ForumPage extends JPanel implements CommentBar.CommentBarListener {
 
     private User user;
     private Merchant merchant;
@@ -35,6 +35,10 @@ public class ForumPage extends JPanel {
     }
 
 
+    public void onDeleteButtonClick(CommentBar commentBar) throws SQLException {
+        // 删除按钮被点击时的处理
+        refreshComments();
+    }
     private void initComponents() throws SQLException {
         try{UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
@@ -194,6 +198,7 @@ public class ForumPage extends JPanel {
         for (CommentBar comment : commentBars) {
             comment.setPreferredSize(new Dimension(1200,150));
             commentPanel.add(comment);
+            comment.setCommentBarListener(this);
         }
 
 

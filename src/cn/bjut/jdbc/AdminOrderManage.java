@@ -85,7 +85,7 @@ public class AdminOrderManage extends JPanel {
         orderTable.setRowHeight(55);
     }
 
-    private void refreshOrderTable() {
+    public void refreshOrderTable() {
         try {
             List<Order> orders = getOrders();
             tableModel.setRowCount(0); // 清空现有数据
