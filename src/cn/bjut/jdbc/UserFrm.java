@@ -1082,12 +1082,16 @@ public class UserFrm extends JFrame {
                         String orderIdColumnName = "o_id"; // 请替换为实际的列名
                         int orderId = getOrderIDFromDatabase(dataBase, orderIdColumnName, productId,buy_time);
                         System.out.println(orderId);
+                        java.util.Date currentDate0 = new java.util.Date();
+                        java.sql.Timestamp receive_time = new java.sql.Timestamp(currentDate0.getTime());
                         // 执行确认收货逻辑，更新数据库等
                         DataBase dataBase = new DataBase();
                         dataBase.OpenDB();
 
                         Statement stmt = dataBase.getCon().createStatement();
-                        String updateQuery = "UPDATE orders SET o_status = '已完成' WHERE o_id = " + orderId;
+                        String updateQuery = "UPDATE orders SET o_status = '已完成', receive_time = '" + receive_time + "' WHERE o_id = " + orderId;
+
+
                         stmt.executeUpdate(updateQuery);
 
                         stmt.close();
