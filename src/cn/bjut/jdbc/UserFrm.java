@@ -1400,8 +1400,9 @@ public class UserFrm extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 finalDataControl.insertOrUpdateCart(u_id,id);
                 // 添加成功提示框
-                JOptionPane.showMessageDialog((Component) e.getSource(),
+                JOptionPane.showMessageDialog(null,
                         "已成功添加到购物车！", "成功", JOptionPane.INFORMATION_MESSAGE);
+
             }
         });
 
