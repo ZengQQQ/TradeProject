@@ -18,6 +18,7 @@ public class ForumPage extends JPanel implements CommentBar.CommentBarListener {
 
     private DataControl dataControl = new DataControl();
 
+
     public ForumPage(User user,String flag) throws SQLException {
         this.user = user;
         this.flag = flag;

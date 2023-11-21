@@ -735,7 +735,8 @@ public class DataControl {
             String f_time = rs.getString("f_time");
             String f_con = rs.getString("f_con");
             String flag = rs.getString("flag");
-            Comment comment = new Comment(author_name, f_time, f_con, flag);
+            String replyId = Integer.toString(rs.getInt("f_id"));
+            Comment comment = new Comment(author_name, f_time, f_con, flag, replyId);
             replyList.add(comment);
         }
         return replyList;
@@ -901,12 +902,13 @@ public class DataControl {
         stmt.executeUpdate();
     }
 
-    public  void deleteReply(String ID) throws SQLException {
-        String sql ="delete from forum where reply_to = ?";
+    public  void deleteReply(String replyID,String ID) throws SQLException {
+        String sql ="delete from forum where reply_to = ? and f_id = ?";
         Connection con = DataBase.OpenDB();
         PreparedStatement stmt = con.prepareStatement(sql);
         try {
             stmt.setInt(1, Integer.parseInt(ID));
+            stmt.setInt(2, Integer.parseInt(replyID));
             stmt.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();

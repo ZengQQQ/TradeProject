@@ -285,13 +285,16 @@ public class CommentBar extends JPanel {
         private String time;
         private String content;
         private String flag;
+        private String replyID;
 
-        public replyBar(String name, String time, String content, String flag) {
+        public replyBar(String name, String time, String content, String flag,String ID) {
             this.name = name;
             this.time = time;
             this.content = content;
             this.flag = flag;
+            this.replyID = ID;
             initComponents();
+
         }
 
         public replyBar(Comment comment) {
@@ -299,6 +302,7 @@ public class CommentBar extends JPanel {
             this.time = comment.getTime();
             this.content = comment.getContent();
             this.flag = comment.getFlag();
+            this.replyID = comment.getComment_id(); // 这里的 comment_id 是回复的评论的f_id
             initComponents();
         }
 
@@ -347,7 +351,7 @@ public class CommentBar extends JPanel {
                             int confirm = JOptionPane.showConfirmDialog(null, "确定删除该评论吗？", "确认删除", JOptionPane.YES_NO_OPTION);
                             if (confirm == JOptionPane.YES_OPTION) {
                                 // 执行删除评论的操作
-                                new DataControl().deleteReply(ID);
+                                new DataControl().deleteReply(replyID,ID);
                             }
                         } else {
                             JOptionPane.showMessageDialog(null, "只有评论者才能删除评论！", "提示", JOptionPane.INFORMATION_MESSAGE);
@@ -358,7 +362,7 @@ public class CommentBar extends JPanel {
                             int confirm = JOptionPane.showConfirmDialog(null, "确定删除该评论吗？", "确认删除", JOptionPane.YES_NO_OPTION);
                             if (confirm == JOptionPane.YES_OPTION) {
                                 // 执行删除评论的操作
-                                new DataControl().deleteReply(ID);
+                                new DataControl().deleteReply(replyID,ID);
                             }
                         } else {
                             JOptionPane.showMessageDialog(null, "只有评论者才能删除评论！", "提示", JOptionPane.INFORMATION_MESSAGE);

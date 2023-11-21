@@ -7,11 +7,13 @@ public class Comment{
 
     private String flag;
 
-    public Comment(String userName, String time, String content,String flag) {
+    private String comment_id;
+    public Comment(String userName, String time, String content,String flag,String comment_id) {
         this.name = userName;
         this.time = time;
         this.content = content;
         this.flag = flag;
+        this.comment_id = comment_id;
     }
 
     public String getName() {
@@ -48,5 +50,13 @@ public class Comment{
 
     public String getContent() {
         return content;
+    }
+
+    public String getComment_id() {
+        return comment_id;
+    }
+
+    public void setComment_id(String comment_id) {
+        this.comment_id = comment_id;
     }
 }
