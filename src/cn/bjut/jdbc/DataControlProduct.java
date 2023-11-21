@@ -84,6 +84,7 @@ public class DataControlProduct extends DataControl {
         rs = preparedStatement.executeQuery();
 
         boolean orderInProgress = false;
+        boolean ordertimeProgress = false;
 
         // 获取当前日期时间并计算7天后的日期时间
         java.util.Date currentDate = new java.util.Date();
@@ -97,28 +98,37 @@ public class DataControlProduct extends DataControl {
 
             String orderStatus = rs.getString("o_status");
             java.sql.Timestamp receiveTime = rs.getTimestamp("receive_time");
-            if ((!orderStatus.equals("已完成") && !orderStatus.equals("已退货")) &&
-                    (receiveTime == null || receiveTime.after(sevenDaysBefore))) {
+            if ((!orderStatus.equals("已完成") && !orderStatus.equals("已退货"))) {
                 orderInProgress = true;
+                break;
+            }
+            if (receiveTime == null || receiveTime.after(sevenDaysBefore)) {
+                ordertimeProgress = true;
                 break;
             }
         }
 
+
+
         if (orderInProgress) {
             // 有未完成的订单或订单在7天内，不能删除商品
-            JOptionPane.showMessageDialog(null, "您的商品7天内还有订单，不能删除！", "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "您的商品还有未完成的订单，不能删除！", "错误", JOptionPane.ERROR_MESSAGE);
         } else {
-            // 创建SQL删除语句，并修改m_id和p_status
-            String deleteQuery = "UPDATE product SET m_id = -1, p_status = '下架' WHERE p_id = ?";
+            if (ordertimeProgress) {
+                JOptionPane.showMessageDialog(null, "您的商品7天内还有订单，不能删除！", "错误", JOptionPane.ERROR_MESSAGE);
+            }else {
+                // 创建SQL删除语句，并修改m_id和p_status
+                String deleteQuery = "UPDATE product SET m_id = -1, p_status = '下架' WHERE p_id = ?";
 
-            // 准备并执行SQL语句
-            preparedStatement = con.prepareStatement(deleteQuery);
-            preparedStatement.setInt(1, productId);
+                // 准备并执行SQL语句
+                preparedStatement = con.prepareStatement(deleteQuery);
+                preparedStatement.setInt(1, productId);
 
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                // 如果成功删除了行，则返回true
-                deleted = true;
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected > 0) {
+                    // 如果成功删除了行，则返回true
+                    deleted = true;
+                }
             }
         }
 
