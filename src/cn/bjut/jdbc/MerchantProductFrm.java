@@ -428,7 +428,7 @@ public class MerchantProductFrm extends JPanel {
                 }
             }
 
-            if (!minPrice.isEmpty() || !maxPrice.isEmpty()) {
+            if (!minPrice.isEmpty() && !maxPrice.isEmpty()) {
                 double minPriceValue = Double.parseDouble(minPrice);
                 double maxPriceValue = Double.parseDouble(maxPrice);
 
@@ -438,7 +438,7 @@ public class MerchantProductFrm extends JPanel {
                 }
             }
 
-            if (!minQuantity.isEmpty() || !maxQuantity.isEmpty()) {
+            if (!minQuantity.isEmpty() && !maxQuantity.isEmpty()) {
                 int minQuantityValue = Integer.parseInt(minQuantity);
                 int maxQuantityValue = Integer.parseInt(maxQuantity);
 
