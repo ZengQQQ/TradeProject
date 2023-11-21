@@ -49,7 +49,7 @@ public class login extends JFrame {
                             JOptionPane.showMessageDialog(null, "登录成功", "登录", JOptionPane.INFORMATION_MESSAGE);
                             UserFrm userFrame = new UserFrm(dataControl.getUserid(logname));
                             userFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                            userFrame.setSize(1500, 1000);
+                            userFrame.setSize(1520, 1000);
                             userFrame.setLocationRelativeTo(null);
                             userFrame.setVisible(true);
                             dispose();
@@ -62,7 +62,7 @@ public class login extends JFrame {
                             JOptionPane.showMessageDialog(null, "登录成功", "登录", JOptionPane.INFORMATION_MESSAGE);
                             MerchantInterFrm merchantFrame = new MerchantInterFrm(dataControlmer.getMerchantm_id(logname));
                             merchantFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                            merchantFrame.setSize(1500, 1000);
+                            merchantFrame.setSize(1500, 1300);
                             merchantFrame.setVisible(true);
                             merchantFrame.setLocationRelativeTo(null);
                             dispose();
@@ -104,15 +104,15 @@ public class login extends JFrame {
 
         setContentPane(backgroundPanel);
         JPanel loginPanel = new JPanel(new GridBagLayout());
-        loginPanel.setBackground(new Color(0, 0, 0, 0)); // Transparent background
+        loginPanel.setBackground(new Color(0, 0, 0, 0));
         loginPanel.setPreferredSize(new Dimension(200, 100));
 
-        // Create a separate panel for the background image of loginPanel
+
         JPanel loginPanelBackground = new BackgroundPanel("/img/login.jpg");
         loginPanelBackground.setLayout(new BorderLayout());
         backgroundPanel.setLayout(new BorderLayout());
         backgroundPanel.add(loginPanelBackground, BorderLayout.EAST);
-        loginPanelBackground.setOpaque(false); // Make it transparent
+        loginPanelBackground.setOpaque(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(5, 5, 5, 5);
@@ -204,7 +204,7 @@ public class login extends JFrame {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            // Display the background image
+
             background.paintIcon(this, g, 0, 0);
         }
     }
@@ -219,7 +219,7 @@ public class login extends JFrame {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            // Display the animated GIF
+
             background.paintIcon(this, g, 0, 0);
         }
     }
