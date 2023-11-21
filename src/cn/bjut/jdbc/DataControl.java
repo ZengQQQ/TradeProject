@@ -278,13 +278,14 @@ public class DataControl {
                     double totalprice = quantity * p_price;
 
                     // 将购物车内容插入订单表
-                    String insertQuery = "INSERT INTO orders (p_id, u_id, buy_time, quantity, totalprice) VALUES (?, ?, ?, ?, ?)";
+                    String insertQuery = "INSERT INTO orders (p_id, u_id, buy_time, quantity, totalprice,o_status) VALUES (?, ?, ?, ?, ?,?)";
                     PreparedStatement insertStmt = dataBase.getCon().prepareStatement(insertQuery);
                     insertStmt.setInt(1, p_id);
                     insertStmt.setInt(2, u_id);
                     insertStmt.setObject(3, currentDateTime);
                     insertStmt.setInt(4, quantity);
                     insertStmt.setDouble(5, totalprice);
+                    insertStmt.setString(6, "待发货");
 
                     int rowsInserted = insertStmt.executeUpdate();
 
