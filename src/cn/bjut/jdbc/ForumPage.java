@@ -1,9 +1,12 @@
 package cn.bjut.jdbc;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +18,6 @@ public class ForumPage extends JPanel implements CommentBar.CommentBarListener {
     private String flag;
     private JPanel commentPanel = new JPanel();
     private List<CommentBar> commentBars;
-
     private DataControl dataControl = new DataControl();
 
 
@@ -32,7 +34,9 @@ public class ForumPage extends JPanel implements CommentBar.CommentBarListener {
         this.flag = flag;
         this.user = null;
         this.commentBars = getCommentBars();
+
         initComponents();
+
     }
 
 
@@ -40,6 +44,8 @@ public class ForumPage extends JPanel implements CommentBar.CommentBarListener {
         // 删除按钮被点击时的处理
         refreshComments();
     }
+
+
     private void initComponents() throws SQLException {
         try{UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
@@ -64,7 +70,7 @@ public class ForumPage extends JPanel implements CommentBar.CommentBarListener {
 
         JButton newCommentButton = new JButton("发表评论");
         newCommentButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        newCommentButton.setBackground(new Color(122, 191, 255));
+        newCommentButton.setBackground(new Color(122, 135, 255));
         newCommentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -200,6 +206,7 @@ public class ForumPage extends JPanel implements CommentBar.CommentBarListener {
             comment.setPreferredSize(new Dimension(1200,150));
             commentPanel.add(comment);
             comment.setCommentBarListener(this);
+
         }
 
 

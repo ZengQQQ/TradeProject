@@ -1,10 +1,12 @@
 package cn.bjut.jdbc;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -26,6 +28,8 @@ public class CommentBar extends JPanel {
     private List<Comment> replies;
 
     private  CommentBarListener listener;
+
+    private Image backgroundImage;
     public CommentBar(String ID,String userName, String time, String content, String flag,User user,Merchant merchant) {
         this.ID = ID;
         this.userName = userName;
@@ -34,6 +38,8 @@ public class CommentBar extends JPanel {
         this.flag = flag;
         this.user = user;
         this.merchant = merchant;
+        this.setOpaque(false);
+        setBackgroundImage();
         initComponents();
         setDefaultFont();
     }
@@ -64,6 +70,29 @@ public class CommentBar extends JPanel {
         }
     }
 
+    private void setBackgroundImage() {
+        // Load the background image
+        try {
+            backgroundImage = ImageIO.read(getClass().getResource("/Img/detailproduct.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        // Paint the background image, if available
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
+    }
+
+
+
+
     private void initComponents() {
         setLayout(new BorderLayout(10, 10)); // 设置主布局
 
@@ -85,10 +114,12 @@ public class CommentBar extends JPanel {
         topPanel.add(flagLabel, BorderLayout.CENTER);
         topPanel.add(timeLabel, BorderLayout.EAST);
 
+        topPanel.setOpaque(false);
         add(topPanel, BorderLayout.NORTH);
 
         // 创建评论内容标签
         JTextArea contentTextArea = new JTextArea(content);
+        contentTextArea.setOpaque(false);
         contentTextArea.setLineWrap(true);
         contentTextArea.setEditable(false);
         contentTextArea.setBackground(this.getBackground());
@@ -99,6 +130,7 @@ public class CommentBar extends JPanel {
 
         // 查看回复按钮
         JButton viewRepliesButton = new JButton("查看回复");
+        viewRepliesButton.setOpaque(false);
         viewRepliesButton.setPreferredSize(new Dimension(100, 30)); // 设置按钮大小
         viewRepliesButton.addActionListener(e -> {
             DataControl data = null;
@@ -122,6 +154,7 @@ public class CommentBar extends JPanel {
 
         // 回复按钮
         JButton replyButton = new JButton("回复");
+        replyButton.setOpaque(false);
         replyButton.setPreferredSize(new Dimension(100, 30)); // 设置按钮大小
         replyButton.addActionListener(e -> {
             try {
@@ -133,9 +166,11 @@ public class CommentBar extends JPanel {
 
         // 创建按钮面板，并添加查看回复按钮和回复按钮
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // 使用流式布局，将按钮放在右边
+        buttonPanel.setOpaque(false);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0)); // 添加边距
 
         JButton deleteButton = new JButton("删除评论");
+        deleteButton.setOpaque(false);
         deleteButton.setPreferredSize(new Dimension(100, 30)); // 设置按钮大小
         deleteButton.addActionListener(e -> {
             try {
@@ -178,6 +213,7 @@ public class CommentBar extends JPanel {
         bottomPanel.add(buttonPanel, BorderLayout.CENTER);
 
         // 添加底部面板到主面板
+        bottomPanel.setOpaque(false);
         add(bottomPanel, BorderLayout.SOUTH);
         setMinimumSize(new Dimension(600, 200));
         setPreferredSize(new Dimension(600, 200));

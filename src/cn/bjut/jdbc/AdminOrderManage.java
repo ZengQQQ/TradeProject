@@ -66,7 +66,10 @@ public class AdminOrderManage extends JPanel {
         JButton deleteOrderButton = new JButton("删除订单");
         setButtonAction(deleteOrderButton, e -> {
             try {
-                deleteSelectedOrder();
+                int result = JOptionPane.showConfirmDialog(this, "确定要删除该订单吗？", "删除订单", JOptionPane.YES_NO_OPTION);
+                if(result == JOptionPane.YES_OPTION){
+                    deleteSelectedOrder();
+                }
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
