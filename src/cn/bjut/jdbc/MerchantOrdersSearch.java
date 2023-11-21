@@ -501,6 +501,9 @@ public class MerchantOrdersSearch extends JPanel {
         // 执行日期输入的验证
         if (!date.isEmpty() && !validateDateInput(dateType, date)) {
             errorMessage.append("- 购买时间输入不合法（日期格式：xxxx.x.x）\n");
+            errorMessage.append("- 年：年份必须是数字且长度为4\n");
+            errorMessage.append("- 月：1~12\n");
+            errorMessage.append("- 日：1~31\n");
         }
 
         // 如果有错误，则显示错误消息
