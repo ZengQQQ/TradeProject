@@ -63,18 +63,18 @@ public class AdminOrderManage extends JPanel {
         buttonPanel.add(updateStatusButton);
 
         // 添加删除订单的按钮
-        JButton deleteOrderButton = new JButton("删除订单");
-        setButtonAction(deleteOrderButton, e -> {
-            try {
-                int result = JOptionPane.showConfirmDialog(this, "确定要删除该订单吗？", "删除订单", JOptionPane.YES_NO_OPTION);
-                if(result == JOptionPane.YES_OPTION){
-                    deleteSelectedOrder();
-                }
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-        buttonPanel.add(deleteOrderButton);
+//        JButton deleteOrderButton = new JButton("删除订单");
+//        setButtonAction(deleteOrderButton, e -> {
+//            try {
+//                int result = JOptionPane.showConfirmDialog(this, "确定要删除该订单吗？", "删除订单", JOptionPane.YES_NO_OPTION);
+//                if(result == JOptionPane.YES_OPTION){
+//                    deleteSelectedOrder();
+//                }
+//            } catch (SQLException ex) {
+//                throw new RuntimeException(ex);
+//            }
+//        });
+//        buttonPanel.add(deleteOrderButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
     }
