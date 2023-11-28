@@ -15,7 +15,7 @@ public class DataBase {
         //private String jdbcName="com.microsoft.sqlserver.jdbc.SQLServerDriver";
         private String dbpath="jdbc:mysql://localhost:3306/tradeplatform?allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8&useSSL=false";
         private String dbUserName="root";
-        private String dbPassword="zcq.020731";//s输入你的数据库密码
+        private String dbPassword="";//s输入你的数据库密码
         private String jdbcName="com.mysql.cj.jdbc.Driver";
 
         public DataBase(){
